@@ -39,7 +39,12 @@ public final class Main {
     public static void onPageLoad(String... args) throws Exception {
         Town t = new Town();
         t.clear();
-        Karel d = new Karel("msg", t, new Command("krok"), new Command("vlevo-vbok"));
+        Karel d = new Karel("msg", t, 
+            "celem-vzad\n"
+          + "  vl.\n"
+          + "  vl.\n"
+          + "konec\n", 
+            new Command("krok"), new Command("vlevo-vbok"));
         d.applyBindings();
     }
 }

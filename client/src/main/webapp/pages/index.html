@@ -49,9 +49,17 @@
         </script>
         <div data-bind="template: { name : 'town', data : town }"></div>
         
-        <ul data-bind="foreach: commands">
+        <ul>
+          <!-- ko foreach: commands -->
             <li><a href="#" data-bind="text: name,click: $root.invoke"></a></li>
+          <!-- /ko -->
         </ul>
+
+        <script type="text/html" id="edit">
+            <textarea data-bind="text: source"></textarea>
+            <button data-bind="click: compile">Přeložit</button>
+        </script>
+        <div data-bind="template: { name : 'edit' }"></div>
         
         <script type="text/javascript" src="bck2brwsr.js"></script>
         <script>

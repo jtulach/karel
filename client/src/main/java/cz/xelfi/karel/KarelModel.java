@@ -28,7 +28,8 @@ import net.java.html.json.Property;
 @Model(className = "Karel", properties = {
     @Property(name = "message", type = String.class),
     @Property(name = "town", type = Town.class),
-    @Property(name = "commands", type = Command.class, array = true)
+    @Property(name = "commands", type = Command.class, array = true),
+    @Property(name = "source", type = String.class)
 })
 final class KarelModel {
     @Model(className = "Command", properties = {
@@ -44,5 +45,9 @@ final class KarelModel {
         if (data.getName().equalsIgnoreCase("vlevo-vbok")) {
             m.getTown().left();
         }
+    }
+    
+    @Function static void compile(Karel m) {
+        m.getCommands().add(new Command("novy"));
     }
 }
