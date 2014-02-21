@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>cz.xelfi.karel</groupId>
+    <artifactId>pom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Karel</name>
+    <description>
+        The simplest, yet very powerful programming language possible.
+        Control your robot (a word invented by Karel Čapek) on a town
+        with simple commands. Regardless simple commands, solve complex
+        tasks.
+    </description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <license>COPYING</license>
+        <net.java.html.version>0.7.5</net.java.html.version>
+        <bck2brwsr.version>0.8.1</bck2brwsr.version>
+    </properties>
+    <organization>
+      <name>Jaroslav Tulach</name>
+      <url>http://xelfi.cz</url>
+    </organization>
+    <scm>
+        <connection>scm:hg:http://source.apidesign.org/hg/bck2brwsr</connection>
+        <developerConnection>scm:hg:https://source.apidesign.org/hg/bck2brwsr</developerConnection>
+        <url>http://source.apidesign.org/hg/bck2brwsr</url>
+        <tag>HEAD</tag>
+    </scm>
+    <modules>
+        <module>client</module>
+    </modules>
+  <build>
+      <plugins>
+         <plugin>
+              <inherited>false</inherited>
+              <groupId>com.mycila.maven-license-plugin</groupId>
+              <artifactId>maven-license-plugin</artifactId>
+              <version>1.9.0</version>
+              <executions>
+                  <execution>
+                      <id>check-license</id>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
+              <configuration>
+                  <aggregate>true</aggregate>
+                  <basedir>${basedir}</basedir>
+                  <header>COPYING</header>
+                  <strictCheck>true</strictCheck>
+                  <excludes>
+                       <exclude>*</exclude>
+                       <exclude>.*/**</exclude>
+                  </excludes>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
+</project>
