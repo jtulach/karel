@@ -47,5 +47,7 @@ public class CompileTest {
         assertEquals(i3.text(), "vl.");
         
         assertEquals(it.next(), KarelToken.END);
+        assertEquals(it.next(), KarelToken.EOF);
+        assertFalse(it.hasNext());
     }
 }

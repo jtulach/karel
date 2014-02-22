@@ -46,6 +46,8 @@ final class KarelToken {
     static final KarelToken END = create("END"); // NOI18N
     static final KarelToken IS = create("IS"); // NOI18N
     static final KarelToken NOT = create("NOT"); // NOI18N
+    
+    static final KarelToken EOF = new KarelToken("", 0, 0); // NOI18N
 
     private KarelToken(String text, int begin, int end) {
         this.begin = begin;
@@ -110,8 +112,13 @@ final class KarelToken {
                 }
             }
         }
-        tokens.add(new KarelToken(text, text.length(), text.length()));
+        tokens.add(KarelToken.EOF);
         return tokens.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return "Token{" + "text=" + text() + '}';
     }
     
 }
