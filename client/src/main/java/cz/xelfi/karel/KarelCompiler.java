@@ -34,10 +34,16 @@ class KarelCompiler {
     public static AST toAST(String text) throws SyntaxException {
         Iterator<KarelToken> it = KarelToken.tokenize(text);
         Stack<AST> stack = new Stack<AST>();
+        final Root root = new Root();
+        stack.push(root);
         while (it.hasNext()) {
             final KarelToken t = it.next();
+            final AST top = stack.peek();
+            if (t == KarelToken.EOF) {
+                break;
+            }
             if (t == KarelToken.END) {
-                if (stack.isEmpty()) {
+                if (top instanceof Root) {
                     throw new SyntaxException(t);
                 }
                 stack.pop();
@@ -51,33 +57,63 @@ class KarelCompiler {
                 }
                 continue;
             }
+            if (t.isIdentifier()) {
+                AST d;
+                if (top instanceof Root) {
+                    d = new Define(t);
+                    stack.push(d);
+                } else {
+                    d = new Call(t);
+                }
+                top.addNode(d);
+                continue;
+            }
             if (t == KarelToken.IF) {
                 boolean is = it.next().trueFalse();
-                
+                If cond = new If(t, is, it.next());
+                top.addNode(cond);
+                stack.push(cond);
+                continue;
+            }
+            if (t == KarelToken.WHILE) {
+                boolean is = it.next().trueFalse();
+                While w = new While(t, is, it.next());
+                top.addNode(w);
+                stack.push(w);
+                continue;
+            }
+            if (t == KarelToken.REPEAT) {
+                Repeat r = new Repeat(t, it.next());
+                top.addNode(r);
+                stack.push(r);
+                continue;
             }
         }
-        return null;
+        return root;
     }
 
-    private static abstract class AST {
-        final AST[] onTrue;
-        final AST[] onFalse;
+    static abstract class AST {
+        final KarelToken token;
 
-        protected AST(AST[] onTrue, AST[] onFalse) {
-            this.onTrue = onTrue;
-            this.onFalse = onFalse;
+        public AST(KarelToken token) {
+            this.token = token;
         }
         
+        abstract void addNode(AST child) throws SyntaxException;
         abstract boolean isCondition(Town town);
         abstract int repeat(int counter);
     }
     
-    private static final class Call extends AST {
-        private final String function;
+    static final class Root extends AST {
+        final List<AST> children = new ArrayList<AST>();
+
+        public Root() {
+            super(KarelToken.EOF);
+        }
         
-        public Call(String function) {
-            super(null, null);
-            this.function = function;
+        @Override
+        void addNode(AST child) throws SyntaxException {
+            children.add(child);
         }
 
         @Override
@@ -92,10 +128,61 @@ class KarelCompiler {
         
     }
     
-    private static final class If extends AST {
+    static final class Define extends AST {
+        final List<AST> children;
+        public Define(KarelToken id) {
+            super(id);
+            children = new ArrayList<AST>();
+        }
 
-        public If(AST[] onTrue, AST[] onFalse) {
-            super(onTrue, onFalse);
+        @Override
+        void addNode(AST child) {
+            children.add(child);
+        }
+        
+        @Override
+        boolean isCondition(Town town) {
+            return true;
+        }
+
+
+        @Override
+        int repeat(int counter) {
+            return 0;
+        }
+        
+    }
+    
+    static final class Call extends AST {
+        public Call(KarelToken id) {
+            super(id);
+        }
+
+        @Override
+        void addNode(AST child) throws SyntaxException {
+            throw new SyntaxException(child.token);
+        }
+
+        
+        
+        @Override
+        boolean isCondition(Town town) {
+            return true;
+        }
+
+        @Override
+        int repeat(int counter) {
+            return 0;
+        }
+        
+    }
+    
+    static final class If extends AST {
+        private List<AST> yes;
+        private List<AST> no;
+
+        public If(KarelToken t, boolean yes, KarelToken cond) {
+            super(t);
         }
         @Override
         boolean isCondition(Town town) {
@@ -108,8 +195,70 @@ class KarelCompiler {
         }
 
         final void switchElse() {
-            
+            no = new ArrayList<AST>();
+        }
+
+        @Override
+        void addNode(AST child) throws SyntaxException {
+            if (no != null) {
+                no.add(child);
+            } else {
+                if (yes == null) {
+                    yes = new ArrayList<AST>();
+                }
+                yes.add(child);
+            }
         }
         
+    }
+    
+    static final class While extends AST {
+        private final List<AST> block;
+
+        public While(KarelToken t, boolean yes, KarelToken cond) {
+            super(t);
+            this.block = new ArrayList<AST>();
+        }
+
+        @Override
+        void addNode(AST child) throws SyntaxException {
+            block.add(child);
+        }
+
+        @Override
+        boolean isCondition(Town town) {
+            return true;
+        }
+
+        @Override
+        int repeat(int counter) {
+            return 1;
+        }
+    }
+    
+    static final class Repeat extends AST {
+        private final List<AST> block;
+        private final int count;
+
+        public Repeat(KarelToken t, KarelToken count) {
+            super(t);
+            this.block = new ArrayList<AST>();
+            this.count = 1;
+        }
+
+        @Override
+        void addNode(AST child) throws SyntaxException {
+            block.add(child);
+        }
+
+        @Override
+        boolean isCondition(Town town) {
+            return true;
+        }
+
+        @Override
+        int repeat(int counter) {
+            return 1;
+        }
     }
 }

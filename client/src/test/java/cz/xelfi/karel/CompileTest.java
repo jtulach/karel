@@ -17,7 +17,12 @@
  */
 package cz.xelfi.karel;
 
+import cz.xelfi.karel.KarelCompiler.AST;
+import cz.xelfi.karel.KarelCompiler.Call;
+import cz.xelfi.karel.KarelCompiler.Define;
+import cz.xelfi.karel.KarelCompiler.Root;
 import java.util.Iterator;
+import java.util.List;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
@@ -26,7 +31,7 @@ import org.testng.annotations.Test;
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 public class CompileTest {
-    @Test public void compileTurnBack() {
+    @Test public void tokenize() {
         Iterator<KarelToken> it = KarelToken.tokenize(
               "čelem-vzad\n"
             + "  vlevo.\n"
@@ -50,4 +55,24 @@ public class CompileTest {
         assertEquals(it.next(), KarelToken.EOF);
         assertFalse(it.hasNext());
     }
+
+    @Test public void astize() throws SyntaxException {
+        AST root = KarelCompiler.toAST(
+            "čelem-vzad\n"
+                + "  vlevo-vbok\n"
+                + "  vlevo-vbok\n"
+                + "konec\n"
+                + "");
+        List<AST> arr = ((Root)root).children;
+        assertEquals(arr.size(), 1, "one definition: " + arr);
+        arr = ((Define)arr.get(0)).children;
+        
+        assertEquals(arr.size(), 2, "Two calls: " + arr);
+        assertTrue(arr.get(0) instanceof Call);
+        assertTrue(arr.get(1) instanceof Call);
+        
+        assertEquals(arr.get(0).token.text(), "vlevo-vbok");
+        assertEquals(arr.get(1).token.text(), "vlevo-vbok");
+    }
+    
 }

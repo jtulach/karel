@@ -80,15 +80,6 @@ final class KarelToken {
         return begin != -1;
     }
 
-    boolean trueFalse() throws SyntaxException {
-        if ("je".contentEquals(text())) {
-            return true;
-        } else if ("není".contentEquals(text()) || "neni".contentEquals(text())) {
-            return false;
-        }
-        throw new SyntaxException(this);
-    }
-
     static Iterator<KarelToken> tokenize(String text) {
         List<KarelToken> tokens = new ArrayList<KarelToken>();
         int begin = -1;
@@ -119,6 +110,16 @@ final class KarelToken {
     @Override
     public String toString() {
         return "Token{" + "text=" + text() + '}';
+    }
+
+    boolean trueFalse() throws SyntaxException {
+        if (KarelToken.IS.equals(this)) {
+            return true;
+        }
+        if (KarelToken.NOT.equals(this)) {
+            return false;
+        }
+        throw new SyntaxException(this);
     }
     
 }
