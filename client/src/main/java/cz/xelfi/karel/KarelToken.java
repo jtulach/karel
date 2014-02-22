@@ -90,7 +90,7 @@ final class KarelToken {
                 } else {
                     KarelToken t = new KarelToken(text, begin, i);
                     for (KarelToken k : ALL) {
-                        if (k.text().equals(t.text())) {
+                        if (k.sameText(t.text())) {
                             t = k;
                         }
                     }
@@ -120,6 +120,15 @@ final class KarelToken {
             return false;
         }
         throw new SyntaxException(this);
+    }
+
+    final boolean sameText(CharSequence text) {
+        for (String t : this.text) {
+            if (t.contentEquals(text)) {
+                return true;
+            }
+        }
+        return false;
     }
     
 }

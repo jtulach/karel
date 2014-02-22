@@ -20,6 +20,7 @@ package cz.xelfi.karel;
 import cz.xelfi.karel.KarelCompiler.AST;
 import cz.xelfi.karel.KarelCompiler.Call;
 import cz.xelfi.karel.KarelCompiler.Define;
+import cz.xelfi.karel.KarelCompiler.If;
 import cz.xelfi.karel.KarelCompiler.Root;
 import java.util.Iterator;
 import java.util.List;
@@ -75,4 +76,26 @@ public class CompileTest {
         assertEquals(arr.get(1).token.text(), "vlevo-vbok");
     }
     
+    @Test public void stepWithCare() throws SyntaxException {
+        AST root = KarelCompiler.toAST(
+            "step-care\n"
+          + "  kdyz není zed\n"
+          + "    krok\n"
+          + "  konec\n"
+          + "konec\n"
+        );
+        List<AST> arr = ((Root)root).children;
+        assertEquals(arr.size(), 1, "one definition: " + arr);
+        arr = ((Define)arr.get(0)).children;
+
+        assertEquals(arr.size(), 1, "One if: " + arr);
+        assertTrue(arr.get(0) instanceof If);
+        
+        If f = (If)arr.get(0);
+        assertNull(f.no, "Only one branch");
+        
+        assertNotNull(f.yes, "One branch present");
+        assertEquals(f.yes.size(), 1, "One call in the branch");
+        assertTrue(f.yes.get(0) instanceof Call, "The call is here");
+    }
 }

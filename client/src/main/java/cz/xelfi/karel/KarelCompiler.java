@@ -57,17 +57,6 @@ class KarelCompiler {
                 }
                 continue;
             }
-            if (t.isIdentifier()) {
-                AST d;
-                if (top instanceof Root) {
-                    d = new Define(t);
-                    stack.push(d);
-                } else {
-                    d = new Call(t);
-                }
-                top.addNode(d);
-                continue;
-            }
             if (t == KarelToken.IF) {
                 boolean is = it.next().trueFalse();
                 If cond = new If(t, is, it.next());
@@ -86,6 +75,17 @@ class KarelCompiler {
                 Repeat r = new Repeat(t, it.next());
                 top.addNode(r);
                 stack.push(r);
+                continue;
+            }
+            if (t.isIdentifier()) {
+                AST d;
+                if (top instanceof Root) {
+                    d = new Define(t);
+                    stack.push(d);
+                } else {
+                    d = new Call(t);
+                }
+                top.addNode(d);
                 continue;
             }
         }
@@ -178,8 +178,8 @@ class KarelCompiler {
     }
     
     static final class If extends AST {
-        private List<AST> yes;
-        private List<AST> no;
+        List<AST> yes;
+        List<AST> no;
 
         public If(KarelToken t, boolean yes, KarelToken cond) {
             super(t);
