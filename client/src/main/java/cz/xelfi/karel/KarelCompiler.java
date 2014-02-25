@@ -27,7 +27,67 @@ import java.util.Stack;
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 class KarelCompiler {
-    private KarelCompiler() {
+    private final Town town;
+    private final Root root;
+    private final KarelCompiler prev;
+    private final AST current;
+    private int index;
+    
+    private KarelCompiler(KarelCompiler p, AST fn) {
+        root = p.root;
+        town = p.town;
+        prev = p;
+        current = fn;
+        index = -1;
+    }
+    
+    private KarelCompiler(Town t, Root r, AST fn) {
+        root = r;
+        town = t;
+        prev = null;
+        current = fn;
+        index = -1;
+    }
+    
+    public static KarelCompiler execute(Town town, Root r, String function) {
+        for (AST ast : r.children) {
+            if (ast instanceof Define) {
+                final Define fn = (Define)ast;
+                if (fn.token.sameText(function)) {
+                    return new KarelCompiler(town, r, fn);
+                }
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+    
+    public KarelCompiler step() {
+        if (current instanceof Define) {
+            List<AST> arr = ((Define)current).children;
+            index++;
+            if (arr.size() > index) {
+                return new KarelCompiler(this, arr.get(index)).step();
+            } else {
+                return prev == null ? null : prev.step();
+            }
+        }
+        if (current instanceof Call) {
+            Call c = (Call)current;
+            for (AST ast : root.children) {
+                if (ast.token.sameText(c.token.text())) {
+                    return new KarelCompiler(this, ast).step();
+                }
+            }
+            if (c.token.sameText("vlevo-vbok")) {
+                town.left();
+                return prev;
+            }
+            if (c.token.sameText("krok")) {
+                town.step();
+                return prev;
+            }
+        }
+        return prev;
     }
     
     
@@ -243,7 +303,7 @@ class KarelCompiler {
         public Repeat(KarelToken t, KarelToken count) {
             super(t);
             this.block = new ArrayList<AST>();
-            this.count = 1;
+            this.count = Integer.parseInt(count.text().toString());
         }
 
         @Override

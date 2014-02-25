@@ -123,12 +123,16 @@ final class KarelToken {
     }
 
     final boolean sameText(CharSequence text) {
-        for (String t : this.text) {
-            if (t.contentEquals(text)) {
-                return true;
+        if (begin == -1 && end == -1) {
+            for (String t : this.text) {
+                if (t.contentEquals(text)) {
+                    return true;
+                }
             }
+            return false;
+        } else {
+            return text().equals(text);
         }
-        return false;
     }
     
 }
