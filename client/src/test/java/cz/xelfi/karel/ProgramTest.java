@@ -113,8 +113,40 @@ public class ProgramTest {
             assertLocation(t, 0, 9, 1, "Rotated 2nd");
             assertNull(two.next(), "No further movements");
         }
-        
     }
+
+    @Test public void pickupAllSigns() throws Exception {
+        KarelCompiler.AST root = KarelCompiler.toAST(
+              "seber\n"
+            + "  dokud je značka\n"
+            + "    zvedni\n"
+            + "  konec\n"
+            + "konec\n"
+        );
+        
+        Town t = new Town();
+        t.clear();
+        
+        int[] xyd = TownModel.findKarel(t);
+        final Square square = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
+        square.setSign(3);
+        
+        KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "seber");
+        
+        {
+            KarelCompiler one = inst.next();
+            assertNotNull(one);
+            assertEquals(square.getSign(), 2, "One sign less");
+            KarelCompiler two = one.next();
+            assertNotNull(two);
+            assertEquals(square.getSign(), 1, "One sign remaining");
+            KarelCompiler three = two.next();
+            assertNotNull(three);
+            assertEquals(square.getSign(), 0, "Empty");
+            assertNull(three.next(), "Execution is over");
+        }
+    }
+    
     private static void assertLocation(Town t, int x, int y, int d, String msg) {
         int[] xyd = TownModel.findKarel(t);
         assertNotNull(xyd, "Location of Karel found: " + t);

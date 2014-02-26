@@ -46,6 +46,11 @@ final class KarelToken {
     static final KarelToken END = create("END"); // NOI18N
     static final KarelToken IS = create("IS"); // NOI18N
     static final KarelToken NOT = create("NOT"); // NOI18N
+
+    static final KarelToken STEP = create("STEP", -2); // NOI18N
+    static final KarelToken LEFT = create("LEFT", -2); // NOI18N
+    static final KarelToken TAKE = create("TAKE", -2); // NOI18N
+    static final KarelToken PUT = create("PUT", -2); // NOI18N
     
     static final KarelToken EOF = new KarelToken("", 0, 0); // NOI18N
 
@@ -55,22 +60,25 @@ final class KarelToken {
         this.text = new String[] { text };
     }
     
-    private KarelToken(String[] arr) {
+    private KarelToken(String[] arr, int beg) {
         this.text = arr;
-        this.begin = -1;
+        this.begin = beg;
         this.end = -1;
     }
 
     private static KarelToken create(String key) {
+        return create(key, -1);
+    }
+    private static KarelToken create(String key, int begin) {
         ResourceBundle rb = ResourceBundle.getBundle("cz/xelfi/karel/Bundle");
         String[] arr = rb.getString(key).split(",");
-        KarelToken kt = new KarelToken(arr);
+        KarelToken kt = new KarelToken(arr, begin);
         ALL.add(kt);
         return kt;
     }
 
     CharSequence text() {
-        if (begin == -1 || end == -1) {
+        if (begin < 0 || end == -1) {
             return text[0];
         }
         return text[0].subSequence(begin, end);
@@ -123,7 +131,7 @@ final class KarelToken {
     }
 
     final boolean sameText(CharSequence text) {
-        if (begin == -1 && end == -1) {
+        if (begin < 0 && end == -1) {
             for (String t : this.text) {
                 if (t.contentEquals(text)) {
                     return true;

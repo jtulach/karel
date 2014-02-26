@@ -152,4 +152,24 @@ class TownModel {
             t.getRows().get(xyd[1]).getColumns().get(xyd[0]).setRobot(xyd[2]);
         }
     }
+    
+    @ModelOperation static void put(Town t) {
+        int[] xyd = findKarel(t);
+        Square sq = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
+        if (sq.getSign() >= 5) {
+            t.setError(3);
+            return;
+        }
+        sq.setSign(sq.getSign() + 1);
+    }
+
+    @ModelOperation static void take(Town t) {
+        int[] xyd = findKarel(t);
+        Square sq = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
+        if (sq.getSign() <= 0) {
+            t.setError(2);
+            return;
+        }
+        sq.setSign(sq.getSign() - 1);
+    }
 }

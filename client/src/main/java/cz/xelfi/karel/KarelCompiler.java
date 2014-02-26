@@ -220,12 +220,20 @@ class KarelCompiler {
                     }
                 }
             }
-            if (this.token.text().equals("krok")) {
+            if (this.token == KarelToken.STEP) {
                 frame.town.step();
                 return null;
             }
-            if (this.token.text().equals("vlevo-vbok")) {
+            if (this.token == KarelToken.LEFT) {
                 frame.town.left();
+                return null;
+            }
+            if (this.token == KarelToken.PUT) {
+                frame.town.put();
+                return null;
+            }
+            if (this.token == KarelToken.TAKE) {
+                frame.town.take();
                 return null;
             }
             throw new IllegalStateException("Cannot find " + this.token.text());
