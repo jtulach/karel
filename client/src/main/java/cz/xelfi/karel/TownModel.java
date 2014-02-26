@@ -44,7 +44,32 @@ class TownModel {
     }
 
     static boolean isCondition(Town town, KarelToken cond) {
-        return true;
+        int[] xyd = findKarel(town);
+        if (KarelToken.EAST == cond) {
+            return xyd[2] == 1;
+        }
+        if (KarelToken.SOUTH == cond) {
+            return xyd[2] == 2;
+        }
+        if (KarelToken.WEST == cond) {
+            return xyd[2] == 3;
+        }
+        if (KarelToken.NORTH == cond) {
+            return xyd[2] == 4;
+        }
+        if (KarelToken.SIGN == cond) {
+            return town.getRows().get(xyd[1]).getColumns().get(xyd[0]).getSign() > 0;
+        }
+        if (KarelToken.WALL != cond) {
+            throw new IllegalStateException("" + cond);
+        }
+        int[] next = stepInDirection(xyd);
+        try {
+            town.getRows().get(next[1]).getColumns().get(next[0]);
+            return false;
+        } catch (IndexOutOfBoundsException ex) {
+            return true;
+        }
     }
     
     
@@ -95,21 +120,26 @@ class TownModel {
         t.setError(0);
         int[] xyd = findKarel(t);
         if (xyd != null) {
-            int[] old = xyd.clone();
-            switch (xyd[2]) {
-                case 1: xyd[0]++; break;
-                case 2: xyd[1]++; break;
-                case 3: xyd[0]--; break;
-                case 4: xyd[1]--; break;
-            }
+            int[] next = stepInDirection(xyd);
             try {
-                t.getRows().get(xyd[1]).getColumns().get(xyd[0]).setRobot(xyd[2]);
+                t.getRows().get(next[1]).getColumns().get(next[0]).setRobot(next[2]);
             } catch (IndexOutOfBoundsException ex) {
                 t.setError(1);
                 return;
             }
-            t.getRows().get(old[1]).getColumns().get(old[0]).setRobot(0);
+            t.getRows().get(xyd[1]).getColumns().get(xyd[0]).setRobot(0);
         }
+    }
+
+    private static int[] stepInDirection(int[] xyd) {
+        int[] old = xyd.clone();
+        switch (xyd[2]) {
+            case 1: old[0]++; break;
+            case 2: old[1]++; break;
+            case 3: old[0]--; break;
+            case 4: old[1]--; break;
+        }
+        return old;
     }
     
     @ModelOperation static void left(Town t) {

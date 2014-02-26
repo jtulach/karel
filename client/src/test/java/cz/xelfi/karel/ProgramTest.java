@@ -82,22 +82,36 @@ public class ProgramTest {
         t.clear();
         t.getRows().get(9).getColumns().get(0).setRobot(0);
         t.getRows().get(9).getColumns().get(2).setRobot(3);
-
+        assertLocation(t, 2, 9, 3, "Heading to home");
+        
         KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "postup");
         assertNotNull(inst, "Instruction created");
 
+        assertLocation(t, 2, 9, 3, "Still heading to home");
         {
             KarelCompiler one = inst.next();
-            assertLocation(t, 9, 1, 3, "Step was made");
+            assertLocation(t, 1, 9, 3, "Step was made");
             assertNotNull(one);
             assertNull(one.next());
         }
         
+        inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "postup");
         {
             KarelCompiler one = inst.next();
-            assertLocation(t, 9, 0, 3, "Step was made");
+            assertLocation(t, 0, 9, 3, "Step was made");
             assertNotNull(one);
             assertNull(one.next());
+        }
+
+        inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "postup");
+        {
+            KarelCompiler one = inst.next();
+            assertLocation(t, 0, 9, 2, "Rotated once");
+            assertNotNull(one);
+            KarelCompiler two = one.next();
+            assertNotNull(two);
+            assertLocation(t, 0, 9, 1, "Rotated 2nd");
+            assertNull(two.next(), "No further movements");
         }
         
     }

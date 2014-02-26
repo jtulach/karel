@@ -18,6 +18,7 @@
 package cz.xelfi.karel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -56,7 +57,9 @@ class KarelCompiler {
             if (ast instanceof Define) {
                 final Define fn = (Define)ast;
                 if (fn.token.sameText(function)) {
-                    return new KarelCompiler(town, r, fn, fn.children);
+                    return new KarelCompiler(town, r, fn, 
+                        Collections.<AST>singletonList(new Call(fn.token))
+                    );
                 }
             }
         }
@@ -69,15 +72,15 @@ class KarelCompiler {
             count = cnt;
             if (cnt > 0) {
                 pc = 0;
-                return this;
+                return this.next();
             } else {
-                return prev;
+                return prev == null ? null : prev.next();
             }
         } else {
             AST inst = instructions.get(pc++);
             KarelCompiler inner = inst.exec(this);
             if (inner != null) {
-                return inner;
+                return inner.next();
             } else {
                 return this;
             }
@@ -217,23 +220,33 @@ class KarelCompiler {
                     }
                 }
             }
+            if (this.token.text().equals("krok")) {
+                frame.town.step();
+                return null;
+            }
+            if (this.token.text().equals("vlevo-vbok")) {
+                frame.town.left();
+                return null;
+            }
             throw new IllegalStateException("Cannot find " + this.token.text());
         }
     }
     
     static final class If extends AST {
         private final KarelToken cond;
+        private final boolean positive;
         List<AST> yes;
         List<AST> no;
 
         public If(KarelToken t, boolean yes, KarelToken cond) {
             super(t);
+            this.positive = yes;
             this.cond = cond;
         }
 
         @Override
         KarelCompiler exec(KarelCompiler frame) {
-            if (TownModel.isCondition(frame.town, this.cond)) {
+            if (TownModel.isCondition(frame.town, this.cond) == positive) {
                 return new KarelCompiler(frame, this, yes);
             } else {
                 return no == null ? null : new KarelCompiler(frame, this, no);
