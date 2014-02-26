@@ -30,23 +30,25 @@ class KarelCompiler {
     private final Town town;
     private final Root root;
     private final KarelCompiler prev;
-    private final AST current;
-    private int index;
+    private final AST owner;
+    private final List<AST> instructions;
+    private int pc;
+    private int count;
     
-    private KarelCompiler(KarelCompiler p, AST fn) {
+    private KarelCompiler(KarelCompiler p, AST fn, List<AST> inst) {
         root = p.root;
         town = p.town;
         prev = p;
-        current = fn;
-        index = -1;
+        owner = fn;
+        instructions = inst;
     }
     
-    private KarelCompiler(Town t, Root r, AST fn) {
+    private KarelCompiler(Town t, Root r, AST fn, List<AST> inst) {
         root = r;
         town = t;
         prev = null;
-        current = fn;
-        index = -1;
+        owner = fn;
+        instructions = inst;
     }
     
     public static KarelCompiler execute(Town town, Root r, String function) {
@@ -54,40 +56,32 @@ class KarelCompiler {
             if (ast instanceof Define) {
                 final Define fn = (Define)ast;
                 if (fn.token.sameText(function)) {
-                    return new KarelCompiler(town, r, fn);
+                    return new KarelCompiler(town, r, fn, fn.children);
                 }
             }
         }
         throw new IllegalArgumentException();
     }
     
-    public KarelCompiler step() {
-        if (current instanceof Define) {
-            List<AST> arr = ((Define)current).children;
-            index++;
-            if (arr.size() > index) {
-                return new KarelCompiler(this, arr.get(index)).step();
+    public KarelCompiler next() {
+        if (instructions.size() <= pc) {
+            int cnt = owner.repeatFrame(this, count);
+            count = cnt;
+            if (cnt > 0) {
+                pc = 0;
+                return this;
             } else {
-                return prev == null ? null : prev.step();
-            }
-        }
-        if (current instanceof Call) {
-            Call c = (Call)current;
-            for (AST ast : root.children) {
-                if (ast.token.sameText(c.token.text())) {
-                    return new KarelCompiler(this, ast).step();
-                }
-            }
-            if (c.token.sameText("vlevo-vbok")) {
-                town.left();
                 return prev;
             }
-            if (c.token.sameText("krok")) {
-                town.step();
-                return prev;
+        } else {
+            AST inst = instructions.get(pc++);
+            KarelCompiler inner = inst.exec(this);
+            if (inner != null) {
+                return inner;
+            } else {
+                return this;
             }
         }
-        return prev;
     }
     
     
@@ -160,8 +154,11 @@ class KarelCompiler {
         }
         
         abstract void addNode(AST child) throws SyntaxException;
-        abstract boolean isCondition(Town town);
-        abstract int repeat(int counter);
+        
+        abstract KarelCompiler exec(KarelCompiler frame);
+        int repeatFrame(KarelCompiler frame, int counter) {
+            return 0;
+        }
     }
     
     static final class Root extends AST {
@@ -177,15 +174,9 @@ class KarelCompiler {
         }
 
         @Override
-        boolean isCondition(Town town) {
-            return true;
+        KarelCompiler exec(KarelCompiler frame) {
+            throw new IllegalStateException();
         }
-
-        @Override
-        int repeat(int counter) {
-            return 0;
-        }
-        
     }
     
     static final class Define extends AST {
@@ -199,18 +190,11 @@ class KarelCompiler {
         void addNode(AST child) {
             children.add(child);
         }
-        
-        @Override
-        boolean isCondition(Town town) {
-            return true;
-        }
-
 
         @Override
-        int repeat(int counter) {
-            return 0;
+        KarelCompiler exec(KarelCompiler frame) {
+            return new KarelCompiler(frame, this, children);
         }
-        
     }
     
     static final class Call extends AST {
@@ -223,35 +207,37 @@ class KarelCompiler {
             throw new SyntaxException(child.token);
         }
 
-        
-        
         @Override
-        boolean isCondition(Town town) {
-            return true;
+        KarelCompiler exec(KarelCompiler frame) {
+            for (AST a : frame.root.children) {
+                if (a instanceof Define) {
+                    Define d = (Define)a;
+                    if (d.token.sameText(this.token.text())) {
+                        return new KarelCompiler(frame, d, d.children);
+                    }
+                }
+            }
+            throw new IllegalStateException("Cannot find " + this.token.text());
         }
-
-        @Override
-        int repeat(int counter) {
-            return 0;
-        }
-        
     }
     
     static final class If extends AST {
+        private final KarelToken cond;
         List<AST> yes;
         List<AST> no;
 
         public If(KarelToken t, boolean yes, KarelToken cond) {
             super(t);
-        }
-        @Override
-        boolean isCondition(Town town) {
-            return true;
+            this.cond = cond;
         }
 
         @Override
-        int repeat(int counter) {
-            return 0;
+        KarelCompiler exec(KarelCompiler frame) {
+            if (TownModel.isCondition(frame.town, this.cond)) {
+                return new KarelCompiler(frame, this, yes);
+            } else {
+                return no == null ? null : new KarelCompiler(frame, this, no);
+            }
         }
 
         final void switchElse() {
@@ -274,10 +260,12 @@ class KarelCompiler {
     
     static final class While extends AST {
         private final List<AST> block;
+        private final KarelToken cond;
 
         public While(KarelToken t, boolean yes, KarelToken cond) {
             super(t);
             this.block = new ArrayList<AST>();
+            this.cond = cond;
         }
 
         @Override
@@ -286,13 +274,20 @@ class KarelCompiler {
         }
 
         @Override
-        boolean isCondition(Town town) {
-            return true;
+        KarelCompiler exec(KarelCompiler frame) {
+            if (TownModel.isCondition(frame.town, cond)) {
+                return new KarelCompiler(frame, this, block);
+            } else {
+                return null;
+            }
         }
 
         @Override
-        int repeat(int counter) {
-            return 1;
+        int repeatFrame(KarelCompiler frame, int counter) {
+            if (TownModel.isCondition(frame.town, cond)) {
+                return 1;
+            }
+            return 0;
         }
     }
     
@@ -312,13 +307,15 @@ class KarelCompiler {
         }
 
         @Override
-        boolean isCondition(Town town) {
-            return true;
+        KarelCompiler exec(KarelCompiler frame) {
+            KarelCompiler my = new KarelCompiler(frame, this, block);
+            my.count = count;
+            return my;
         }
-
+        
         @Override
-        int repeat(int counter) {
-            return 1;
+        int repeatFrame(KarelCompiler frame, int counter) {
+            return counter - 1;
         }
     }
 }

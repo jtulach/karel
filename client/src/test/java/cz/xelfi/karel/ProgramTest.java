@@ -50,18 +50,57 @@ public class ProgramTest {
         KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "čelem-vzad");
         assertNotNull(inst, "Instruction created");
 
-        inst = inst.step();
+        inst = inst.next();
         assertLocation(t, 0, 9, 4, "One step heading north");
         
-        inst = inst.step();
+        inst = inst.next();
         assertLocation(t, 0, 9, 3, "Another and heading to west");
 
         assertNotNull(inst, "Waiting for another instruction");
-        inst = inst.step();
+        inst = inst.next();
         
         assertNull(inst, "No next instruction");
     }
- 
+
+    @Test public void advance() throws Exception {
+        KarelCompiler.AST root = KarelCompiler.toAST(
+              "čelem-vzad\n"
+            + "  vlevo-vbok\n"
+            + "  vlevo-vbok\n"
+            + "konec\n"
+            + "\n"
+            + "postup\n"
+            + "  kdyz není zed\n"
+            + "    krok\n"
+            + "  jinak\n"
+            + "    čelem-vzad\n"
+            + "  konec\n"
+            + "konec\n"
+        );
+        
+        Town t = new Town();
+        t.clear();
+        t.getRows().get(9).getColumns().get(0).setRobot(0);
+        t.getRows().get(9).getColumns().get(2).setRobot(3);
+
+        KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "postup");
+        assertNotNull(inst, "Instruction created");
+
+        {
+            KarelCompiler one = inst.next();
+            assertLocation(t, 9, 1, 3, "Step was made");
+            assertNotNull(one);
+            assertNull(one.next());
+        }
+        
+        {
+            KarelCompiler one = inst.next();
+            assertLocation(t, 9, 0, 3, "Step was made");
+            assertNotNull(one);
+            assertNull(one.next());
+        }
+        
+    }
     private static void assertLocation(Town t, int x, int y, int d, String msg) {
         int[] xyd = TownModel.findKarel(t);
         assertNotNull(xyd, "Location of Karel found: " + t);

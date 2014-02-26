@@ -42,6 +42,10 @@ class TownModel {
     static enum Orientation {
         NORTH, EAST, SOUTH, WEST;
     }
+
+    static boolean isCondition(Town town, KarelToken cond) {
+        return true;
+    }
     
     
     @Model(className = "Square", properties = {
