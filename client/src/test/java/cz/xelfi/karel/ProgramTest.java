@@ -147,6 +147,33 @@ public class ProgramTest {
         }
     }
     
+    @Test public void threeSteps() throws Exception {
+        KarelCompiler.AST root = KarelCompiler.toAST(
+              "tri-kroky\n"
+            + "  opakuj 3\n"
+            + "    krok\n"
+            + "  konec\n"
+            + "konec\n"
+        );
+        
+        Town t = new Town();
+        t.clear();
+        
+        KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "tri-kroky");
+        
+        {
+            KarelCompiler one = inst.next();
+            assertNotNull(one);
+            KarelCompiler two = one.next();
+            assertNotNull(two);
+            KarelCompiler three = two.next();
+            assertNotNull(three);
+            assertNull(three.next(), "Execution is over");
+        }
+        
+        assertLocation(t, 3, 9, 1, "Three steps");
+    }
+    
     private static void assertLocation(Town t, int x, int y, int d, String msg) {
         int[] xyd = TownModel.findKarel(t);
         assertNotNull(xyd, "Location of Karel found: " + t);
