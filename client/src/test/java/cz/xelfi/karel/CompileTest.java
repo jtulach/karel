@@ -62,7 +62,7 @@ public class CompileTest {
             "čelem-vzad\n"
                 + "  vlevo-vbok\n"
                 + "  vlevo-vbok\n"
-                + "konec\n"
+                + "Konec\n"
                 + "");
         List<AST> arr = ((Root)root).children;
         assertEquals(arr.size(), 5, "five definitions: " + arr);
@@ -81,7 +81,7 @@ public class CompileTest {
             "step-care\n"
           + "  kdyz není zed\n"
           + "    krok\n"
-          + "  konec\n"
+          + "  KONec\n"
           + "konec\n"
         );
         List<AST> arr = ((Root)root).children;

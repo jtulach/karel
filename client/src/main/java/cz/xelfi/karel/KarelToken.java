@@ -129,17 +129,30 @@ final class KarelToken {
         }
         throw new SyntaxException(this);
     }
+    
+    private static boolean equalsIgnoreCase(CharSequence s1, CharSequence s2) {
+        final int s1l = s1.length();
+        if (s1l != s2.length()) return false;
+        for (int i = 0; i < s1l; i++) {
+            char ch1 = Character.toUpperCase(s1.charAt(i));
+            char ch2 = Character.toUpperCase(s2.charAt(i));
+            if (ch1 != ch2) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     final boolean sameText(CharSequence text) {
         if (begin < 0 && end == -1) {
             for (String t : this.text) {
-                if (t.contentEquals(text)) {
+                if (equalsIgnoreCase(t, text)) {
                     return true;
                 }
             }
             return false;
         } else {
-            return text().equals(text);
+            return equalsIgnoreCase(text(), text);
         }
     }
     
