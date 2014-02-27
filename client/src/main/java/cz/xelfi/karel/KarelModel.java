@@ -17,9 +17,12 @@
  */
 package cz.xelfi.karel;
 
-import net.java.html.json.ComputedProperty;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
+import net.java.html.json.ModelOperation;
 import net.java.html.json.Property;
 
 /** Model annotation generates class Data with 
@@ -32,6 +35,7 @@ import net.java.html.json.Property;
     @Property(name = "source", type = String.class)
 })
 final class KarelModel {
+    private static final Timer KAREL = new Timer("Karel Moves");
     @Model(className = "Command", properties = {
         @Property(name = "name", type = String.class)
     })
@@ -39,15 +43,40 @@ final class KarelModel {
     }
     
     @Function static void invoke(Karel m, Command data) {
-        if (data.getName().equalsIgnoreCase("krok")) {
-            m.getTown().step();
+        try {
+            KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
+            KarelCompiler frame = KarelCompiler.execute(m.getTown(), root, data.getName());
+            m.animate(frame);
+        } catch (SyntaxException ex) {
+            throw new IllegalStateException(ex);
         }
-        if (data.getName().equalsIgnoreCase("vlevo-vbok")) {
-            m.getTown().left();
+    }
+    
+    @ModelOperation static void animate(final Karel m, KarelCompiler frame) {
+        final KarelCompiler nxt = frame.next();
+        if (nxt != null) {
+            KAREL.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    animate(m, nxt);
+                }
+            }, 1000);
         }
     }
     
     @Function static void compile(Karel m) {
-        m.getCommands().add(new Command("novy"));
+        try {
+            KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
+            List<Command> lst = m.getCommands();
+            lst.clear();
+            for (KarelCompiler.AST ast : root.children) {
+                if (ast instanceof KarelCompiler.Define) {
+                    KarelCompiler.Define d = (KarelCompiler.Define) ast;
+                    m.getCommands().add(new Command(d.token.text().toString()));
+                }
+            }
+        } catch (SyntaxException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 }
