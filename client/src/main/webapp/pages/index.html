@@ -61,11 +61,14 @@
         </script>
         <div data-bind="template: { name : 'edit' }"></div>
         
-        <ul>
-          <!-- ko foreach: commands -->
-            <li><a href="#" data-bind="text: name,click: $root.invoke"></a></li>
-          <!-- /ko -->
-        </ul>
+        <script type="text/html" id="commands">
+            <ul>
+              <!-- ko foreach: commands -->
+                <li><a href="#" data-bind="text: name,click: $root.invoke"></a></li>
+              <!-- /ko -->
+            </ul>
+        </script>
+        <div data-bind="template: { name : 'commands' }"></div>
 
         
         <script type="text/javascript" src="bck2brwsr.js"></script>
