@@ -26,11 +26,11 @@
 
     </head>
     <body>
-        <h1>Karel</h1>
-        
         <script type="text/html" id="town">
             <ul>
                 <li data-bind="visible: error() == 1">Narazil jsem do zdi!</li>
+                <li data-bind="visible: error() == 2">Nelze sebrat značku!</li>
+                <li data-bind="visible: error() == 3">Příliš mnoho značek!</li>
             </ul>
             
             <table class="town">
@@ -57,6 +57,7 @@
 
         <script type="text/html" id="edit">
             <textarea data-bind="value: source"></textarea>
+            <progress max="1000" data-bind="value: speed"></progress>
             <button data-bind="click: compile">Přeložit</button>
         </script>
         <div data-bind="template: { name : 'edit' }"></div>

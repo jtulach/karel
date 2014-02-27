@@ -40,11 +40,11 @@ public final class Main {
         Town t = new Town();
         t.clear();
         Karel d = new Karel("msg", t, 
-            "celem-vzad\n"
-          + "  vl.\n"
-          + "  vl.\n"
-          + "konec\n", 
-            new Command("krok"), new Command("vlevo-vbok"));
+            "čelem-vzad\n"
+          + "  vlevo-vbok\n"
+          + "  vlevo-vbok\n"
+          + "konec\n", 300);
+        d.compile();
         d.applyBindings();
     }
 }

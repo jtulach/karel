@@ -32,7 +32,8 @@ import net.java.html.json.Property;
     @Property(name = "message", type = String.class),
     @Property(name = "town", type = Town.class),
     @Property(name = "commands", type = Command.class, array = true),
-    @Property(name = "source", type = String.class)
+    @Property(name = "source", type = String.class),
+    @Property(name = "speed", type = int.class)
 })
 final class KarelModel {
     private static final Timer KAREL = new Timer("Karel Moves");
@@ -55,16 +56,23 @@ final class KarelModel {
     @ModelOperation static void animate(final Karel m, KarelCompiler frame) {
         final KarelCompiler nxt = frame.next();
         if (nxt != null) {
+            int spd = m.getSpeed();
+            if (spd < 0) {
+                spd = 50;
+            }
+            if (spd > 1000) {
+                spd = 1000;
+            }
             KAREL.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     animate(m, nxt);
                 }
-            }, 1000);
+            }, spd);
         }
     }
     
-    @Function static void compile(Karel m) {
+    @ModelOperation @Function static void compile(Karel m) {
         try {
             KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
             List<Command> lst = m.getCommands();
