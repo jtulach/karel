@@ -65,8 +65,8 @@ public class CompileTest {
                 + "konec\n"
                 + "");
         List<AST> arr = ((Root)root).children;
-        assertEquals(arr.size(), 1, "one definition: " + arr);
-        arr = ((Define)arr.get(0)).children;
+        assertEquals(arr.size(), 5, "five definitions: " + arr);
+        arr = ((Define)arr.get(4)).children;
         
         assertEquals(arr.size(), 2, "Two calls: " + arr);
         assertTrue(arr.get(0) instanceof Call);
@@ -85,8 +85,8 @@ public class CompileTest {
           + "konec\n"
         );
         List<AST> arr = ((Root)root).children;
-        assertEquals(arr.size(), 1, "one definition: " + arr);
-        arr = ((Define)arr.get(0)).children;
+        assertEquals(arr.size(), 5, "five definitions: " + arr);
+        arr = ((Define)arr.get(4)).children;
 
         assertEquals(arr.size(), 1, "One if: " + arr);
         assertTrue(arr.get(0) instanceof If);

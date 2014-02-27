@@ -93,6 +93,11 @@ class KarelCompiler {
         Stack<AST> stack = new Stack<AST>();
         final Root root = new Root();
         stack.push(root);
+        root.addNode(new Define(KarelToken.STEP, true));
+        root.addNode(new Define(KarelToken.LEFT, true));
+        root.addNode(new Define(KarelToken.PUT, true));
+        root.addNode(new Define(KarelToken.TAKE, true));
+        
         while (it.hasNext()) {
             final KarelToken t = it.next();
             final AST top = stack.peek();
@@ -188,6 +193,11 @@ class KarelCompiler {
             super(id);
             children = new ArrayList<AST>();
         }
+        
+        public Define(KarelToken id, boolean predefined) {
+            super(id);
+            children = null;
+        }
 
         @Override
         void addNode(AST child) {
@@ -196,6 +206,25 @@ class KarelCompiler {
 
         @Override
         KarelCompiler exec(KarelCompiler frame) {
+            if (children == null) {
+                if (this.token == KarelToken.STEP) {
+                    frame.town.step();
+                    return null;
+                }
+                if (this.token == KarelToken.LEFT) {
+                    frame.town.left();
+                    return null;
+                }
+                if (this.token == KarelToken.PUT) {
+                    frame.town.put();
+                    return null;
+                }
+                if (this.token == KarelToken.TAKE) {
+                    frame.town.take();
+                    return null;
+                }
+                throw new IllegalStateException("Cannot find predefined " + this.token.text());
+            }
             return new KarelCompiler(frame, this, children);
         }
     }
@@ -216,25 +245,12 @@ class KarelCompiler {
                 if (a instanceof Define) {
                     Define d = (Define)a;
                     if (d.token.sameText(this.token.text())) {
+                        if (d.children == null) {
+                            return d.exec(frame);
+                        }
                         return new KarelCompiler(frame, d, d.children);
                     }
                 }
-            }
-            if (this.token == KarelToken.STEP) {
-                frame.town.step();
-                return null;
-            }
-            if (this.token == KarelToken.LEFT) {
-                frame.town.left();
-                return null;
-            }
-            if (this.token == KarelToken.PUT) {
-                frame.town.put();
-                return null;
-            }
-            if (this.token == KarelToken.TAKE) {
-                frame.town.take();
-                return null;
             }
             throw new IllegalStateException("Cannot find " + this.token.text());
         }
