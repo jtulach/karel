@@ -85,6 +85,9 @@ class TownModel {
                 case 3: return "&larr;";
                 case 4: return "&uarr;";
             }
+            if (sign > 0) {
+                return "" + (char)('0' + sign);
+            }
             return "&nbsp;";
         }
     }
