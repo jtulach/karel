@@ -15,17 +15,9 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 21.2.2014, 11:34:37
-    Author     : Jaroslav Tulach <jtulach@netbeans.org>
-*/
 
 table.town td {
+    position: relative;
     border: 1px solid black;
     padding:10px;
     width: 18px;
@@ -33,4 +25,16 @@ table.town td {
     vertical-align: middle;
     text-align: center;
     font-size:1em;
+}
+
+table.town div.karel {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+table.town div.sign {
+    position: absolute;
+    top: 8px;
+    left: 8px;
 }

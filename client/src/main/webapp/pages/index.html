@@ -39,7 +39,12 @@
                     <tr>
                         <!-- ko foreach: columns -->
                         <td>
-                            <div data-bind='html: html'></div>
+                            <div class="karel" data-bind="visible: robot() == 1">&rarr;</div>
+                            <div class="karel" data-bind="visible: robot() == 2">&darr;</div>
+                            <div class="karel" data-bind="visible: robot() == 3">&larr;</div>
+                            <div class="karel" data-bind="visible: robot() == 4">&uarr;</div>
+                            
+                            <div class="sign" data-bind="visible: sign() > 0, text: sign"></div>
                         </td>
                         <!-- /ko -->
                     </tr>
@@ -48,6 +53,13 @@
             </table>
         </script>
         <div data-bind="template: { name : 'town', data : town }"></div>
+
+        <script type="text/html" id="edit">
+            <textarea data-bind="value: source"></textarea>
+            <button data-bind="click: compile">Přeložit</button>
+            <progress max="1000" data-bind="value: speed"></progress>
+        </script>
+        <div data-bind="template: { name : 'edit' }"></div>
         
         <ul>
           <!-- ko foreach: commands -->
@@ -55,12 +67,6 @@
           <!-- /ko -->
         </ul>
 
-        <script type="text/html" id="edit">
-            <textarea data-bind="value: source"></textarea>
-            <progress max="1000" data-bind="value: speed"></progress>
-            <button data-bind="click: compile">Přeložit</button>
-        </script>
-        <div data-bind="template: { name : 'edit' }"></div>
         
         <script type="text/javascript" src="bck2brwsr.js"></script>
         <script>

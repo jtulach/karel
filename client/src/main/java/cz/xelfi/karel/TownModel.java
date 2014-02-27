@@ -78,18 +78,6 @@ class TownModel {
         @Property(name = "sign", type = int.class),
     })
     static class SquareModel {
-        @ComputedProperty static String html(int robot, int sign) {
-            if (robot != 0) switch (robot) {
-                case 1: return "&rarr;";
-                case 2: return "&darr;";
-                case 3: return "&larr;";
-                case 4: return "&uarr;";
-            }
-            if (sign > 0) {
-                return "" + (char)('0' + sign);
-            }
-            return "&nbsp;";
-        }
     }
     
     @ModelOperation static void clear(Town m) {
