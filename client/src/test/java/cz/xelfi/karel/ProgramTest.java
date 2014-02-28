@@ -146,6 +146,35 @@ public class ProgramTest {
             assertNull(three.next(), "Execution is over");
         }
     }
+
+    @Test public void approachTheWall() throws Exception {
+        KarelCompiler.AST root = KarelCompiler.toAST(
+              "jdi\n"
+            + "  dokud neni zed\n"
+            + "    krok\n"
+            + "  konec\n"
+            + "konec\n"
+        );
+        
+        Town t = new Town();
+        t.clear();
+        
+        int[] xyd = TownModel.findKarel(t);
+        final Square square = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
+        square.setSign(3);
+        
+        KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "jdi");
+        
+        for (;;) {
+            KarelCompiler next = inst.next();
+            if (next == null) {
+                break;
+            }
+            inst = next;
+        }
+        
+        assertLocation(t, 9, 9, 1, "Right bottom corner");
+    }
     
     @Test public void threeSteps() throws Exception {
         KarelCompiler.AST root = KarelCompiler.toAST(

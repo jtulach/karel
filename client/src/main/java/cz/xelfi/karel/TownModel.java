@@ -30,6 +30,7 @@ import net.java.html.json.Property;
  */
 @Model(className = "Town", properties = {
     @Property(name = "error", type = int.class),
+    @Property(name = "errorParams", type = String.class, array = true),
     @Property(name = "rows", type = Row.class, array = true)
 })
 class TownModel {

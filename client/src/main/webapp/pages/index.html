@@ -31,6 +31,7 @@
                 <li data-bind="visible: error() == 1">Narazil jsem do zdi!</li>
                 <li data-bind="visible: error() == 2">Nelze sebrat značku!</li>
                 <li data-bind="visible: error() == 3">Příliš mnoho značek!</li>
+                <li data-bind="visible: error() == 4">Neznámý příkaz <span data-bind="text: errorParams[0]"></span>!</li>
             </ul>
             
             <table class="town">

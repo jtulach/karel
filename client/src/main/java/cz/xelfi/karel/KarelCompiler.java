@@ -63,7 +63,10 @@ class KarelCompiler {
                 }
             }
         }
-        throw new IllegalArgumentException();
+        town.setError(4);
+        town.getErrorParams().clear();
+        town.getErrorParams().add(function);
+        return new KarelCompiler(town, r, r, Collections.<AST>emptyList());
     }
     
     public KarelCompiler next() {
@@ -297,10 +300,12 @@ class KarelCompiler {
     
     static final class While extends AST {
         private final List<AST> block;
+        private final boolean positive;
         private final KarelToken cond;
 
         public While(KarelToken t, boolean yes, KarelToken cond) {
             super(t);
+            this.positive = yes;
             this.block = new ArrayList<AST>();
             this.cond = cond;
         }
@@ -312,7 +317,7 @@ class KarelCompiler {
 
         @Override
         KarelCompiler exec(KarelCompiler frame) {
-            if (TownModel.isCondition(frame.town, cond)) {
+            if (TownModel.isCondition(frame.town, cond) == positive) {
                 return new KarelCompiler(frame, this, block);
             } else {
                 return null;
@@ -321,7 +326,7 @@ class KarelCompiler {
 
         @Override
         int repeatFrame(KarelCompiler frame, int counter) {
-            if (TownModel.isCondition(frame.town, cond)) {
+            if (TownModel.isCondition(frame.town, cond) == positive) {
                 return 1;
             }
             return 0;
