@@ -54,6 +54,7 @@
                   <excludes>
                        <exclude>*</exclude>
                        <exclude>.*/**</exclude>
+                       <exclude>client/src/main/webapp/pages/codemirror*/**</exclude>
                   </excludes>
               </configuration>
           </plugin>
