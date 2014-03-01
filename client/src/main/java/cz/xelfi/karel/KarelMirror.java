@@ -40,5 +40,14 @@ final class KarelMirror {
     )
     static native Object initCodeMirror(String id);
 
+    @JavaScriptBody(args = {  }, body = 
+        "var src = localStorage ? localStorage['source'] : null;\n" +
+        "return src ? src : null;\n"
+    )
+    static native String getLocalText();
     
+    @JavaScriptBody(args = { "value" }, body = 
+        "if (localStorage) localStorage['source'] = value;"
+    )
+    static native void setLocalText(String value);
 }

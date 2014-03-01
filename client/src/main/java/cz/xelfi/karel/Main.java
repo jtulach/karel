@@ -39,11 +39,16 @@ public final class Main {
     public static void onPageLoad(String... args) throws Exception {
         Town t = new Town();
         t.clear();
-        Karel d = new Karel("msg", t, 
-            "čelem-vzad\n"
+        
+        String src = KarelMirror.getLocalText();
+        if (src == null) {
+            src = "čelem-vzad\n"
           + "  vlevo-vbok\n"
           + "  vlevo-vbok\n"
-          + "konec\n", 300);
+          + "konec\n";
+        }
+        
+        Karel d = new Karel("msg", t, src, 300);
         d.compile();
         d.applyBindings();
         Object cm = KarelMirror.initCodeMirror("editor");

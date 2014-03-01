@@ -23,6 +23,7 @@ import java.util.TimerTask;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
+import net.java.html.json.OnPropertyChange;
 import net.java.html.json.Property;
 
 /** Model annotation generates class Data with 
@@ -86,5 +87,9 @@ final class KarelModel {
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+    
+    @OnPropertyChange("source") static void storeSource(Karel m) {
+        KarelMirror.setLocalText(m.getSource());
     }
 }
