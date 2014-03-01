@@ -220,9 +220,11 @@
       <profile>
           <id>dlvkbrwsr</id>
           <activation>
+              <!--
               <property>
                   <name>android.sdk.path</name>
               </property>
+              -->
           </activation>
           <properties>
               <platform.version>4.1.1.4</platform.version>
