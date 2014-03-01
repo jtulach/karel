@@ -96,12 +96,7 @@ final class KarelToken {
                 if (begin == -1) {
                     continue;
                 } else {
-                    KarelToken t = new KarelToken(text, begin, i);
-                    for (KarelToken k : ALL) {
-                        if (k.sameText(t.text())) {
-                            t = k;
-                        }
-                    }
+                    KarelToken t = findToken(text, begin, i);
                     tokens.add(t);
                     begin = -1;
                 }
@@ -111,8 +106,21 @@ final class KarelToken {
                 }
             }
         }
+        if (begin != -1 && begin != text.length()) {
+            tokens.add(findToken(text, begin, text.length()));
+        }
         tokens.add(KarelToken.EOF);
         return tokens.iterator();
+    }
+
+    private static KarelToken findToken(String text, int begin, int i) {
+        KarelToken t = new KarelToken(text, begin, i);
+        for (KarelToken k : ALL) {
+            if (k.sameText(t.text())) {
+                t = k;
+            }
+        }
+        return t;
     }
 
     @Override

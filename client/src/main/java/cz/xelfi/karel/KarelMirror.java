@@ -17,6 +17,7 @@
  */
 package cz.xelfi.karel;
 
+import java.util.Iterator;
 import net.java.html.js.JavaScriptBody;
 
 /** Integration with CodeMirror editor.
@@ -24,10 +25,69 @@ import net.java.html.js.JavaScriptBody;
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 final class KarelMirror {
+    static {
+        registerSyntax();
+    }
+    
+    static Object initCodeMirror(String id) {
+        Object cm = initCodeMirrorImpl(id);
+        return cm;
+    }
+    
+    static boolean isKeyword(String text) {
+        Iterator<KarelToken> it = KarelToken.tokenize(text);
+        if (it.hasNext()) {
+            KarelToken kt = it.next();
+            if (kt.isIdentifier()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+ 
+    @JavaScriptBody(args = {}, javacall = true, body = 
+"CodeMirror.defineMode(\"karel\", function() {\n" +
+"  var numbers = /^([0-9]+)/i;\n" +
+"\n" +
+"  return {\n" +
+"    startState: function() {\n" +
+"      return {context: 0};\n" +
+"    },\n" +
+"    token: function(stream, state) {\n" +
+"      if (stream.eatSpace())\n" +
+"        return null;\n" +
+"\n" +
+"      var w;\n" +
+"\n" +
+"      if (stream.eatWhile(/\\S/)) {\n" +
+"        w = stream.current();\n" +
+"\n" +
+"        if (@cz.xelfi.karel.KarelMirror::isKeyword(Ljava/lang/String;)(w)) {\n" +
+"          return 'keyword';\n" +
+"        } else if (numbers.test(w)) {\n" +
+"          return 'number';\n" +
+"        } else {\n" +
+"          return null;\n" +
+"        }\n" +
+"      } else if (stream.eat('#')) {\n" +
+"        stream.skipToEnd();\n" +
+"        return 'comment';\n" +
+"      } else {\n" +
+"        stream.next();\n" +
+"      }\n" +
+"      return null;\n" +
+"    }\n" +
+"  }; \n" +
+"});\n" +
+"")
+    private static native void registerSyntax();
+    
     @JavaScriptBody(args = { "id" }, body = 
 "      var el = document.getElementById(id);\n" +
 "      if (!el) return null;\n" + 
 "      var opts = {\n" +
+"        model: 'karel',\n" +
 "        lineNumbers: true,\n" +
 "        lineWrapping: true\n" +
 "      };" +
@@ -38,7 +98,7 @@ final class KarelMirror {
 "      });\n" +
 "      return cm;"
     )
-    static native Object initCodeMirror(String id);
+    private static native Object initCodeMirrorImpl(String id);
 
     @JavaScriptBody(args = {  }, body = 
         "var src = localStorage ? localStorage['source'] : null;\n" +

@@ -56,6 +56,16 @@ public class CompileTest {
         assertEquals(it.next(), KarelToken.EOF);
         assertFalse(it.hasNext());
     }
+    
+    @Test public void singleWord() throws SyntaxException {
+        Iterator<KarelToken> it = KarelToken.tokenize("konec");
+        assertTrue(it.hasNext());
+        KarelToken kt = it.next();
+        assertEquals(kt, KarelToken.END);
+        assertTrue(it.hasNext());
+        assertEquals(it.next(), KarelToken.EOF);
+        assertFalse(it.hasNext());
+    }
 
     @Test public void astize() throws SyntaxException {
         AST root = KarelCompiler.toAST(
