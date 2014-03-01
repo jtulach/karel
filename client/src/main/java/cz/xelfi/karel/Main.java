@@ -46,5 +46,6 @@ public final class Main {
           + "konec\n", 300);
         d.compile();
         d.applyBindings();
+        Object cm = KarelMirror.initCodeMirror("editor");
     }
 }

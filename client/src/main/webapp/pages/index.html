@@ -23,7 +23,8 @@
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link href="karel.css" rel="stylesheet">
-
+        <link rel="stylesheet" href="codemirror-3.22/lib/codemirror.css">
+        <script src="codemirror-3.22/lib/codemirror.js"></script>
     </head>
     <body>
         <script type="text/html" id="town">
@@ -56,7 +57,7 @@
         <div data-bind="template: { name : 'town', data : town }"></div>
 
         <script type="text/html" id="edit">
-            <textarea data-bind="value: source" rows="30" columns="80"></textarea>
+            <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
             <button data-bind="click: compile">Přeložit</button>
             <progress max="1000" data-bind="value: speed"></progress>
         </script>
