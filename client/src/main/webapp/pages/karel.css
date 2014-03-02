@@ -51,6 +51,26 @@ table.town div.direction-4:after {
     content: '\002191';
 }
 
+table.town div.mark-1:after {
+    content: '1';
+}
+
+table.town div.mark-2:after {
+    content: '2';
+}
+
+table.town div.mark-3:after {
+    content: '3';
+}
+
+table.town div.mark-4:after {
+    content: '4';
+}
+table.town div.mark-5:after {
+    content: '5';
+}
+
+
 table.town div.sign {
     position: absolute;
     top: 0px;

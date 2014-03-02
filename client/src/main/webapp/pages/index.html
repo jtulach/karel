@@ -43,9 +43,8 @@
                     <tr>
                         <!-- ko foreach: columns -->
                         <td>
-                            <div class="karel" data-bind="css: ('direction-' + robot()) "></div>
-                            
-                            <div class="sign" data-bind="visible: sign() > 0, text: sign"></div>
+                            <div class="karel" data-bind="css: ('direction-' + robot())"></div>
+                            <div class="karel" data-bind="css: ('mark-' + sign())"></div>
                         </td>
                         <!-- /ko -->
                     </tr>
