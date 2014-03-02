@@ -18,7 +18,9 @@
 package cz.xelfi.karel;
 
 import java.util.Arrays;
+import java.util.Locale;
 import static org.testng.Assert.*;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -26,6 +28,10 @@ import org.testng.annotations.Test;
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 public class CompletionTest {
+    @BeforeClass public static void czechLocale() {
+        Locale.setDefault(new Locale("cs", "CZ"));
+    }
+
     @Test public void completionAfterIf() {
         Object[] arr = KarelMirror.listCompletions(null, "kdyz ", "", 5);
         

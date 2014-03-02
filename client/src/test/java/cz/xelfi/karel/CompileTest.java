@@ -24,7 +24,9 @@ import cz.xelfi.karel.KarelCompiler.If;
 import cz.xelfi.karel.KarelCompiler.Root;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import static org.testng.Assert.*;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -32,6 +34,10 @@ import org.testng.annotations.Test;
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 public class CompileTest {
+    @BeforeClass public static void czechLocale() {
+        Locale.setDefault(new Locale("cs", "CZ"));
+    }
+    
     @Test public void tokenize() {
         Iterator<KarelToken> it = KarelToken.tokenize(
               "čelem-vzad\n"
