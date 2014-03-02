@@ -17,7 +17,9 @@
  */
 package cz.xelfi.karel;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import net.java.html.js.JavaScriptBody;
 
 /** Integration with CodeMirror editor.
@@ -25,8 +27,9 @@ import net.java.html.js.JavaScriptBody;
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 final class KarelMirror {
-    static {
+    static void initialize() {
         registerSyntax();
+        registerCodeCompletion();
     }
     
     static Object initCodeMirror(String id) {
@@ -44,6 +47,75 @@ final class KarelMirror {
             return true;
         }
         return false;
+    }
+    
+    static Object[] listCompletions(String line, String word, int offset) {
+        Iterator<KarelToken> it = KarelToken.tokenize(line.substring(0, offset));
+        int type = 0;
+        while (it.hasNext()) {
+            KarelToken kt = it.next();
+            if (kt == KarelToken.WHILE || kt == KarelToken.IF) {
+                type = 1;
+                continue;
+            }
+            if (kt == KarelToken.REPEAT) {
+                type = 2;
+                continue;
+            }
+            if (kt == KarelToken.IS || kt == KarelToken.NOT) {
+                type = 3;
+                continue;
+            }
+            if (kt == KarelToken.EOF) {
+                break;
+            }
+            type = 0;
+        }
+        
+        List<String> arr = new ArrayList<String>();
+        switch (type) {
+            case 1:
+                appendWord(arr, word, KarelToken.IS.text(), KarelToken.NOT.text());
+                break;
+            case 2:
+                appendWord(arr, word, "1", "2", "3", "4", "5", "6", "7", "8");
+                break;
+            case 3:
+                appendWord(arr, word, 
+                    KarelToken.WALL.text(),
+                    KarelToken.SIGN.text(),
+                    KarelToken.EAST.text(), 
+                    KarelToken.SOUTH.text(),
+                    KarelToken.WEST.text(),
+                    KarelToken.NORTH.text()
+                );
+                break;
+            default:
+                appendWord(arr, word, 
+                    KarelToken.IF.text(),
+                    KarelToken.WHILE.text(),
+                    KarelToken.REPEAT.text(),
+                    KarelToken.STEP.text(),
+                    KarelToken.LEFT.text(),
+                    KarelToken.PUT.text(),
+                    KarelToken.TAKE.text(),
+                    KarelToken.END.text()
+                );
+                break;
+        }
+        return arr.toArray();
+    }
+    
+    private static void appendWord(List<String> arr, String prefix, CharSequence... values) {
+        for (CharSequence cs : values) {
+            if (prefix.length() > cs.length()) {
+                continue;
+            }
+            if (!cs.subSequence(0, prefix.length()).equals(prefix)) {
+                continue;
+            }
+            arr.add(cs.toString());
+        }
     }
  
     @JavaScriptBody(args = {}, javacall = true, body = 
@@ -83,15 +155,48 @@ final class KarelMirror {
 "")
     private static native void registerSyntax();
     
+
+    @JavaScriptBody(args = {}, javacall = true, body = 
+"  var WORD = /[\\S$]+/;\n" +
+"\n" +
+"  CodeMirror.registerHelper('hint', 'karel', function(editor) {\n" +
+"    var cur = editor.getCursor();\n" +
+"    var offset = editor.getDoc().indexFromPos(editor.getCursor());\n" +
+"    var curLine = editor.getLine(cur.line);\n" +
+"    var start = cur.ch;\n" +
+"    var end = start;\n" +
+"    while (end < curLine.length && WORD.test(curLine.charAt(end))) ++end;\n" +
+"    while (start && WORD.test(curLine.charAt(start - 1))) --start;\n" +
+"    var curWord = curLine.slice(start, end);\n" +
+"\n" +
+"    var list = @cz.xelfi.karel.KarelMirror::listCompletions(Ljava/lang/String;Ljava/lang/String;I)(\n" +
+"      curLine,\n" +
+"      curWord,\n" +
+"      start\n" +
+"    );\n" +
+"    \n" +
+"    return {list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};\n" +
+"  });\n" +
+""            
+    )
+    private static native void registerCodeCompletion();
+    
     @JavaScriptBody(args = { "id" }, body = 
 "      var el = document.getElementById(id);\n" +
 "      if (!el) return null;\n" + 
+"      CodeMirror.commands.autocomplete = function(cm) {\n" +
+"        CodeMirror.showHint(cm, CodeMirror.hint.anyword);\n" +
+"      }\n" +
 "      var opts = {\n" +
 "        model: 'karel',\n" +
 "        lineNumbers: true,\n" +
-"        lineWrapping: true\n" +
+"        lineWrapping: true,\n" +
+"        extraKeys: {\n" +
+"          'Ctrl-Space': 'autocomplete',\n" + 
+"          'Tab': 'autocomplete'\n" + 
+"        }\n" +
 "      };" +
-"      var cm = CodeMirror.fromTextArea(el, opts);\n" +
+"      var cm = CodeMirror.fromTextArea(el, opts);\n" + 
 "      cm.on('change', function() {\n" +
 "        cm.save();\n" +
 "        ko.utils.triggerEvent(el, 'change');\n" +
