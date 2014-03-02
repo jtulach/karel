@@ -28,25 +28,13 @@ import net.java.html.js.JavaScriptBody;
  */
 final class KarelMirror {
     static void initialize() {
-        registerSyntax();
+        registerSyntax(KarelToken.keywords());
         registerCodeCompletion();
     }
     
     static Object initCodeMirror(Karel k, String id) {
         Object cm = initCodeMirrorImpl(k, id);
         return cm;
-    }
-    
-    static boolean isKeyword(String text) {
-        Iterator<KarelToken> it = KarelToken.tokenize(text);
-        if (it.hasNext()) {
-            KarelToken kt = it.next();
-            if (kt.isIdentifier()) {
-                return false;
-            }
-            return true;
-        }
-        return false;
     }
     
     static Object[] listCompletions(cz.xelfi.karel.Karel karel, String line, String word, int offset) {
@@ -117,7 +105,7 @@ final class KarelMirror {
         }
     }
  
-    @JavaScriptBody(args = {}, javacall = true, body = 
+    @JavaScriptBody(args = { "kw" }, body = 
 "CodeMirror.defineMode(\"karel\", function() {\n" +
 "  var numbers = /^([0-9]+)/i;\n" +
 "\n" +
@@ -134,7 +122,7 @@ final class KarelMirror {
 "      if (stream.eatWhile(/\\S/)) {\n" +
 "        w = stream.current();\n" +
 "\n" +
-"        if (@cz.xelfi.karel.KarelMirror::isKeyword(Ljava/lang/String;)(w)) {\n" +
+"        if (kw.indexOf(w.toString().toLowerCase()) >= 0) {\n" +
 "          return 'keyword';\n" +
 "        } else if (numbers.test(w)) {\n" +
 "          return 'number';\n" +
@@ -152,7 +140,7 @@ final class KarelMirror {
 "  }; \n" +
 "});\n" +
 "")
-    private static native void registerSyntax();
+    private static native void registerSyntax(String... keywords);
     
 
     @JavaScriptBody(args = {}, javacall = true, body = 

@@ -76,6 +76,19 @@ final class KarelToken {
         ALL.add(kt);
         return kt;
     }
+    
+    static String[] keywords() {
+        List<String> arr = new ArrayList<String>();
+        for (KarelToken kt : ALL) {
+            if (kt.isIdentifier()) {
+                continue;
+            }
+            for (String s : kt.text) {
+                arr.add(s.toLowerCase());
+            }
+        }
+        return arr.toArray(new String[arr.size()]);
+    }
 
     CharSequence text() {
         if (begin < 0 || end == -1) {
