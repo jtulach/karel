@@ -66,6 +66,20 @@ public class TownModelTest {
         assertLocation(t, 0, 9, 3, "Same position remains");
         assertEquals(t.getError(), 1, "Hit the wall");
     }
+
+    @Test public void crashIntoMiddleWall() {
+        Town t = new Town();
+        t.clear();
+        t.wall(1, 9);
+        
+        t.step();
+        
+        assertLocation(t, 0, 9, 1, "Same position remains");
+        assertEquals(t.getError(), 1, "Hit the wall");
+        
+        boolean isWall = TownModel.isCondition(t, KarelToken.WALL);
+        assertTrue(isWall, "Yes, heading towards the wall");
+    }
  
     private static void assertLocation(Town t, int x, int y, int d, String msg) {
         int[] xyd = TownModel.findKarel(t);

@@ -130,20 +130,20 @@ public class ProgramTest {
         
         int[] xyd = TownModel.findKarel(t);
         final Square square = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
-        square.setSign(3);
+        square.setMarks(3);
         
         KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "seber");
         
         {
             KarelCompiler one = inst.next();
             assertNotNull(one);
-            assertEquals(square.getSign(), 2, "One sign less");
+            assertEquals(square.getMarks(), 2, "One sign less");
             KarelCompiler two = one.next();
             assertNotNull(two);
-            assertEquals(square.getSign(), 1, "One sign remaining");
+            assertEquals(square.getMarks(), 1, "One sign remaining");
             KarelCompiler three = two.next();
             assertNotNull(three);
-            assertEquals(square.getSign(), 0, "Empty");
+            assertEquals(square.getMarks(), 0, "Empty");
             assertNull(three.next(), "Execution is over");
         }
     }
@@ -162,7 +162,7 @@ public class ProgramTest {
         
         int[] xyd = TownModel.findKarel(t);
         final Square square = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
-        square.setSign(3);
+        square.setMarks(3);
         
         KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "jdi");
         

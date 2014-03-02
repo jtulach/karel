@@ -59,15 +59,16 @@ class TownModel {
             return xyd[2] == 4;
         }
         if (KarelToken.SIGN == cond) {
-            return town.getRows().get(xyd[1]).getColumns().get(xyd[0]).getSign() > 0;
+            final int m = town.getRows().get(xyd[1]).getColumns().get(xyd[0]).getMarks();
+            return m > 0 && m < 100;
         }
         if (KarelToken.WALL != cond) {
             throw new IllegalStateException("" + cond);
         }
         int[] next = stepInDirection(xyd);
         try {
-            town.getRows().get(next[1]).getColumns().get(next[0]);
-            return false;
+            Square sq = town.getRows().get(next[1]).getColumns().get(next[0]);
+            return sq.getMarks() == 111;
         } catch (IndexOutOfBoundsException ex) {
             return true;
         }
@@ -76,7 +77,7 @@ class TownModel {
     
     @Model(className = "Square", properties = {
         @Property(name = "robot", type = int.class),
-        @Property(name = "sign", type = int.class),
+        @Property(name = "marks", type = int.class),
     })
     static class SquareModel {
     }
@@ -114,13 +115,24 @@ class TownModel {
         if (xyd != null) {
             int[] next = stepInDirection(xyd);
             try {
-                t.getRows().get(next[1]).getColumns().get(next[0]).setRobot(next[2]);
+                final Square sq = t.getRows().get(next[1]).getColumns().get(next[0]);
+                if (sq.getMarks()== 111) {
+                    t.setError(1);
+                    return;
+                }
+                sq.setRobot(next[2]);
             } catch (IndexOutOfBoundsException ex) {
                 t.setError(1);
                 return;
             }
             t.getRows().get(xyd[1]).getColumns().get(xyd[0]).setRobot(0);
         }
+    }
+    
+    @ModelOperation static void wall(Town t, int x, int y) {
+        final Square sq = t.getRows().get(y).getColumns().get(x);
+        sq.setMarks(111);
+        sq.setRobot(0);
     }
 
     private static int[] stepInDirection(int[] xyd) {
@@ -148,20 +160,20 @@ class TownModel {
     @ModelOperation static void put(Town t) {
         int[] xyd = findKarel(t);
         Square sq = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
-        if (sq.getSign() >= 5) {
+        if (sq.getMarks()>= 5) {
             t.setError(3);
             return;
         }
-        sq.setSign(sq.getSign() + 1);
+        sq.setMarks(sq.getMarks()+ 1);
     }
 
     @ModelOperation static void take(Town t) {
         int[] xyd = findKarel(t);
         Square sq = t.getRows().get(xyd[1]).getColumns().get(xyd[0]);
-        if (sq.getSign() <= 0) {
+        if (sq.getMarks()<= 0) {
             t.setError(2);
             return;
         }
-        sq.setSign(sq.getSign() - 1);
+        sq.setMarks(sq.getMarks()- 1);
     }
 }
