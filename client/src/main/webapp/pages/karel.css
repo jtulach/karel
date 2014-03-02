@@ -24,17 +24,35 @@ table.town td {
     height: 18px;
     vertical-align: middle;
     text-align: center;
-    font-size:1em;
+    font-size: 32px;
 }
 
 table.town div.karel {
     position: absolute;
     top: 0px;
     left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+table.town div.direction-1:after {
+    content: '\002192';
+}
+
+table.town div.direction-2:after {
+    content: '\002193';
+}
+
+table.town div.direction-3:after {
+    content: '\002190';
+}
+
+table.town div.direction-4:after {
+    content: '\002191';
 }
 
 table.town div.sign {
     position: absolute;
-    top: 8px;
+    top: 0px;
     left: 8px;
 }

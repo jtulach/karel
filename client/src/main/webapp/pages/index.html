@@ -43,10 +43,7 @@
                     <tr>
                         <!-- ko foreach: columns -->
                         <td>
-                            <div class="karel" data-bind="visible: robot() == 1">&rarr;</div>
-                            <div class="karel" data-bind="visible: robot() == 2">&darr;</div>
-                            <div class="karel" data-bind="visible: robot() == 3">&larr;</div>
-                            <div class="karel" data-bind="visible: robot() == 4">&uarr;</div>
+                            <div class="karel" data-bind="css: ('direction-' + robot()) "></div>
                             
                             <div class="sign" data-bind="visible: sign() > 0, text: sign"></div>
                         </td>
