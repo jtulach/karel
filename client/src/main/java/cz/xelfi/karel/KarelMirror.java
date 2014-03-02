@@ -32,8 +32,8 @@ final class KarelMirror {
         registerCodeCompletion();
     }
     
-    static Object initCodeMirror(String id) {
-        Object cm = initCodeMirrorImpl(id);
+    static Object initCodeMirror(Karel k, String id) {
+        Object cm = initCodeMirrorImpl(k, id);
         return cm;
     }
     
@@ -49,7 +49,7 @@ final class KarelMirror {
         return false;
     }
     
-    static Object[] listCompletions(String line, String word, int offset) {
+    static Object[] listCompletions(cz.xelfi.karel.Karel karel, String line, String word, int offset) {
         Iterator<KarelToken> it = KarelToken.tokenize(line.substring(0, offset));
         int type = 0;
         while (it.hasNext()) {
@@ -95,12 +95,11 @@ final class KarelMirror {
                     KarelToken.IF.text(),
                     KarelToken.WHILE.text(),
                     KarelToken.REPEAT.text(),
-                    KarelToken.STEP.text(),
-                    KarelToken.LEFT.text(),
-                    KarelToken.PUT.text(),
-                    KarelToken.TAKE.text(),
                     KarelToken.END.text()
                 );
+                for (Command command : karel.getCommands()) {
+                    appendWord(arr, word, command.getName());
+                }
                 break;
         }
         return arr.toArray();
@@ -169,7 +168,8 @@ final class KarelMirror {
 "    while (start && WORD.test(curLine.charAt(start - 1))) --start;\n" +
 "    var curWord = curLine.slice(start, end);\n" +
 "\n" +
-"    var list = @cz.xelfi.karel.KarelMirror::listCompletions(Ljava/lang/String;Ljava/lang/String;I)(\n" +
+"    var list = @cz.xelfi.karel.KarelMirror::listCompletions(Lcz/xelfi/karel/Karel;Ljava/lang/String;Ljava/lang/String;I)(\n" +
+"      editor['karel'],\n" +
 "      curLine,\n" +
 "      curWord,\n" +
 "      start\n" +
@@ -181,7 +181,7 @@ final class KarelMirror {
     )
     private static native void registerCodeCompletion();
     
-    @JavaScriptBody(args = { "id" }, body = 
+    @JavaScriptBody(args = { "k", "id" }, body = 
 "      var el = document.getElementById(id);\n" +
 "      if (!el) return null;\n" + 
 "      CodeMirror.commands.autocomplete = function(cm) {\n" +
@@ -201,9 +201,10 @@ final class KarelMirror {
 "        cm.save();\n" +
 "        ko.utils.triggerEvent(el, 'change');\n" +
 "      });\n" +
+"      cm['karel'] = k;\n" +
 "      return cm;"
     )
-    private static native Object initCodeMirrorImpl(String id);
+    private static native Object initCodeMirrorImpl(Karel k, String id);
 
     @JavaScriptBody(args = {  }, body = 
         "var src = localStorage ? localStorage['source'] : null;\n" +

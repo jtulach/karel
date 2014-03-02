@@ -52,6 +52,6 @@ public final class Main {
         d.compile();
         d.applyBindings();
         KarelMirror.initialize();
-        Object cm = KarelMirror.initCodeMirror("editor");
+        Object cm = KarelMirror.initCodeMirror(d, "editor");
     }
 }

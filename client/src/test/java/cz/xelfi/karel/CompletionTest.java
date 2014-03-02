@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
  */
 public class CompletionTest {
     @Test public void completionAfterIf() {
-        Object[] arr = KarelMirror.listCompletions("kdyz ", "", 5);
+        Object[] arr = KarelMirror.listCompletions(null, "kdyz ", "", 5);
         
         assertEquals(arr.length, 2, "Two: " + Arrays.toString(arr));
 
