@@ -184,16 +184,20 @@ final class KarelMirror {
     @JavaScriptBody(args = { "k", "id" }, body = 
 "      var el = document.getElementById(id);\n" +
 "      if (!el) return null;\n" + 
-"      CodeMirror.commands.autocomplete = function(cm) {\n" +
+"      function AutoComplete(cm) {\n" +
 "        CodeMirror.showHint(cm, CodeMirror.hint.anyword);\n" +
+"      }\n" +
+"      function Compile(cm) {\n" +
+"        cm['karel'].compile();\n" +
 "      }\n" +
 "      var opts = {\n" +
 "        model: 'karel',\n" +
 "        lineNumbers: true,\n" +
 "        lineWrapping: true,\n" +
 "        extraKeys: {\n" +
-"          'Ctrl-Space': 'autocomplete',\n" + 
-"          'Tab': 'autocomplete'\n" + 
+"          'Ctrl-Space': AutoComplete,\n" + 
+"          'Tab': AutoComplete,\n" + 
+"          'F9': Compile\n" + 
 "        }\n" +
 "      };" +
 "      var cm = CodeMirror.fromTextArea(el, opts);\n" + 
