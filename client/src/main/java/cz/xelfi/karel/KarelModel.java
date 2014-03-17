@@ -104,7 +104,7 @@ final class KarelModel {
     }
     
     @Function static void complete(Karel m, Completion data) {
-        KarelMirror.complete("editor", data.getWord(), data.getLine(), data.getStart(), data.getEnd());
+        KarelMirror.complete("editor", data.getWord(), null, data.getLine(), data.getStart(), data.getEnd());
     }
     
     @Model(className="Completion", properties = {

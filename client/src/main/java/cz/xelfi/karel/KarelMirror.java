@@ -178,16 +178,17 @@ final class KarelMirror {
     )
     private static native void registerCodeCompletion(Object cm);
 
-    @JavaScriptBody(args = { "id", "word", "line", "start", "end" }, body = 
+    @JavaScriptBody(args = { "id", "word", "then", "line", "start", "end" }, body = 
 "      var el = document.getElementById(id);\n" +
 "      if (!el) return null;\n" + 
 "      var cm = el['cm'];\n" + 
 "      var doc = cm.getDoc();\n" +            
+"      if (then === null) { word += ' '; }\n" +            
 "      doc.replaceRange(word, CodeMirror.Pos(line, start), CodeMirror.Pos(line, end));\n" +            
 "      cm.focus();\n" +            
 ""
     )
-    static native void complete(String id, String word, int line, int start, int end);
+    static native void complete(String id, String word, String then, int line, int start, int end);
     
     @JavaScriptBody(args = { "k", "id" }, body = 
 "      var el = document.getElementById(id);\n" +
