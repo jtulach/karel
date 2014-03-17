@@ -34,6 +34,7 @@ import net.java.html.json.Property;
     @Property(name = "town", type = Town.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
+    @Property(name = "completions", type = Completion.class, array = true),
     @Property(name = "speed", type = int.class)
 })
 final class KarelModel {
@@ -91,5 +92,27 @@ final class KarelModel {
     
     @OnPropertyChange("source") static void storeSource(Karel m) {
         KarelMirror.setLocalText(m.getSource());
+    }
+    
+    @ModelOperation static void updateCompletions(Karel m, List<String> words, int line, int start, int end) {
+        m.getCompletions().clear();
+        int i = 0;
+        for (String s : words) {
+            m.getCompletions().add(new Completion(s, line, start, end));
+            if (i++ == 10) break;
+        }
+    }
+    
+    @Function static void complete(Karel m, Completion data) {
+        KarelMirror.complete("editor", data.getWord(), data.getLine(), data.getStart(), data.getEnd());
+    }
+    
+    @Model(className="Completion", properties = {
+        @Property(name="word", type = String.class),
+        @Property(name="line", type = int.class),
+        @Property(name="start", type = int.class),
+        @Property(name="end", type = int.class)
+    })
+    static class CompletionModel {
     }
 }

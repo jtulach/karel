@@ -33,7 +33,7 @@ public class CompletionTest {
     }
 
     @Test public void completionAfterIf() {
-        Object[] arr = KarelMirror.listCompletions(null, "kdyz ", "", 5);
+        Object[] arr = KarelMirror.listCompletions(null, "kdyz ", "", 1, 5, 7);
         
         assertEquals(arr.length, 2, "Two: " + Arrays.toString(arr));
 

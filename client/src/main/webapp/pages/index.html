@@ -120,7 +120,10 @@
         </script>
         <script type="text/html" id="edit">
             <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
-            <button data-bind="click: compile">Přeložit</button>
+            <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
+            <!-- ko foreach: completions -->
+            <button type="button" class="btn btn-xs btn-info" data-bind="text: word, click: $root.complete"></button>
+            <!-- /ko -->
             <progress max="1000" data-bind="value: speed"></progress>
         </script>
         <script type="text/html" id="commands">

@@ -29,15 +29,16 @@ import net.java.html.js.JavaScriptBody;
 final class KarelMirror {
     static void initialize() {
         registerSyntax(KarelToken.keywords());
-        registerCodeCompletion();
+        registerCodeCompletion(null);
     }
     
     static Object initCodeMirror(Karel k, String id) {
         Object cm = initCodeMirrorImpl(k, id);
+        registerCodeCompletion(cm);
         return cm;
     }
     
-    static Object[] listCompletions(cz.xelfi.karel.Karel karel, String line, String word, int offset) {
+    static Object[] listCompletions(cz.xelfi.karel.Karel karel, String line, String word, int lineNo, int offset, int end) {
         Iterator<KarelToken> it = KarelToken.tokenize(line.substring(0, offset));
         int type = 0;
         while (it.hasNext()) {
@@ -89,6 +90,9 @@ final class KarelMirror {
                     appendWord(arr, word, command.getName());
                 }
                 break;
+        }
+        if (karel != null) {
+            karel.updateCompletions(arr, lineNo, offset, end);
         }
         return arr.toArray();
     }
@@ -143,10 +147,9 @@ final class KarelMirror {
     private static native void registerSyntax(String... keywords);
     
 
-    @JavaScriptBody(args = {}, javacall = true, body = 
+    @JavaScriptBody(args = { "cm" }, javacall = true, body = 
 "  var WORD = /[\\S$]+/;\n" +
-"\n" +
-"  CodeMirror.registerHelper('hint', 'karel', function(editor) {\n" +
+"  function cmptCmpl(editor) {\n" +
 "    var cur = editor.getCursor();\n" +
 "    var offset = editor.getDoc().indexFromPos(editor.getCursor());\n" +
 "    var curLine = editor.getLine(cur.line);\n" +
@@ -155,19 +158,36 @@ final class KarelMirror {
 "    while (end < curLine.length && WORD.test(curLine.charAt(end))) ++end;\n" +
 "    while (start && WORD.test(curLine.charAt(start - 1))) --start;\n" +
 "    var curWord = curLine.slice(start, end);\n" +
-"\n" +
-"    var list = @cz.xelfi.karel.KarelMirror::listCompletions(Lcz/xelfi/karel/Karel;Ljava/lang/String;Ljava/lang/String;I)(\n" +
-"      editor['karel'],\n" +
-"      curLine,\n" +
-"      curWord,\n" +
-"      start\n" +
+"    var list = @cz.xelfi.karel.KarelMirror::listCompletions(Lcz/xelfi/karel/Karel;Ljava/lang/String;Ljava/lang/String;III)(\n" +
+"        editor['karel'],\n" +
+"        curLine,\n" +
+"        curWord,\n" +
+"        cur.line,\n" +
+"        start,\n" +
+"        end\n" +
 "    );\n" +
-"    \n" +
 "    return {list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};\n" +
-"  });\n" +
-""            
+"  }\n" +
+"  if (cm == null) {" +
+"    CodeMirror.registerHelper('hint', 'karel', cmptCmpl);\n" +
+"  } else {\n" +
+"      cm.getDoc().on('cursorActivity', function() {\n" +
+"        cmptCmpl(cm);\n" +
+"      });\n" +
+"  }"
     )
-    private static native void registerCodeCompletion();
+    private static native void registerCodeCompletion(Object cm);
+
+    @JavaScriptBody(args = { "id", "word", "line", "start", "end" }, body = 
+"      var el = document.getElementById(id);\n" +
+"      if (!el) return null;\n" + 
+"      var cm = el['cm'];\n" + 
+"      var doc = cm.getDoc();\n" +            
+"      doc.replaceRange(word, CodeMirror.Pos(line, start), CodeMirror.Pos(line, end));\n" +            
+"      cm.focus();\n" +            
+""
+    )
+    static native void complete(String id, String word, int line, int start, int end);
     
     @JavaScriptBody(args = { "k", "id" }, body = 
 "      var el = document.getElementById(id);\n" +
@@ -194,6 +214,7 @@ final class KarelMirror {
 "        ko.utils.triggerEvent(el, 'change');\n" +
 "      });\n" +
 "      cm['karel'] = k;\n" +
+"      el['cm'] = cm;\n" +
 "      return cm;"
     )
     private static native Object initCodeMirrorImpl(Karel k, String id);
