@@ -51,11 +51,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Karel</a>
+            <a class="navbar-brand" href="#" id="tab-home" data-bind="click: changeTab">Karel</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li data-bind="css: { active : tab == 'task'}"><a href="#" id="tab-task" data-bind="click: changeTab">Úkol</a></li>
+            <li data-bind="css: { active : tab == 'town'}"><a href="#" id="tab-town" data-bind="click: changeTab">Město</a></li>
+            <li data-bind="css: { active : tab == 'edit'}"><a href="#" id="tab-edit" data-bind="click: changeTab">Kód</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
             <li class="dropdown">
@@ -75,87 +77,84 @@
       </div>
     </div>
 
-    <div class="container theme-showcase" role="main">
-      <div class="jumbotron">
-        <h1>Karel</h1>
-        <p>Cesta programátora je těžká. 
-           Robot Karel je zde, aby Ti ji pomohl projít. 
-           Před Tebou leží plno úkolů různých obtížností a Tvým
-           úkolem je provést Karla všemi připravenými nástrahami.
-           Tak do toho!
-        </p>
-        <p><a href="#" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
-      </div>
-    </div>
+    <script type="text/html" id="home">
+        <div class="container theme-showcase" role="main">
+          <div class="jumbotron">
+            <h1>Karel</h1>
+            <p>Cesta programátora je těžká. 
+               Robot Karel je zde, aby Ti ji pomohl projít. 
+               Před Tebou leží plno úkolů různých obtížností a Tvým
+               úkolem je provést Karla všemi připravenými nástrahami.
+               Tak do toho!
+            </p>
+            <p><a href="#" class="btn btn-primary btn-lg" role="button">Vybrat si úkol &raquo;</a></p>
+          </div>
+        </div>
+    </script>
     
-        <script type="text/html" id="town">
-            <div class="alert alert-warning" data-bind="visible: error() == 1">
-              <strong>Pozor!</strong> Narazil jsem do zdi!
-            </div>
-            <div class="alert alert-warning" data-bind="visible: error() == 2">
-              <strong>Pozor!</strong> Nelze sebrat značku!
-            </div>
-            <div class="alert alert-warning" data-bind="visible: error() == 3">
-              <strong>Pozor!</strong> Příliš mnoho značek!
-            </div>
-            <div class="alert alert-warning" data-bind="visible: error() == 4">
-              <strong>Pozor!</strong>
-              Neznámý příkaz <span data-bind="text: errorParams[0]"></span>!
-            </div>
-            
-            <table class="town">
-                <tbody>
-                    <!-- ko foreach: rows -->
-                    <tr>
-                        <!-- ko foreach: columns -->
-                        <td>
-                            <div class="karel" data-bind="css: ('direction-' + robot())"></div>
-                            <div class="karel" data-bind="css: ('mark-' + marks())"></div>
-                        </td>
+    <script type="text/html" id="task">
+        <ul data-bind="foreach: tasks">
+          <li data-bind="text: name"></li>
+        </ul>
+    </script>
+
+    <script type="text/html" id="town">
+        <div class="row">
+            <div class="col-sm-4" data-bind="with: town">
+                <table class="town">
+                    <tbody>
+                        <!-- ko foreach: rows -->
+                        <tr>
+                            <!-- ko foreach: columns -->
+                            <td>
+                                <div class="karel" data-bind="css: ('direction-' + robot())"></div>
+                                <div class="karel" data-bind="css: ('mark-' + marks())"></div>
+                            </td>
+                            <!-- /ko -->
+                        </tr>
                         <!-- /ko -->
-                    </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
-        </script>
-        <script type="text/html" id="edit">
+                    </tbody>
+                </table>
+                <div class="alert alert-warning" data-bind="visible: error() == 1">
+                    <strong>Pozor!</strong> Narazil jsem do zdi!
+                </div>
+                <div class="alert alert-warning" data-bind="visible: error() == 2">
+                    <strong>Pozor!</strong> Nelze sebrat značku!
+                </div>
+                <div class="alert alert-warning" data-bind="visible: error() == 3">
+                    <strong>Pozor!</strong> Příliš mnoho značek!
+                </div>
+                <div class="alert alert-warning" data-bind="visible: error() == 4">
+                    <strong>Pozor!</strong>
+                    Neznámý příkaz <span data-bind="text: errorParams[0]"></span>!
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <!-- ko foreach: commands -->
+                    <button type="button" class="btn btn-info" data-bind="text: name,click: $root.invoke"></button>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+    <script type="text/html" id="edit">
+        <div class="row">
             <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
-            <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
             <!-- ko foreach: completions -->
-            <button type="button" class="btn btn-xs btn-info" data-bind="text: word, click: $root.complete"></button>
+            <button type="button" class="btn btn-info" data-bind="text: word, click: $root.complete"></button>
             <!-- /ko -->
+            <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
             <progress max="1000" data-bind="value: speed"></progress>
-        </script>
-        <script type="text/html" id="commands">
-            <ul class="list-group">
-              <!-- ko foreach: commands -->
-                <li class="list-group-item"><a href="#" data-bind="text: name,click: $root.invoke"></a></li>
-              <!-- /ko -->
-            </ul>
-        </script>
-        
-      <div class="row">
-        <div class="col-sm-4">
-            <div data-bind="template: { name : 'town', data : town }"></div>
         </div>
- 
-        <div class="col-sm-4">
-            <div data-bind="template: { name : 'commands' }"></div>
-        </div>
+    </script>
 
-        <div class="col-sm-4">
-            <div data-bind="template: { name : 'edit' }"></div>
-        </div>
-      </div>
-        
+    <div data-bind="template: { name : tab() }"></div>
 
-        
-        <script type="text/javascript" src="bck2brwsr.js"></script>
-        <script>
-            var vm = bck2brwsr('${project.build.finalName}.jar');
-            vm.loadClass('cz.xelfi.karel.MainBrwsr');
-        </script>
-        
+    <script type="text/javascript" src="bck2brwsr.js"></script>
+    <script>
+        var vm = bck2brwsr('${project.build.finalName}.jar');
+        vm.loadClass('cz.xelfi.karel.MainBrwsr');
+    </script>
+
 
     <div class="container theme-showcase" role="main">
       <div class="page-header">

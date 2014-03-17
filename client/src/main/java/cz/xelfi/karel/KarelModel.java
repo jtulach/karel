@@ -17,6 +17,7 @@
  */
 package cz.xelfi.karel;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,18 +25,21 @@ import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
 import net.java.html.json.OnPropertyChange;
+import net.java.html.json.OnReceive;
 import net.java.html.json.Property;
 
 /** Model annotation generates class Data with 
  * one message property, boolean property and read only words property
  */
 @Model(className = "Karel", properties = {
+    @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "town", type = Town.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
     @Property(name = "completions", type = Completion.class, array = true),
-    @Property(name = "speed", type = int.class)
+    @Property(name = "speed", type = int.class),
+    @Property(name = "tasks", type = TaskInfo.class, array = true)
 })
 final class KarelModel {
     private static final Timer KAREL = new Timer("Karel Moves");
@@ -43,6 +47,12 @@ final class KarelModel {
         @Property(name = "name", type = String.class)
     })
     final static class CommandModel {
+    }
+    
+    @Function static void changeTab(Karel m, String id) {
+        if (id.startsWith("tab-")) {
+            m.setTab(id.substring(4));
+        }
     }
     
     @Function static void invoke(Karel m, Command data) {
@@ -115,4 +125,9 @@ final class KarelModel {
     })
     static class CompletionModel {
     }
+    
+    @OnReceive(url = "{url}") static void loadTasks(Karel m, TaskInfo[] arr) {
+        m.getTasks().addAll(Arrays.asList(arr));
+    }
+    
 }
