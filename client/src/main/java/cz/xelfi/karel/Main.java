@@ -40,7 +40,7 @@ public final class Main {
         Town t = new Town();
         t.clear();
         
-        String src = KarelMirror.getLocalText();
+        String src = null;//KarelMirror.getLocalText();
         if (src == null) {
             src = "čelem-vzad\n"
           + "  vlevo-vbok\n"

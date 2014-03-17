@@ -239,9 +239,9 @@
                   <scope>provided</scope>
               </dependency>
               <dependency>
-                  <groupId>org.apidesign.html</groupId>
+                  <groupId>org.apidesign.brwsr</groupId>
                   <artifactId>dlvkbrwsr</artifactId>
-                  <version>0.1-SNAPSHOT</version>
+                  <version>0.5</version>
                   <type>jar</type>
               </dependency>
               <dependency>
@@ -282,6 +282,7 @@
                                   <metaInclude>services/org.apidesign.**</metaInclude>
                               </metaIncludes>
                           </apk>
+                          <extractDuplicates>true</extractDuplicates>
                           <file>${project.build.directory}/${project.build.finalName}.apk</file>
                       </configuration>
                       <executions>

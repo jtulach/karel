@@ -35,7 +35,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
-        <activity android:name="org.apidesign.html.dlvkbrwsr.DlvkBrwsr" 
+        <activity android:name="org.apidesign.brwsr.DlvkBrwsr" 
                   android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
