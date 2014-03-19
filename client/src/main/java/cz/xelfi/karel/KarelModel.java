@@ -49,10 +49,24 @@ final class KarelModel {
     final static class CommandModel {
     }
     
-    @Function static void changeTab(Karel m, String id) {
-        if (id.startsWith("tab-")) {
-            m.setTab(id.substring(4));
-        }
+    @Function static void changeTabTown(Karel m) {
+        m.setTab("town");
+    }
+
+    @Function static void changeTabTask(Karel m) {
+        m.setTab("task");
+    }
+
+    @Function static void changeTabEdit(Karel m) {
+        m.setTab("edit");
+    }
+
+    @Function static void changeTabHome(Karel m) {
+        m.setTab("home");
+    }
+    
+    @Function static void changeTabAbout(Karel m) {
+        m.setTab("about");
     }
     
     @Function static void templateShown(Karel m) {
