@@ -58,20 +58,7 @@
             <li data-bind="css: { active : tab == 'task'}"><a href="#" id="tab-task" data-bind="click: changeTab">Úkol</a></li>
             <li data-bind="css: { active : tab == 'town'}"><a href="#" id="tab-town" data-bind="click: changeTab">Město</a></li>
             <li data-bind="css: { active : tab == 'edit'}"><a href="#" id="tab-edit" data-bind="click: changeTab">Kód</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>
+            <li data-bind="css: { active : tab == 'about'}"><a href="#" id="tab-about" data-bind="click: changeTab">Zbytek</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -87,7 +74,7 @@
                úkolem je provést Karla všemi připravenými nástrahami.
                Tak do toho!
             </p>
-            <p><a href="#" class="btn btn-primary btn-lg" role="button">Vybrat si úkol &raquo;</a></p>
+            <p><a href="#" id="tab-task" data-bind="click: changeTab"class="btn btn-primary btn-lg" role="button">Vybrat si úkol &raquo;</a></p>
           </div>
         </div>
     </script>
@@ -134,16 +121,20 @@
                     <button type="button" class="btn btn-info" data-bind="text: name,click: $root.invoke"></button>
                 <!-- /ko -->
             </div>
+            <progress max="1000" data-bind="value: speed"></progress>
         </div>
     </script>
     <script type="text/html" id="edit">
         <div class="row">
-            <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
-            <!-- ko foreach: completions -->
-            <button type="button" class="btn btn-info" data-bind="text: word, click: $root.complete"></button>
-            <!-- /ko -->
-            <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
-            <progress max="1000" data-bind="value: speed"></progress>
+            <div class="col-sm-4">
+                <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
+            </div>
+            <div class="col-sm-4">
+                <!-- ko foreach: completions -->
+                <button type="button" class="btn btn-info" data-bind="text: word, click: $root.complete"></button>
+                <!-- /ko -->
+                <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
+            </div>    
         </div>
     </script>
 
@@ -156,7 +147,9 @@
     </script>
 
 
-    <div class="container theme-showcase" role="main">
+    <script type="text/html" id="about">
+    </script>
+    <div class="container theme-showcase" role="main" data-bind="visible: tab() == 'about' ">
       <div class="page-header">
         <h1>Buttons</h1>
       </div>
