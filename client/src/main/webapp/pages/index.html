@@ -138,7 +138,7 @@
         </div>
     </script>
 
-    <div data-bind="template: { name : tab() }"></div>
+    <div data-bind="template: { name : tab(), afterRender: $root.templateShown }"></div>
 
     <script type="text/javascript" src="bck2brwsr.js"></script>
     <script>
