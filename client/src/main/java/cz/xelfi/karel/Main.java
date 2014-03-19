@@ -51,8 +51,6 @@ public final class Main {
         Karel d = new Karel("home", "msg", t, src, 300);
         d.compile();
         d.applyBindings();
-        KarelMirror.initialize();
-        Object cm = KarelMirror.initCodeMirror(d, "editor");
         
         d.loadTasks("tasks/list.js");
     }

@@ -55,7 +55,14 @@ final class KarelModel {
         }
     }
     
-    @Function static void invoke(Karel m, Command data) {
+    @Function static void templateShown(Karel m) {
+        if ("edit".equals(m.getTab())) {
+            KarelMirror.initialize();
+            Object cm = KarelMirror.initCodeMirror(m, "editor");
+        }
+    }
+    
+    @Function static void invoke(Karel m, Command data) {   
         try {
             KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
             KarelCompiler frame = KarelCompiler.execute(m.getTown(), root, data.getName());

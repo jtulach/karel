@@ -29,7 +29,6 @@ import net.java.html.js.JavaScriptBody;
 final class KarelMirror {
     static void initialize() {
         registerSyntax(KarelToken.keywords());
-        registerCodeCompletion(null);
     }
     
     static Object initCodeMirror(Karel k, String id) {
@@ -168,13 +167,11 @@ final class KarelMirror {
 "    );\n" +
 "    return {list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};\n" +
 "  }\n" +
-"  if (cm == null) {" +
-"    CodeMirror.registerHelper('hint', 'karel', cmptCmpl);\n" +
-"  } else {\n" +
-"      cm.getDoc().on('cursorActivity', function() {\n" +
-"        cmptCmpl(cm);\n" +
-"      });\n" +
-"  }"
+"  CodeMirror.registerHelper('hint', 'karel', cmptCmpl);\n" +
+"  cm.getDoc().on('cursorActivity', function() {\n" +
+"    cmptCmpl(cm);\n" +
+"  });\n" +
+"\n"
     )
     private static native void registerCodeCompletion(Object cm);
 
