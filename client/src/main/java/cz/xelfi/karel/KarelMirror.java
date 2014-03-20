@@ -101,16 +101,16 @@ final class KarelMirror {
                     if (KarelToken.IF.sameText(w)) {
                         w = KarelToken.IF.text() + " " +
                             KarelToken.IS.text() + " " +
-                            KarelToken.SIGN.text() + "\n";
-                        then = "\n" + KarelToken.ELSE.text() + "\n\n" + KarelToken.END.text() + "\n";
+                            KarelToken.SIGN.text() + newLine(offset + 2);
+                        then = newLine(offset) + KarelToken.ELSE.text() + newLine(offset + 2) + newLine(offset) + KarelToken.END.text();
                     } else if (KarelToken.WHILE.sameText(w)) {
                         w = KarelToken.WHILE.text() + " " +
                             KarelToken.IS.text() + " " +
-                            KarelToken.SIGN.text() + "\n";
-                        then = "\n\n" + KarelToken.END.text() + "\n";
+                            KarelToken.SIGN.text() + newLine(offset + 2);
+                        then = newLine(offset) + KarelToken.END.text();
                     } else if (KarelToken.REPEAT.sameText(w)) {
-                        w = KarelToken.REPEAT.text() + " 8\n";
-                        then = "\n\n" + KarelToken.END.text() + "\n";
+                        w = KarelToken.REPEAT.text() + " 8" + newLine(offset + 2);
+                        then = newLine(offset) + KarelToken.END.text();
                     } else {
                         w += "\n";
                         then = "";
@@ -128,6 +128,15 @@ final class KarelMirror {
             karel.updateCompletions(cmpl);
         }
         return arr.toArray();
+    }
+    
+    private static String newLine(int spaces) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        while (spaces-- > 0) {
+            sb.append(" ");
+        }
+        return sb.toString();
     }
     
     private static void appendWord(List<String> arr, List<String> all, String prefix, CharSequence... values) {
