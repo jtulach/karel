@@ -94,9 +94,36 @@ final class KarelMirror {
         if (karel != null) {
             int max = Math.min(10, touch.size());
             List<Completion> cmpl = new ArrayList<Completion>(max);
-            String toAdd = word.isEmpty() ? null : "";
-            for (int i = 0; i < max; i++) {
-                cmpl.add(new Completion(touch.get(i), lineNo, offset, end, toAdd));
+            if (word.isEmpty()) {
+                for (int i = 0; i < max; i++) {
+                    String w = touch.get(i);
+                    String then = null;
+                    if (KarelToken.IF.sameText(w)) {
+                        w = KarelToken.IF.text() + " " +
+                            KarelToken.IS.text() + " " +
+                            KarelToken.SIGN.text() + "\n";
+                        then = "\n" + KarelToken.ELSE.text() + "\n\n" + KarelToken.END.text() + "\n";
+                    } else if (KarelToken.WHILE.sameText(w)) {
+                        w = KarelToken.WHILE.text() + " " +
+                            KarelToken.IS.text() + " " +
+                            KarelToken.SIGN.text() + "\n";
+                        then = "\n\n" + KarelToken.END.text() + "\n";
+                    } else if (KarelToken.REPEAT.sameText(w)) {
+                        w = KarelToken.REPEAT.text() + " 8\n";
+                        then = "\n\n" + KarelToken.END.text() + "\n";
+                    } else {
+                        w += "\n";
+                        then = "";
+                    }
+                    cmpl.add(new Completion(touch.get(i), w, lineNo, offset, end, then));
+                }
+                
+            } else {
+                // replace
+                for (int i = 0; i < max; i++) {
+                    final String w = touch.get(i);
+                    cmpl.add(new Completion(w, w, lineNo, offset, end, ""));
+                }
             }
             karel.updateCompletions(cmpl);
         }
@@ -190,6 +217,9 @@ final class KarelMirror {
 "      var doc = cm.getDoc();\n" +            
 "      if (then === null) { word += ' '; }\n" +            
 "      doc.replaceRange(word, CodeMirror.Pos(line, start), CodeMirror.Pos(line, end));\n" +            
+"      var cur = doc.getCursor();\n" +            
+"      if (then !== null) doc.replaceRange(then, cur);\n" +            
+"      cm.setCursor(cur);\n" +            
 "      cm.focus();\n" +            
 ""
     )

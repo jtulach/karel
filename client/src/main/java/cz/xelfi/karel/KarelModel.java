@@ -135,6 +135,7 @@ final class KarelModel {
     }
     
     @Model(className="Completion", properties = {
+        @Property(name="name", type = String.class),
         @Property(name="word", type = String.class),
         @Property(name="line", type = int.class),
         @Property(name="start", type = int.class),
