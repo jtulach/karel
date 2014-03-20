@@ -87,7 +87,7 @@
 
     <script type="text/html" id="town">
         <div class="row">
-            <div class="col-sm-4" data-bind="with: town">
+            <div class="col-sm-6" data-bind="with: town">
                 <table class="town">
                     <tbody>
                         <!-- ko foreach: rows -->
@@ -116,12 +116,14 @@
                     Neznámý příkaz <span data-bind="text: errorParams[0]"></span>!
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <!-- ko foreach: commands -->
                     <button type="button" class="btn btn-info" data-bind="text: name,click: $root.invoke"></button>
                 <!-- /ko -->
+                <!--
+                <progress max="1000" data-bind="value: speed"></progress>
+                -->
             </div>
-            <progress max="1000" data-bind="value: speed"></progress>
         </div>
     </script>
     <script type="text/html" id="edit">
