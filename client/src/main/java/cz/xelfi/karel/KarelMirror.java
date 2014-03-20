@@ -61,15 +61,16 @@ final class KarelMirror {
         }
         
         List<String> arr = new ArrayList<String>();
+        List<String> touch = new ArrayList<String>();
         switch (type) {
             case 1:
-                appendWord(arr, word, KarelToken.IS.text(), KarelToken.NOT.text());
+                appendWord(arr, touch, word, KarelToken.IS.text(), KarelToken.NOT.text());
                 break;
             case 2:
-                appendWord(arr, word, "1", "2", "3", "4", "5", "6", "7", "8");
+                appendWord(arr, touch, word, "1", "2", "3", "4", "5", "6", "7", "8");
                 break;
             case 3:
-                appendWord(arr, word, 
+                appendWord(arr, touch, word, 
                     KarelToken.WALL.text(),
                     KarelToken.SIGN.text(),
                     KarelToken.EAST.text(), 
@@ -79,25 +80,32 @@ final class KarelMirror {
                 );
                 break;
             default:
-                appendWord(arr, word, 
+                appendWord(arr, touch, word, 
                     KarelToken.IF.text(),
                     KarelToken.WHILE.text(),
                     KarelToken.REPEAT.text(),
                     KarelToken.END.text()
                 );
                 for (Command command : karel.getCommands()) {
-                    appendWord(arr, word, command.getName());
+                    appendWord(arr, touch, word, command.getName());
                 }
                 break;
         }
         if (karel != null) {
-            karel.updateCompletions(arr, lineNo, offset, end);
+            int max = Math.min(10, touch.size());
+            List<Completion> cmpl = new ArrayList<Completion>(max);
+            String toAdd = word.isEmpty() ? null : "";
+            for (int i = 0; i < max; i++) {
+                cmpl.add(new Completion(touch.get(i), lineNo, offset, end, toAdd));
+            }
+            karel.updateCompletions(cmpl);
         }
         return arr.toArray();
     }
     
-    private static void appendWord(List<String> arr, String prefix, CharSequence... values) {
+    private static void appendWord(List<String> arr, List<String> all, String prefix, CharSequence... values) {
         for (CharSequence cs : values) {
+            all.add(cs.toString());
             if (prefix.length() > cs.length()) {
                 continue;
             }

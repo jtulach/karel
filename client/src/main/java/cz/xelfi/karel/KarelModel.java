@@ -125,24 +125,21 @@ final class KarelModel {
         KarelMirror.setLocalText(m.getSource());
     }
     
-    @ModelOperation static void updateCompletions(Karel m, List<String> words, int line, int start, int end) {
+    @ModelOperation static void updateCompletions(Karel m, List<Completion> compl) {
         m.getCompletions().clear();
-        int i = 0;
-        for (String s : words) {
-            m.getCompletions().add(new Completion(s, line, start, end));
-            if (i++ == 10) break;
-        }
+        m.getCompletions().addAll(compl);
     }
     
     @Function static void complete(Karel m, Completion data) {
-        KarelMirror.complete("editor", data.getWord(), null, data.getLine(), data.getStart(), data.getEnd());
+        KarelMirror.complete("editor", data.getWord(), data.getThen(), data.getLine(), data.getStart(), data.getEnd());
     }
     
     @Model(className="Completion", properties = {
         @Property(name="word", type = String.class),
         @Property(name="line", type = int.class),
         @Property(name="start", type = int.class),
-        @Property(name="end", type = int.class)
+        @Property(name="end", type = int.class),
+        @Property(name="then", type = String.class)
     })
     static class CompletionModel {
     }
