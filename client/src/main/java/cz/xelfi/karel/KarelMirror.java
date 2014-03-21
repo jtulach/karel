@@ -112,7 +112,7 @@ final class KarelMirror {
                         w = KarelToken.REPEAT.text() + " 8" + newLine(offset + 2);
                         then = newLine(offset) + KarelToken.END.text();
                     } else {
-                        w += "\n";
+                        w += newLine(offset);
                         then = "";
                     }
                     cmpl.add(new Completion(touch.get(i), w, lineNo, offset, end, then));
