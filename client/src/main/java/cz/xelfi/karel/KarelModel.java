@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
@@ -87,7 +89,16 @@ final class KarelModel {
     }
     
     @ModelOperation static void animate(final Karel m, KarelCompiler frame) {
-        final KarelCompiler nxt = frame.next();
+        final KarelCompiler nxt;
+        try {
+            nxt = frame.next();
+        } catch (SyntaxException ex) {
+            final Town t = m.getTown();
+            t.setError(ex.getErrorCode());
+            t.getErrorParams().clear();
+            ex.fillParams(t.getErrorParams());
+            return;
+        }
         if (nxt != null) {
             int spd = m.getSpeed();
             if (spd < 0) {
@@ -99,7 +110,7 @@ final class KarelModel {
             KAREL.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    animate(m, nxt);
+                    m.animate(nxt);
                 }
             }, spd);
         }

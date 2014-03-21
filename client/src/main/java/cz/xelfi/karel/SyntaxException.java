@@ -23,11 +23,29 @@
 
 package cz.xelfi.karel;
 
+import java.util.List;
+
 /**
  *
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
 final class SyntaxException extends Exception {
+    private int error;
+    private CharSequence[] params;
     public SyntaxException(KarelToken t) {
+    }
+    public SyntaxException(int error, CharSequence... params) {
+        this.error = error;
+        this.params = params;
+    }
+
+    int getErrorCode() {
+        return error;
+    }
+
+    void fillParams(List<String> errorParams) {
+        for (CharSequence s : params) {
+            errorParams.add(s.toString());
+        }
     }
 }

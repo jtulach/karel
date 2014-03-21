@@ -69,7 +69,7 @@ class KarelCompiler {
         return new KarelCompiler(town, r, r, Collections.<AST>emptyList());
     }
     
-    public KarelCompiler next() {
+    public KarelCompiler next() throws SyntaxException {
         if (instructions.size() <= pc) {
             int cnt = owner.repeatFrame(this, count);
             count = cnt;
@@ -166,7 +166,7 @@ class KarelCompiler {
         
         abstract void addNode(AST child) throws SyntaxException;
         
-        abstract KarelCompiler exec(KarelCompiler frame);
+        abstract KarelCompiler exec(KarelCompiler frame) throws SyntaxException;
         int repeatFrame(KarelCompiler frame, int counter) {
             return 0;
         }
@@ -243,7 +243,7 @@ class KarelCompiler {
         }
 
         @Override
-        KarelCompiler exec(KarelCompiler frame) {
+        KarelCompiler exec(KarelCompiler frame) throws SyntaxException {
             for (AST a : frame.root.children) {
                 if (a instanceof Define) {
                     Define d = (Define)a;
@@ -255,7 +255,7 @@ class KarelCompiler {
                     }
                 }
             }
-            throw new IllegalStateException("Cannot find " + this.token.text());
+            throw new SyntaxException(4, this.token.text());
         }
     }
     
