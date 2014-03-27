@@ -116,6 +116,7 @@ final class KarelModel {
                     m.getCommands().add(new Command(d.token.text().toString()));
                 }
             }
+            m.setTab("town");
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
         }
