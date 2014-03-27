@@ -212,8 +212,13 @@ final class KarelMirror {
 "    return {list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};\n" +
 "  }\n" +
 "  CodeMirror.registerHelper('hint', 'karel', cmptCmpl);\n" +
+"  var timer;\n" +
 "  cm.getDoc().on('cursorActivity', function() {\n" +
-"    cmptCmpl(cm);\n" +
+"   clearInterval(timer);\n" +
+"   timer = setTimeout(function() {\n" +
+"     cmptCmpl(cm);\n" +
+"     cm.focus();\n" +
+"   }, 500);\n" +
 "  });\n" +
 "\n"
     )
