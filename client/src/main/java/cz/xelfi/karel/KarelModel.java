@@ -135,6 +135,10 @@ final class KarelModel {
         KarelMirror.complete("editor", data.getWord(), data.getThen(), data.getLine(), data.getStart(), data.getEnd());
     }
     
+    @Function static void newLine(Karel m) {
+        KarelMirror.newLine("editor");
+    }
+    
     @Model(className="Completion", properties = {
         @Property(name="name", type = String.class),
         @Property(name="word", type = String.class),
