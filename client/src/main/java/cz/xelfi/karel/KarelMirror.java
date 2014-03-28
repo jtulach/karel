@@ -247,9 +247,10 @@ final class KarelMirror {
 "      var cur = doc.getCursor();\n" +            
 "      var ln = cur.line;\n" +            
 "      var l = doc.getLine(ln);\n" +            
-"      var findSpaces = /^\\W*/;\n" +            
+"      var findSpaces = /^ */;\n" +            
 "      var spaces = findSpaces.exec(l);\n" +            
 "      doc.replaceRange('\\n' + spaces, CodeMirror.Pos(ln, l.length));\n" +            
+"      doc.setCursor(CodeMirror.Pos(ln + 1, 1000));\n" +            
 "      cm.focus();\n" +            
 ""
     )
