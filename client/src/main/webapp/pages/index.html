@@ -128,10 +128,11 @@
     </script>
     <script type="text/html" id="edit">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
+                <button type="button" class="btn btn-lg btn-default" data-bind="click: $root.newLine">&#x21A9;</button>
                 <!-- ko foreach: completions -->
                 <button type="button" class="btn btn-info" data-bind="text: name, click: $root.complete"></button>
                 <!-- /ko -->

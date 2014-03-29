@@ -212,8 +212,13 @@ final class KarelMirror {
 "    return {list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};\n" +
 "  }\n" +
 "  CodeMirror.registerHelper('hint', 'karel', cmptCmpl);\n" +
+"  var timer;\n" +
 "  cm.getDoc().on('cursorActivity', function() {\n" +
-"    cmptCmpl(cm);\n" +
+"   clearInterval(timer);\n" +
+"   timer = setTimeout(function() {\n" +
+"     cmptCmpl(cm);\n" +
+"     cm.focus();\n" +
+"   }, 500);\n" +
 "  });\n" +
 "\n"
     )
@@ -233,6 +238,23 @@ final class KarelMirror {
 ""
     )
     static native void complete(String id, String word, String then, int line, int start, int end);
+
+    @JavaScriptBody(args = { "id" }, body = 
+"      var el = document.getElementById(id);\n" +
+"      if (!el) return null;\n" + 
+"      var cm = el['cm'];\n" + 
+"      var doc = cm.getDoc();\n" +            
+"      var cur = doc.getCursor();\n" +            
+"      var ln = cur.line;\n" +            
+"      var l = doc.getLine(ln);\n" +            
+"      var findSpaces = /^ */;\n" +            
+"      var spaces = findSpaces.exec(l);\n" +            
+"      doc.replaceRange('\\n' + spaces, CodeMirror.Pos(ln, l.length));\n" +            
+"      doc.setCursor(CodeMirror.Pos(ln + 1, 1000));\n" +            
+"      cm.focus();\n" +            
+""
+    )
+    static native void newLine(String id);
     
     @JavaScriptBody(args = { "k", "id" }, body = 
 "      var el = document.getElementById(id);\n" +

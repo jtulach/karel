@@ -127,6 +127,7 @@ final class KarelModel {
                     m.getCommands().add(new Command(d.token.text().toString()));
                 }
             }
+            m.setTab("town");
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
         }
@@ -143,6 +144,10 @@ final class KarelModel {
     
     @Function static void complete(Karel m, Completion data) {
         KarelMirror.complete("editor", data.getWord(), data.getThen(), data.getLine(), data.getStart(), data.getEnd());
+    }
+    
+    @Function static void newLine(Karel m) {
+        KarelMirror.newLine("editor");
     }
     
     @Model(className="Completion", properties = {
