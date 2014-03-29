@@ -18,7 +18,9 @@
 
 package cz.xelfi.karel;
 
+import net.java.html.json.ComputedProperty;
 import net.java.html.json.Model;
+import net.java.html.json.ModelOperation;
 import net.java.html.json.Property;
 
 /**
@@ -42,9 +44,18 @@ class TaskModel {
         @Property(name = "description", type = String.class),
         @Property(name = "start", type = Town.class),
         @Property(name = "current", type = Town.class),
-        @Property(name = "end", type = Town.class)
+        @Property(name = "end", type = Town.class),
+        @Property(name = "state", type = String.class)
     })
     static class TestCaseModel {
+        static void checkState(TaskTestCase c) {
+            if (c.getCurrent() != null && c.getCurrent().equals(c.getEnd())) {
+                c.setState("ok");
+            } else {
+                c.setState("fail");
+            }
+        }
+        
         static void reset(TaskTestCase c) {
             Town cur = c.getCurrent();
             if (cur == null)  {
@@ -53,6 +64,7 @@ class TaskModel {
             TownModel.init(cur, 10, 10);
             TownModel.load(cur, c.getStart());
             c.setCurrent(cur);
+            c.setState(null);
         }
     }
 }

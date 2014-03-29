@@ -104,11 +104,11 @@ final class KarelModel {
     @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
         final List<KarelCompiler> next = new ArrayList<KarelCompiler>(frames.size());
         for (KarelCompiler frame : frames) {
-            if (frame == null) {
-                continue;
-            }
             try {
                 KarelCompiler nxt = frame.next();
+                if (nxt == null) {
+                    continue;
+                }
                 next.add(nxt);
             } catch (SyntaxException ex) {
                 final Town t = frame.getTown();
@@ -131,6 +131,10 @@ final class KarelModel {
                     model.animate(next);
                 }
             }, spd);
+        } else {
+            for (TaskTestCase c : model.getCurrentTask().getTests()) {
+                TaskModel.TestCaseModel.checkState(c);
+            }
         }
     }
     

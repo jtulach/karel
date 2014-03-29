@@ -112,7 +112,10 @@
                 </div>
                 <span data-bind="foreach: tests">
                     <p></p>
-                    <div class="alert alert-info" data-bind="text: description"></div>
+                    <div class="alert alert-info" >
+                        <span class="karel-result" data-bind="css: state"></span>
+                        <span data-bind="text: description"></span>
+                    </div>
                     <div class="row">
                         <div class="col-sm-6">
                             <p>Počáteční stav</p>
