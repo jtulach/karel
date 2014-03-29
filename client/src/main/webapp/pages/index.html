@@ -86,47 +86,57 @@
     </script>
 
     <script type="text/html" id="town">
-        <div class="row">
-            <div class="col-sm-6" data-bind="with: town">
-                <table class="town">
-                    <tbody>
-                        <!-- ko foreach: rows -->
-                        <tr>
-                            <!-- ko foreach: columns -->
-                            <td>
-                                <div class="karel" data-bind="css: ('direction-' + robot())"></div>
-                                <div class="karel" data-bind="css: ('mark-' + marks())"></div>
-                            </td>
-                            <!-- /ko -->
-                        </tr>
+        <div data-bind="if: currentTask">
+            <div data-bind="with: currentTask">
+                <div class="page-header" data-bind="if: name">
+                    <h1 data-bind="text: name"></h1>
+                </div>
+                <div class="well">
+                    <p data-bind="text: description"></p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6" data-bind="with: $root.town">
+                        <table class="town">
+                            <tbody>
+                                <!-- ko foreach: rows -->
+                                <tr>
+                                    <!-- ko foreach: columns -->
+                                    <td>
+                                        <div class="karel" data-bind="css: ('direction-' + robot())"></div>
+                                        <div class="karel" data-bind="css: ('mark-' + marks())"></div>
+                                    </td>
+                                    <!-- /ko -->
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                        <div class="alert alert-warning" data-bind="visible: error() == 1">
+                            <strong>Pozor!</strong> Narazil jsem do zdi!
+                        </div>
+                        <div class="alert alert-warning" data-bind="visible: error() == 2">
+                            <strong>Pozor!</strong> Nelze sebrat značku!
+                        </div>
+                        <div class="alert alert-warning" data-bind="visible: error() == 3">
+                            <strong>Pozor!</strong> Příliš mnoho značek!
+                        </div>
+                        <div class="alert alert-warning" data-bind="visible: error() == 4">
+                            <strong>Pozor!</strong>
+                            Neznámý příkaz <span data-bind="text: errorParams"></span>!
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <!-- ko foreach: $root.commands -->
+                        <button type="button" class="btn btn-info" data-bind="text: name,click: $root.invoke"></button>
                         <!-- /ko -->
-                    </tbody>
-                </table>
-                <div class="alert alert-warning" data-bind="visible: error() == 1">
-                    <strong>Pozor!</strong> Narazil jsem do zdi!
+                        <!--
+                        <progress max="1000" data-bind="value: speed"></progress>
+                        -->
+                        <button type="button" class="btn btn-success" data-bind="click: $root.dump">Ulož město</button>
+                    </div>
+                    <div class="col-sm-12" data-bind="visible: $root.townText">
+                        <textarea width="100%" data-bind="value: $root.townText"/>
+                    </div>
                 </div>
-                <div class="alert alert-warning" data-bind="visible: error() == 2">
-                    <strong>Pozor!</strong> Nelze sebrat značku!
-                </div>
-                <div class="alert alert-warning" data-bind="visible: error() == 3">
-                    <strong>Pozor!</strong> Příliš mnoho značek!
-                </div>
-                <div class="alert alert-warning" data-bind="visible: error() == 4">
-                    <strong>Pozor!</strong>
-                    Neznámý příkaz <span data-bind="text: errorParams"></span>!
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <!-- ko foreach: commands -->
-                    <button type="button" class="btn btn-info" data-bind="text: name,click: $root.invoke"></button>
-                <!-- /ko -->
-                <!--
-                <progress max="1000" data-bind="value: speed"></progress>
-                -->
-                <button type="button" class="btn btn-success" data-bind="click: dump">Ulož město</button>
-            </div>
-            <div class="col-sm-12" data-bind="visible: townText">
-                <textarea width="100%" data-bind="value: townText"/>
             </div>
         </div>
     </script>

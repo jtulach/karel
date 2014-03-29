@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
@@ -36,6 +34,7 @@ import net.java.html.json.Property;
 @Model(className = "Karel", properties = {
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
+    @Property(name = "currentTask", type = TaskDescription.class),
     @Property(name = "town", type = Town.class),
     @Property(name = "townText", type = String.class),
     @Property(name = "commands", type = Command.class, array = true),
@@ -176,7 +175,16 @@ final class KarelModel {
     
     @OnReceive(url = "{url}", onError = "errorLoadingTask") 
     static void loadTaskDescription(Karel m, TaskDescription td) {
-        TownModel.load(m.getTown(), td.getTests().get(0).getStart());
+        for (TaskTestCase c : td.getTests()) {
+            Town s = new Town();
+            TownModel.load(s, c.getStart());
+            c.setStart(s);
+
+            Town e = new Town();
+            TownModel.load(e, c.getEnd());
+            c.setEnd(e);
+        }
+        m.setCurrentTask(td);
         m.setTab("town");
     }
     

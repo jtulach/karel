@@ -17,7 +17,7 @@
  */
 [{
     "description" : "Robot Karel se umí otočit jen doleva. " + 
-        "Ale také umí skládat příkazy dohromady." + 
+        "Ale také umí skládat příkazy dohromady. " + 
         "Prosím nauč jej otočit se čelem vzad.",
     "tests" : [
         {
