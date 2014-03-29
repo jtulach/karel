@@ -17,9 +17,7 @@
  */
 package cz.xelfi.karel;
 
-import java.util.ArrayList;
 import java.util.List;
-import net.java.html.json.ComputedProperty;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
 import net.java.html.json.Property;
@@ -80,20 +78,44 @@ class TownModel {
         @Property(name = "marks", type = int.class),
     })
     static class SquareModel {
+        static boolean isEmpty(Square sq) {
+            return sq.getRobot() == 0 && sq.getMarks() == 0;
+        }
     }
     
     @ModelOperation static void clear(Town m) {
-        List<Row> rows = new ArrayList<Row>();
-        for (int y = 0; y < 10; y++) {
-            Square[] arr = new Square[10];
-            for (int x = 0; x < 10; x++) {
-                arr[x] = new Square(0, 0);
-            }
-            rows.add(new Row(arr));
-        }
-        m.getRows().clear();
-        m.getRows().addAll(rows);
+        init(m, 10, 10);
         m.getRows().get(9).getColumns().get(0).setRobot(1);
+    }
+
+    static void init(Town m, int columns, int rows) {
+        List<Row> r = m.getRows();
+        for (int y = 0; y < rows; y++) {
+            List<Square> cl;
+            if (r.size() > y) {
+                cl = r.get(y).getColumns();
+            } else {
+                Row nr = new Row();
+                cl = nr.getColumns();
+                r.add(nr);
+                
+            }
+            for (int x = 0; x < columns; x++) {
+                Square sq;
+                if (cl.size() > x && (sq = cl.get(x)) != null) {
+                    sq.setMarks(0);
+                    sq.setRobot(0);
+                } else {
+                    cl.add(new Square(0, 0));
+                }
+            }
+            while (cl.size() > columns) {
+                cl.remove(columns);
+            }
+        }
+        while (r.size() > rows) {
+            r.remove(rows);
+        }
     }
     
     static int[] findKarel(Town t) {
@@ -175,5 +197,46 @@ class TownModel {
             return;
         }
         sq.setMarks(sq.getMarks()- 1);
+    }
+    
+    static String toJSON(Town t) {
+        final Town cl = t.clone();
+        simplify(cl);
+        return cl.toString();
+    }
+    
+    static void simplify(Town t) {
+        for (int i = 0; i < t.getRows().size(); i++) {
+            Row r = t.getRows().get(i);
+            int empty = 0;
+            final List<Square> cols = r.getColumns();
+            for (int j = 0; j < cols.size(); j++) {
+                Square sq = cols.get(j);
+                if (SquareModel.isEmpty(sq)) {
+                    r.getColumns().set(j, null);
+                    empty++;
+                }
+            }
+            if (empty == cols.size()) {
+                t.getRows().set(i, null);
+            }
+        }
+    }
+
+    static void load(Town real, Town simple) {
+        init(real, 10, 10);
+        for (int i = 0; i < real.getRows().size(); i++) {
+            Row r = simple.getRows().get(i);
+            if (r == null) {
+                continue;
+            }
+            final List<Square> cols = r.getColumns();
+            for (int j = 0; j < cols.size(); j++) {
+                Square sq = cols.get(j);
+                if (sq != null) {
+                    real.getRows().get(i).getColumns().set(j, sq);
+                }
+            }
+        }
     }
 }

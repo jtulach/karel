@@ -18,9 +18,7 @@
 
 package cz.xelfi.karel;
 
-import java.util.List;
 import net.java.html.json.Model;
-import net.java.html.json.OnReceive;
 import net.java.html.json.Property;
 
 /**

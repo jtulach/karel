@@ -55,7 +55,7 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li data-bind="css: { active : tab == 'task'}"><a href="#" data-bind="click: changeTabTask">Úkol</a></li>
+            <li data-bind="css: { active : tab == 'task'}"><a href="#" data-bind="click: changeTabTask">Úkoly</a></li>
             <li data-bind="css: { active : tab == 'town'}"><a href="#" data-bind="click: changeTabTown">Město</a></li>
             <li data-bind="css: { active : tab == 'edit'}"><a href="#" data-bind="click: changeTabEdit">Kód</a></li>
             <li data-bind="css: { active : tab == 'about'}"><a href="#" data-bind="click: changeTabAbout">Zbytek</a></li>
@@ -123,6 +123,10 @@
                 <!--
                 <progress max="1000" data-bind="value: speed"></progress>
                 -->
+                <button type="button" class="btn btn-success" data-bind="click: dump">Ulož město</button>
+            </div>
+            <div class="col-sm-12" data-bind="visible: townText">
+                <textarea width="100%" data-bind="value: townText"/>
             </div>
         </div>
     </script>

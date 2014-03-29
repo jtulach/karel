@@ -80,6 +80,38 @@ public class TownModelTest {
         boolean isWall = TownModel.isCondition(t, KarelToken.WALL);
         assertTrue(isWall, "Yes, heading towards the wall");
     }
+    
+    @Test public void compressTown() throws Exception {
+        Town t = new Town();
+        t.clear();
+        String s = TownModel.toJSON(t);
+        
+        int first = s.indexOf("\"robot\"");
+        assertNotEquals(first, -1, "Found one");
+        int second = s.indexOf("\"robot\"", first + 1);
+        assertEquals(second, -1, "Only one robot in the town: " + s);
+    }
+
+    @Test public void compressTownWithAStep() throws Exception {
+        Town t = new Town();
+        t.clear();
+        t.step();
+        t.step();
+        
+        Town cl = t.clone();
+        TownModel.simplify(cl);
+
+        String s = cl.toString();
+        int first = s.indexOf("\"robot\":1");
+        assertNotEquals(first, -1, "Found one");
+        int second = s.indexOf("\"robot\"", first + 1);
+        assertEquals(second, -1, "Only one robot in the town: " + s);
+        
+        Town t2 = new Town();
+        TownModel.load(t2, cl);
+        
+        assertEquals(t2, t, "Towns are the same");
+    }
  
     private static void assertLocation(Town t, int x, int y, int d, String msg) {
         int[] xyd = TownModel.findKarel(t);

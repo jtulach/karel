@@ -37,6 +37,7 @@ import net.java.html.json.Property;
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "town", type = Town.class),
+    @Property(name = "townText", type = String.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
     @Property(name = "completions", type = Completion.class, array = true),
@@ -86,6 +87,10 @@ final class KarelModel {
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+    
+    @Function static void dump(Karel m) {
+        m.setTownText(TownModel.toJSON(m.getTown()));
     }
     
     @ModelOperation static void animate(final Karel m, KarelCompiler frame) {
