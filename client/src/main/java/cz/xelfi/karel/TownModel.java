@@ -242,7 +242,7 @@ class TownModel {
             for (int j = 0; j < cols.size(); j++) {
                 Square sq = cols.get(j);
                 if (sq != null) {
-                    real.getRows().get(i).getColumns().set(j, sq);
+                    real.getRows().get(i).getColumns().set(j, sq.clone());
                 }
             }
         }

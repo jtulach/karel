@@ -41,9 +41,18 @@ class TaskModel {
     @Model(className = "TaskTestCase", properties = {
         @Property(name = "description", type = String.class),
         @Property(name = "start", type = Town.class),
+        @Property(name = "current", type = Town.class),
         @Property(name = "end", type = Town.class)
     })
     static class TestCaseModel {
-        
+        static void reset(TaskTestCase c) {
+            Town cur = c.getCurrent();
+            if (cur == null)  {
+                cur = new Town();
+            }
+            TownModel.init(cur, 10, 10);
+            TownModel.load(cur, c.getStart());
+            c.setCurrent(cur);
+        }
     }
 }
