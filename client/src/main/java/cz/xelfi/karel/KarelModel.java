@@ -84,7 +84,7 @@ final class KarelModel {
             List<TaskTestCase> arr = m.getCurrentTask().getTests();
             List<KarelCompiler> comps = new ArrayList<KarelCompiler>(arr.size());
             for (TaskTestCase c : arr) {
-                TaskModel.TestCaseModel.reset(c);
+                TaskModel.TestCaseModel.reset(c, false);
                 KarelCompiler frame = KarelCompiler.execute(c.getCurrent(), root, data.getName());
                 comps.add(frame);
             }
@@ -139,6 +139,7 @@ final class KarelModel {
     }
     
     @ModelOperation @Function static void compile(Karel m) {
+        TaskModel.DescriptionModel.reset(m.getCurrentTask(), false);
         compile(m, true);
     }
     static void compile(Karel m, boolean switchToTown) {
@@ -202,7 +203,7 @@ final class KarelModel {
             Town e = new Town();
             TownModel.load(e, c.getEnd());
             c.setEnd(e);
-            TaskModel.TestCaseModel.reset(c);
+            TaskModel.TestCaseModel.reset(c, true);
         }
         m.setCurrentTask(td);
         m.setTab("town");
