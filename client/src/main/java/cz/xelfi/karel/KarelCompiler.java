@@ -52,6 +52,10 @@ class KarelCompiler {
         instructions = inst;
     }
     
+    final Town getTown() {
+        return town;
+    }
+    
     public static KarelCompiler execute(Town town, Root r, String function) {
         for (AST ast : r.children) {
             if (ast instanceof Define) {

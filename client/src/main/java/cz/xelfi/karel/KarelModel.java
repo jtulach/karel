@@ -17,6 +17,7 @@
  */
 package cz.xelfi.karel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -81,30 +82,40 @@ final class KarelModel {
     @Function static void invoke(Karel m, Command data) {   
         try {
             KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
-            KarelCompiler frame = KarelCompiler.execute(m.getTown(), root, data.getName());
-            m.animate(frame);
+            List<TaskTestCase> arr = m.getCurrentTask().getTests();
+            List<KarelCompiler> comps = new ArrayList<KarelCompiler>(arr.size());
+            for (TaskTestCase c : arr) {
+                KarelCompiler frame = KarelCompiler.execute(c.getStart(), root, data.getName());
+                comps.add(frame);
+            }
+            m.animate(comps);
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
         }
     }
     
-    @Function static void dump(Karel m) {
-        m.setTownText(TownModel.toJSON(m.getTown()));
+    @Function static void dump(Karel m, Town data) {
+        m.setTownText(TownModel.toJSON(data));
     }
     
-    @ModelOperation static void animate(final Karel m, KarelCompiler frame) {
-        final KarelCompiler nxt;
-        try {
-            nxt = frame.next();
-        } catch (SyntaxException ex) {
-            final Town t = m.getTown();
-            t.setError(ex.getErrorCode());
-            t.getErrorParams().clear();
-            ex.fillParams(t.getErrorParams());
-            return;
+    @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
+        final List<KarelCompiler> next = new ArrayList<KarelCompiler>(frames.size());
+        for (KarelCompiler frame : frames) {
+            if (frame == null) {
+                continue;
+            }
+            try {
+                KarelCompiler nxt = frame.next();
+                next.add(nxt);
+            } catch (SyntaxException ex) {
+                final Town t = frame.getTown();
+                t.setError(ex.getErrorCode());
+                t.getErrorParams().clear();
+                ex.fillParams(t.getErrorParams());
+            }
         }
-        if (nxt != null) {
-            int spd = m.getSpeed();
+        if (!next.isEmpty()) {
+            int spd = model.getSpeed();
             if (spd < 0) {
                 spd = 50;
             }
@@ -114,7 +125,7 @@ final class KarelModel {
             KAREL.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    m.animate(nxt);
+                    model.animate(next);
                 }
             }, spd);
         }
