@@ -41,6 +41,7 @@ import net.java.html.json.Property;
     @Property(name = "source", type = String.class),
     @Property(name = "completions", type = Completion.class, array = true),
     @Property(name = "speed", type = int.class),
+    @Property(name = "running", type = boolean.class),
     @Property(name = "tasks", type = TaskInfo.class, array = true)
 })
 final class KarelModel {
@@ -118,6 +119,7 @@ final class KarelModel {
             }
         }
         if (!next.isEmpty()) {
+            model.setRunning(true);
             int spd = model.getSpeed();
             if (spd < 0) {
                 spd = 50;
@@ -132,6 +134,7 @@ final class KarelModel {
                 }
             }, spd);
         } else {
+            model.setRunning(false);
             for (TaskTestCase c : model.getCurrentTask().getTests()) {
                 TaskModel.TestCaseModel.checkState(c);
             }

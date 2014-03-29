@@ -28,7 +28,7 @@
         {
             "description" : "Je-li blízko zdi, narazí.",
             "start" : {"rows":[null,null,null,null,null,null,null,null,{"columns":[null,{"robot":3,"marks":0},null,null,null,null,null,null,null,null]},null]},
-            "end" : {"rows":[null,null,null,null,null,null,null,null,{"columns":[{"robot":3,"marks":0},null,null,null,null,null,null,null,null,null]},null]}
+            "end" : {"error":1,"rows":[null,null,null,null,null,null,null,null,{"columns":[{"robot":3,"marks":0},null,null,null,null,null,null,null,null,null]},null]}
         },
         {
             "description" : "Nevadí, že je u zdi a jsou tam značky.",

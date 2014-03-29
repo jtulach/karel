@@ -246,5 +246,6 @@ class TownModel {
                 }
             }
         }
+        real.setError(simple.getError());
     }
 }

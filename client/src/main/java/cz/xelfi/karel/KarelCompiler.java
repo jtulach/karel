@@ -56,7 +56,7 @@ class KarelCompiler {
         return town;
     }
     
-    public static KarelCompiler execute(Town town, Root r, String function) {
+    public static KarelCompiler execute(Town town, Root r, String function) throws SyntaxException {
         for (AST ast : r.children) {
             if (ast instanceof Define) {
                 final Define fn = (Define)ast;
@@ -67,10 +67,7 @@ class KarelCompiler {
                 }
             }
         }
-        town.setError(4);
-        town.getErrorParams().clear();
-        town.getErrorParams().add(function);
-        return new KarelCompiler(town, r, r, Collections.<AST>emptyList());
+        throw new SyntaxException(4, function);
     }
     
     public KarelCompiler next() throws SyntaxException {
@@ -212,25 +209,24 @@ class KarelCompiler {
         }
 
         @Override
-        KarelCompiler exec(KarelCompiler frame) {
+        KarelCompiler exec(KarelCompiler frame) throws SyntaxException {
             if (children == null) {
                 if (this.token == KarelToken.STEP) {
                     frame.town.step();
-                    return null;
-                }
-                if (this.token == KarelToken.LEFT) {
+                } else if (this.token == KarelToken.LEFT) {
                     frame.town.left();
-                    return null;
-                }
-                if (this.token == KarelToken.PUT) {
+                } else if (this.token == KarelToken.PUT) {
                     frame.town.put();
-                    return null;
-                }
-                if (this.token == KarelToken.TAKE) {
+                } else if (this.token == KarelToken.TAKE) {
                     frame.town.take();
-                    return null;
+                } else {
+                    throw new SyntaxException(this.token);
                 }
-                throw new IllegalStateException("Cannot find predefined " + this.token.text());
+                final int err = frame.town.getError();
+                if (err != 0) {
+                    throw new SyntaxException(err);
+                }
+                return null;
             }
             return new KarelCompiler(frame, this, children);
         }

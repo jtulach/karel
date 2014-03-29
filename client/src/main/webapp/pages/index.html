@@ -100,7 +100,9 @@
                     <div class="col-sm-12">
                         <p></p>
                         <!-- ko foreach: $root.commands -->
-                        <button type="button" class="btn btn-info" data-bind="text: name,click: $root.invoke"></button>
+                        <button type="button" class="btn btn-info" 
+                          data-bind="text: name,click: $root.invoke,enable: !$root.running()">
+                        </button>
                         <!-- /ko -->
                         <!--
                         <progress max="1000" data-bind="value: speed"></progress>
