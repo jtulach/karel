@@ -196,7 +196,8 @@ final class KarelModel {
         m.getTasks().addAll(Arrays.asList(arr));
     }
 
-    @Function static void chooseTask(Karel m, TaskInfo data) {
+    @ModelOperation @Function static void chooseTask(Karel m, TaskInfo data) {
+        m.setCurrentTask(null);
         m.loadTaskDescription(data.getUrl());
     }
     

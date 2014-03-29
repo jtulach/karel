@@ -36,18 +36,19 @@ public final class Main {
     }
     
     /** Called when page is ready */
-    public static void onPageLoad(String... args) throws Exception {
+    public static Karel onPageLoad(String... args) throws Exception {
         String src = KarelMirror.getLocalText();
         if (src == null) {
-            src = "čelem-vzad\n"
-          + "  vlevo-vbok\n"
-          + "  vlevo-vbok\n"
-          + "konec\n";
+            src = "novy-prikaz\n"
+          + "  \n"
+          + "konec\n\n\n";
         }
         
         Karel d = new Karel("home", "msg", null, null, src, 300, false);
         KarelModel.compile(d, false);
         d.applyBindings();
         d.loadTasks("tasks/list.js");
+        
+        return d;
     }
 }
