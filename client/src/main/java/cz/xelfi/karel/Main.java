@@ -40,7 +40,7 @@ public final class Main {
         Town t = new Town();
         t.clear();
         
-        String src = null;//KarelMirror.getLocalText();
+        String src = KarelMirror.getLocalText();
         if (src == null) {
             src = "čelem-vzad\n"
           + "  vlevo-vbok\n"
@@ -49,9 +49,7 @@ public final class Main {
         }
         
         Karel d = new Karel("home", "msg", t, null, src, 300);
-        d.compile();
         d.applyBindings();
-        
         d.loadTasks("tasks/list.js");
     }
 }

@@ -169,5 +169,18 @@ final class KarelModel {
     @OnReceive(url = "{url}") static void loadTasks(Karel m, TaskInfo[] arr) {
         m.getTasks().addAll(Arrays.asList(arr));
     }
+
+    @Function static void chooseTask(Karel m, TaskInfo data) {
+        m.loadTaskDescription(data.getUrl());
+    }
     
+    @OnReceive(url = "{url}", onError = "errorLoadingTask") 
+    static void loadTaskDescription(Karel m, TaskDescription td) {
+        TownModel.load(m.getTown(), td.getTests().get(0).getStart());
+        m.setTab("town");
+    }
+    
+    static void errorLoadingTask(Karel m, Exception ex) {
+        m.setMessage("Error loading task " + ex.getLocalizedMessage());
+    }
 }

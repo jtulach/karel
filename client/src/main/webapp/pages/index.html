@@ -81,7 +81,7 @@
     
     <script type="text/html" id="task">
         <ul data-bind="foreach: tasks">
-          <li data-bind="text: name"></li>
+            <li><a href="#" data-bind="text: name, click: $root.chooseTask"></a></li>
         </ul>
     </script>
 
@@ -156,6 +156,7 @@
 
     <script type="text/html" id="about">
     </script>
+    <!--
     <div class="container theme-showcase" role="main" data-bind="visible: tab() == 'about' ">
       <div class="page-header">
         <h1>Buttons</h1>
@@ -203,7 +204,6 @@
         <h1>Thumbnails</h1>
       </div>
       <img data-src="holder.js/200x200" class="img-thumbnail" alt="A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera">
-
 
 
       <div class="page-header">
@@ -256,7 +256,7 @@
                 </ul>
               </li>
             </ul>
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
 
@@ -289,7 +289,7 @@
                 </ul>
               </li>
             </ul>
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
 
@@ -351,7 +351,7 @@
             <li class="list-group-item">Porta ac consectetur ac</li>
             <li class="list-group-item">Vestibulum at eros</li>
           </ul>
-        </div><!-- /.col-sm-4 -->
+        </div>
         <div class="col-sm-4">
           <div class="list-group">
             <a href="#" class="list-group-item active">
@@ -362,7 +362,7 @@
             <a href="#" class="list-group-item">Porta ac consectetur ac</a>
             <a href="#" class="list-group-item">Vestibulum at eros</a>
           </div>
-        </div><!-- /.col-sm-4 -->
+        </div>
         <div class="col-sm-4">
           <div class="list-group">
             <a href="#" class="list-group-item active">
@@ -378,7 +378,7 @@
               <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
             </a>
           </div>
-        </div><!-- /.col-sm-4 -->
+        </div>
       </div>
 
 
@@ -404,7 +404,7 @@
               Panel content
             </div>
           </div>
-        </div><!-- /.col-sm-4 -->
+        </div>
         <div class="col-sm-4">
           <div class="panel panel-success">
             <div class="panel-heading">
@@ -422,7 +422,7 @@
               Panel content
             </div>
           </div>
-        </div><!-- /.col-sm-4 -->
+        </div>
         <div class="col-sm-4">
           <div class="panel panel-warning">
             <div class="panel-heading">
@@ -440,8 +440,9 @@
               Panel content
             </div>
           </div>
-        </div><!-- /.col-sm-4 -->
+        </div>
       </div>
+      
 
 
 
@@ -453,8 +454,9 @@
       </div>
 
 
-    </div> <!-- /container -->
+    </div> 
 
+      -->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

@@ -30,4 +30,20 @@ import net.java.html.json.Property;
     @Property(name = "url", type = String.class)
 })
 class TaskModel {
+    @Model(className = "TaskDescription", properties = {
+        @Property(name = "name", type = String.class),
+        @Property(name = "description", type = String.class),
+        @Property(name = "tests", array = true, type = TaskTestCase.class)
+    })
+    static class DescriptionModel {
+    }
+    
+    @Model(className = "TaskTestCase", properties = {
+        @Property(name = "description", type = String.class),
+        @Property(name = "start", type = Town.class),
+        @Property(name = "end", type = Town.class)
+    })
+    static class TestCaseModel {
+        
+    }
 }

@@ -16,7 +16,7 @@
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
 [
-    { "name" : "Otoč se čelem vzad", "url": "01-turnback/description.js" },
+    { "name" : "Otoč se čelem vzad", "url": "tasks/01-turnback.js" },
     { "name" : "Dva kroky", "url": "02-twosteps/description.js" },
     { "name" : "Vpravo vbok", "url": "03-turnright/description.js" }
 ]
