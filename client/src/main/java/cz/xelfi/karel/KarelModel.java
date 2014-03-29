@@ -210,6 +210,7 @@ final class KarelModel {
     }
     
     static void errorLoadingTask(Karel m, Exception ex) {
-        m.setMessage("Error loading task " + ex.getLocalizedMessage());
+        TaskDescription td = new TaskDescription("Error", "Cannot load task: " + ex.getLocalizedMessage());
+        m.setCurrentTask(td);
     }
 }

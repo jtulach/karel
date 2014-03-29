@@ -17,6 +17,6 @@
  */
 [
     { "name" : "Otoč se čelem vzad", "url": "tasks/01-turnback.js" },
-    { "name" : "Dva kroky", "url": "02-twosteps/description.js" },
-    { "name" : "Vpravo vbok", "url": "03-turnright/description.js" }
+    { "name" : "Dva kroky", "url": "tasks/02-twosteps.js" },
+    { "name" : "Vpravo vbok", "url": "tasks/03-turnright.js" }
 ]
