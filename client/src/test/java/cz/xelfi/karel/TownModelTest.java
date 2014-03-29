@@ -90,6 +90,8 @@ public class TownModelTest {
         assertNotEquals(first, -1, "Found one");
         int second = s.indexOf("\"robot\"", first + 1);
         assertEquals(second, -1, "Only one robot in the town: " + s);
+
+        assertEquals(s.indexOf("error"), -1, "Don't dump info about errors: " + s);
     }
 
     @Test public void compressTownWithAStep() throws Exception {

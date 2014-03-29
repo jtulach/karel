@@ -202,7 +202,15 @@ class TownModel {
     static String toJSON(Town t) {
         final Town cl = t.clone();
         simplify(cl);
-        return cl.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"rows\":[");
+        String sep = "";
+        for (Row row : cl.getRows()) {
+            sb.append(sep).append(row);
+            sep = ",";
+        }
+        sb.append("]}");
+        return sb.toString();
     }
     
     static void simplify(Town t) {
