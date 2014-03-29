@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <license>COPYING</license>
-        <net.java.html.version>0.7.6</net.java.html.version>
+        <net.java.html.version>0.8</net.java.html.version>
         <bck2brwsr.version>0.8.1</bck2brwsr.version>
     </properties>
     <organization>
