@@ -37,9 +37,6 @@ public final class Main {
     
     /** Called when page is ready */
     public static void onPageLoad(String... args) throws Exception {
-        Town t = new Town();
-        t.clear();
-        
         String src = KarelMirror.getLocalText();
         if (src == null) {
             src = "čelem-vzad\n"
@@ -48,7 +45,8 @@ public final class Main {
           + "konec\n";
         }
         
-        Karel d = new Karel("home", "msg", null, t, null, src, 300);
+        Karel d = new Karel("home", "msg", null, null, src, 300);
+        KarelModel.compile(d, false);
         d.applyBindings();
         d.loadTasks("tasks/list.js");
     }

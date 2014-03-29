@@ -36,7 +36,6 @@ import net.java.html.json.Property;
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "currentTask", type = TaskDescription.class),
-    @Property(name = "town", type = Town.class),
     @Property(name = "townText", type = String.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
@@ -94,8 +93,11 @@ final class KarelModel {
         }
     }
     
-    @Function static void dump(Karel m, Town data) {
-        m.setTownText(TownModel.toJSON(data));
+    @Function static void dump(Karel m) {
+        if (m.getCurrentTask() != null && !m.getCurrentTask().getTests().isEmpty()) {
+            Town data = m.getCurrentTask().getTests().get(0).getStart();
+            m.setTownText(TownModel.toJSON(data));
+        }
     }
     
     @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
@@ -132,6 +134,9 @@ final class KarelModel {
     }
     
     @ModelOperation @Function static void compile(Karel m) {
+        compile(m, true);
+    }
+    static void compile(Karel m, boolean switchToTown) {
         try {
             KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
             List<Command> lst = m.getCommands();
@@ -142,7 +147,9 @@ final class KarelModel {
                     m.getCommands().add(new Command(d.token.text().toString()));
                 }
             }
-            m.setTab("town");
+            if (switchToTown) {
+                m.setTab("town");
+            }
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
         }
