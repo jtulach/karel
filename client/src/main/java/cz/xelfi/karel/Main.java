@@ -47,7 +47,6 @@ public final class Main {
         Karel d = new Karel("home", "msg", null, null, src, 300, false);
         KarelModel.compile(d, false);
         d.applyBindings();
-        d.loadTasks("tasks/list.js");
         
         return d;
     }

@@ -57,6 +57,7 @@ final class KarelModel {
     }
 
     @Function static void changeTabTask(Karel m) {
+        m.loadTasks("tasks/list.js");
         m.setTab("task");
     }
 
@@ -192,7 +193,8 @@ final class KarelModel {
     static class CompletionModel {
     }
     
-    @OnReceive(url = "{url}") static void loadTasks(Karel m, TaskInfo[] arr) {
+    @OnReceive(url = "{url}", onError = "errorLoadingTask") 
+    static void loadTasks(Karel m, TaskInfo[] arr) {
         m.getTasks().addAll(Arrays.asList(arr));
     }
 
