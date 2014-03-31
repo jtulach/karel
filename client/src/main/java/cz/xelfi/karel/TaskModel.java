@@ -45,6 +45,20 @@ class TaskModel {
                 TestCaseModel.reset(c, clearState, null);
             }
         }
+        @Function
+        static void showHide(TaskDescription td, TaskTestCase data) {
+            for (TaskTestCase c : td.getTests()) {
+                if (c != data) {
+                    c.setShowing(null);
+                }
+            }
+            if (data.getShowing() == null || "".equals(data.getShowing())) {
+                data.setShowing("current");
+            } else {
+                data.setShowing(null);
+            }
+        }
+
     }
     
     @Model(className = "TaskTestCase", properties = {
@@ -53,27 +67,31 @@ class TaskModel {
         @Property(name = "current", type = Town.class),
         @Property(name = "end", type = Town.class),
         @Property(name = "state", type = String.class),
-        @Property(name = "showing", type = boolean.class)
+        @Property(name = "showing", type = String.class)
     })
     static class TestCaseModel {
         @Function static void reset(TaskTestCase c) {
-            reset(c, true, null);
+            reset(c, true, "start");
         }
         
-        @Function static void showHide(TaskTestCase c) {
-            c.setShowing(!c.isShowing());
+        @Function static void now(TaskTestCase c) {
+            c.setShowing("current");
+        }
+
+        @Function static void end(TaskTestCase c) {
+            c.setShowing("end");
         }
         
         static void checkState(TaskTestCase c) {
             if (c.getCurrent() != null && c.getCurrent().equals(c.getEnd())) {
                 c.setState("ok");
-                c.setShowing(false);
+                c.setShowing(null);
             } else {
                 c.setState("fail");
             }
         }
         
-        static void reset(TaskTestCase c, boolean clearState, Boolean showing) {
+        static void reset(TaskTestCase c, boolean clearState, String showing) {
             Town cur = c.getCurrent();
             if (cur == null)  {
                 cur = new Town();
@@ -83,7 +101,7 @@ class TaskModel {
             c.setCurrent(cur);
             if (showing == null) {
                 if (!"ok".equals(c.getState())) {
-                    c.setShowing(true);
+                    c.setShowing("current");
                 }
             } else {
                 c.setShowing(showing);

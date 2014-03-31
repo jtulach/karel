@@ -114,17 +114,22 @@
                     <p></p>
                     <div class="alert alert-info" >
                         <span class="karel-result" data-bind="css: state"></span>
-                        <a href="#" data-bind="text: description, click: showHide"></a>
+                        <a href="#" data-bind="text: description, click: $parents[0].showHide"></a>
                     </div>
                     <div class="row" data-bind="visible: showing">
-                        <div class="col-sm-6">
-                            <p><a href="#" data-bind="click: reset">Počáteční stav</a></p>
+                        <ul class="nav nav-pills nav-justified">
+                            <li data-bind="css: { 'active' : showing() == 'start' }, click: reset"><a href="#">Počáteční pozice</a></li>
+                            <li data-bind="css: { 'active' : showing() == 'current' }, click: now"><a href="#">Nyní</a></li>
+                            <li data-bind="css: { 'active' : showing() == 'end' }, click: end"><a href="#">Cílová pozice</a></li>
+                        </ul>
+                        <div class="col-sm-12" data-bind="visible: showing() == 'current'">
                             <span data-bind="template: { name: 'draw-town', data: current }"/>
                         </div>
-                        <div class="col-sm-6">
-                            <p>Cílový stav</p>
+<!--
+                        <div class="col-sm-12" data-bind="visible: showing() == 'end'">
                             <span data-bind="template: { name: 'draw-town', data: end }"/>
                         </div>
+-->
                     </div>
                 </span>
                 <div class="col-sm-12" data-bind="visible: $root.townText">

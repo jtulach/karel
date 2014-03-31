@@ -210,7 +210,7 @@ final class KarelModel {
             Town e = new Town();
             TownModel.load(e, c.getEnd());
             c.setEnd(e);
-            TaskModel.TestCaseModel.reset(c, true, false);
+            TaskModel.TestCaseModel.reset(c, true, "");
         }
         m.setCurrentTask(td);
         m.setTab("town");
