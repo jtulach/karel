@@ -42,7 +42,7 @@ class TaskModel {
                 return;
             }
             for (TaskTestCase c : td.getTests()) {
-                TestCaseModel.reset(c, clearState);
+                TestCaseModel.reset(c, clearState, null);
             }
         }
     }
@@ -57,7 +57,7 @@ class TaskModel {
     })
     static class TestCaseModel {
         @Function static void reset(TaskTestCase c) {
-            reset(c, true);
+            reset(c, true, null);
         }
         
         @Function static void showHide(TaskTestCase c) {
@@ -73,7 +73,7 @@ class TaskModel {
             }
         }
         
-        static void reset(TaskTestCase c, boolean clearState) {
+        static void reset(TaskTestCase c, boolean clearState, Boolean showing) {
             Town cur = c.getCurrent();
             if (cur == null)  {
                 cur = new Town();
@@ -81,8 +81,12 @@ class TaskModel {
             TownModel.init(cur, 10, 10);
             TownModel.load(cur, c.getStart());
             c.setCurrent(cur);
-            if (!"ok".equals(c.getState())) {
-                c.setShowing(true);
+            if (showing == null) {
+                if (!"ok".equals(c.getState())) {
+                    c.setShowing(true);
+                }
+            } else {
+                c.setShowing(showing);
             }
             if (clearState) {
                 c.setState(null);

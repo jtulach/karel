@@ -86,7 +86,7 @@ final class KarelModel {
             List<TaskTestCase> arr = m.getCurrentTask().getTests();
             List<KarelCompiler> comps = new ArrayList<KarelCompiler>(arr.size());
             for (TaskTestCase c : arr) {
-                TaskModel.TestCaseModel.reset(c, false);
+                TaskModel.TestCaseModel.reset(c, false, null);
                 KarelCompiler frame = KarelCompiler.execute(c.getCurrent(), root, data.getName());
                 comps.add(frame);
             }
@@ -195,6 +195,7 @@ final class KarelModel {
     
     @OnReceive(url = "{url}", onError = "errorLoadingTask") 
     static void loadTasks(Karel m, TaskInfo[] arr) {
+        m.getTasks().clear();
         m.getTasks().addAll(Arrays.asList(arr));
     }
 
@@ -209,7 +210,7 @@ final class KarelModel {
             Town e = new Town();
             TownModel.load(e, c.getEnd());
             c.setEnd(e);
-            TaskModel.TestCaseModel.reset(c, true);
+            TaskModel.TestCaseModel.reset(c, true, false);
         }
         m.setCurrentTask(td);
         m.setTab("town");
