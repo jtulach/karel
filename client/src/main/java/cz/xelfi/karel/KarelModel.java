@@ -56,7 +56,7 @@ final class KarelModel {
         m.setTab("town");
     }
 
-    @Function static void changeTabTask(Karel m) {
+    @ModelOperation @Function static void changeTabTask(Karel m) {
         m.loadTasks("tasks/list.js");
         m.setTab("task");
     }

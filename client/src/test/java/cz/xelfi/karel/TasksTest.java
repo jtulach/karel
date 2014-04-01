@@ -63,6 +63,7 @@ public class TasksTest {
         }
         assertNotNull(CTX, "Not null");
         
+        KAREL.changeTabTask();
         while (KAREL.getTasks().isEmpty()) {
             Thread.sleep(100);
         }
