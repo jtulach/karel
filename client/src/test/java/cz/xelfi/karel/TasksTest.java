@@ -109,6 +109,22 @@ public class TasksTest {
                 + "konec\n";
     }
     
+    public String sixstepsSolution() {
+        return "six\n" 
+            + "  opakuj 6\n"
+            + "    krok\n"
+            + "  konec\n"
+            + "konec\n";
+    }
+
+    public String wallSolution() {
+        return "towall\n" 
+            + "  dokud neni zed\n"
+            + "    krok\n"
+            + "  konec\n"
+            + "konec\n";
+    }
+    
     @Test public void checkTest() throws Throwable {
         KAREL.chooseTask(ti);
         class Wait implements Runnable {
