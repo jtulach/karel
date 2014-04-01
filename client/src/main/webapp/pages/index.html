@@ -118,18 +118,13 @@
                     </div>
                     <div class="row" data-bind="visible: showing">
                         <ul class="nav nav-pills nav-justified">
-                            <li data-bind="css: { 'active' : showing() == 'start' }, click: reset"><a href="#">Počáteční pozice</a></li>
+                            <li data-bind="css: { 'active' : showing() == 'start' }, click: begin"><a href="#">Počáteční pozice</a></li>
                             <li data-bind="css: { 'active' : showing() == 'current' }, click: now"><a href="#">Nyní</a></li>
-                            <li data-bind="css: { 'active' : showing() == 'end' }, click: end"><a href="#">Cílová pozice</a></li>
+                            <li data-bind="css: { 'active' : showing() == 'end' }, click: finish"><a href="#">Cílová pozice</a></li>
                         </ul>
-                        <div class="col-sm-12" data-bind="visible: showing() == 'current'">
-                            <span data-bind="template: { name: 'draw-town', data: current }"/>
-                        </div>
-<!--
-                        <div class="col-sm-12" data-bind="visible: showing() == 'end'">
-                            <span data-bind="template: { name: 'draw-town', data: end }"/>
-                        </div>
--->
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: start, if: showing() == 'start' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: current, if: showing() == 'current' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: end, if: showing() == 'end' }"></div>
                     </div>
                 </span>
                 <div class="col-sm-12" data-bind="visible: $root.townText">

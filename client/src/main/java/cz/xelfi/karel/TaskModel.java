@@ -42,7 +42,7 @@ class TaskModel {
                 return;
             }
             for (TaskTestCase c : td.getTests()) {
-                TestCaseModel.reset(c, clearState, null);
+                TestCaseModel.reset(c, clearState, "");
             }
         }
         @Function
@@ -74,11 +74,15 @@ class TaskModel {
             reset(c, true, "start");
         }
         
+        @Function static void begin(TaskTestCase c) {
+            c.setShowing("start");
+        }
+        
         @Function static void now(TaskTestCase c) {
             c.setShowing("current");
         }
 
-        @Function static void end(TaskTestCase c) {
+        @Function static void finish(TaskTestCase c) {
             c.setShowing("end");
         }
         
@@ -99,11 +103,7 @@ class TaskModel {
             TownModel.init(cur, 10, 10);
             TownModel.load(cur, c.getStart());
             c.setCurrent(cur);
-            if (showing == null) {
-                if (!"ok".equals(c.getState())) {
-                    c.setShowing("current");
-                }
-            } else {
+            if (showing != null) {
                 c.setShowing(showing);
             }
             if (clearState) {
