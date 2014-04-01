@@ -58,7 +58,7 @@
             <li data-bind="css: { active : tab == 'task'}"><a href="#" data-bind="click: changeTabTask">Úkoly</a></li>
             <li data-bind="css: { active : tab == 'town'}"><a href="#" data-bind="click: changeTabTown">Město</a></li>
             <li data-bind="css: { active : tab == 'edit'}"><a href="#" data-bind="click: changeTabEdit">Kód</a></li>
-            <li data-bind="css: { active : tab == 'about'}"><a href="#" data-bind="click: changeTabAbout">Zbytek</a></li>
+            <li data-bind="css: { active : tab == 'about'}"><a href="#" data-bind="click: changeTabAbout">Více</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -130,10 +130,6 @@
                         <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: end, if: showing() == 'end' }"></div>
                     </div>
                 </span>
-                <div class="col-sm-12" data-bind="visible: $root.townText">
-                    <textarea width="100%" data-bind="value: $root.townText"/>
-                </div>
-                <button type="button" class="btn-sm btn-success" data-bind="click: $root.dump">Ulož město</button>
             </div>
         </div>
     </script>
@@ -192,6 +188,49 @@
 
 
     <script type="text/html" id="about">
+      <div data-bind="with: scratch">
+          <div data-bind="with: town">
+              <div class="row">
+                  <div class="col-sm-12">
+                      <p></p>
+                      <button type="button" class="btn btn-info" data-bind="click: left">Vlevo-vbok</button>
+                      <button type="button" class="btn btn-info" data-bind="click: step">Krok</button>
+                      <p></p>
+                  </div>
+              </div>
+              <table class="town">
+                <tbody>
+                    <!-- ko foreach: rows -->
+                    <tr>
+                        <!-- ko foreach: columns -->
+                        <td data-bind="click: rotate">
+                            <div class="karel" data-bind="css: ('direction-' + robot())"></div>
+                            <div class="karel" data-bind="css: ('mark-' + marks())"></div>
+                        </td>
+                        <!-- /ko -->
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+              <div class="alert alert-warning" data-bind="visible: error() == 1">
+                  <strong>Pozor!</strong> Narazil jsem do zdi!
+              </div>
+              <div class="alert alert-warning" data-bind="visible: error() == 2">
+                  <strong>Pozor!</strong> Nelze sebrat značku!
+              </div>
+              <div class="alert alert-warning" data-bind="visible: error() == 3">
+                  <strong>Pozor!</strong> Příliš mnoho značek!
+              </div>
+              <div class="alert alert-warning" data-bind="visible: error() == 4">
+                  <strong>Pozor!</strong>
+                  Neznámý příkaz <span data-bind="text: errorParams"></span>!
+              </div>
+          </div>
+        <div class="col-sm-12" data-bind="visible: text">
+            <textarea width="100%" cols="70" data-bind="value: text"/>
+        </div>
+        <button type="button" class="btn-sm btn-success" data-bind="click: dump">Ulož město</button>
+      </div>
     </script>
 
     <!-- Bootstrap core JavaScript

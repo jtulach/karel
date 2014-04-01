@@ -18,6 +18,7 @@
 package cz.xelfi.karel;
 
 import java.util.List;
+import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
 import net.java.html.json.Property;
@@ -81,6 +82,18 @@ class TownModel {
         static boolean isEmpty(Square sq) {
             return sq.getRobot() == 0 && sq.getMarks() == 0;
         }
+        
+        @Function static void rotate(Square sq) {
+            if (sq.getRobot() == 0) {
+                if (sq.getMarks() == 5) {
+                    sq.setMarks(111);
+                } else if (sq.getMarks() == 111) {
+                    sq.setMarks(0);
+                } else {
+                    sq.setMarks(sq.getMarks() + 1);
+                }
+            }
+        }
     }
     
     @ModelOperation static void clear(Town m) {
@@ -131,7 +144,7 @@ class TownModel {
         return null;
     }
     
-    @ModelOperation static void step(Town t) {
+    @Function @ModelOperation static void step(Town t) {
         t.setError(0);
         int[] xyd = findKarel(t);
         if (xyd != null) {
@@ -168,7 +181,7 @@ class TownModel {
         return old;
     }
     
-    @ModelOperation static void left(Town t) {
+    @Function @ModelOperation static void left(Town t) {
         t.setError(0);
         int[] xyd = findKarel(t);
         if (xyd != null) {

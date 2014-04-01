@@ -36,7 +36,7 @@ import net.java.html.json.Property;
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "currentTask", type = TaskDescription.class),
-    @Property(name = "townText", type = String.class),
+    @Property(name = "scratch", type = Scratch.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
     @Property(name = "completions", type = Completion.class, array = true),
@@ -93,13 +93,6 @@ final class KarelModel {
             m.animate(comps);
         } catch (SyntaxException ex) {
             throw new IllegalStateException(ex);
-        }
-    }
-    
-    @Function static void dump(Karel m) {
-        if (m.getCurrentTask() != null && !m.getCurrentTask().getTests().isEmpty()) {
-            Town data = m.getCurrentTask().getTests().get(0).getCurrent();
-            m.setTownText(TownModel.toJSON(data));
         }
     }
     

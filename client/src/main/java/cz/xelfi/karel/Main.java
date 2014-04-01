@@ -43,8 +43,10 @@ public final class Main {
           + "  \n"
           + "konec\n\n\n";
         }
+        final Scratch s = new Scratch();
+        s.getTown().clear();
         
-        Karel d = new Karel("home", "msg", null, null, src, 300, false);
+        Karel d = new Karel("home", "msg", null, s, src, 300, false);
         KarelModel.compile(d, false);
         d.applyBindings();
         
