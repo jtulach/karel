@@ -103,6 +103,14 @@ final class KarelModel {
         }
     }
     
+    @Function static void edit(Karel m) {
+        String cmd = m.getCurrentTask().getCommand();
+        if (!m.getSource().contains(cmd)) {
+            m.setSource(m.getSource() + "\n\n" + cmd +"\n  \n" + KarelToken.END.text() + "\n");
+        }
+        m.setTab("edit");
+    }
+    
     @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
         final List<KarelCompiler> next = new ArrayList<KarelCompiler>(frames.size());
         for (KarelCompiler frame : frames) {
@@ -220,7 +228,7 @@ final class KarelModel {
     }
     
     static void errorLoadingTask(Karel m, Exception ex) {
-        TaskDescription td = new TaskDescription("Error", "Cannot load task: " + ex.getLocalizedMessage());
+        TaskDescription td = new TaskDescription("Error", "Cannot load task: " + ex.getLocalizedMessage(), null);
         m.setCurrentTask(td);
     }
 }

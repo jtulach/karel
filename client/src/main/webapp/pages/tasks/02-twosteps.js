@@ -19,6 +19,7 @@
     "description" : "Robot Karel se umí udělat jeden krok. " + 
         "Ale také umí skládat příkazy dohromady. " + 
         "Prosím nauč jej nový příkaz, kterým udělá dva kroky.",
+    "command" : "dva-kroky",
     "tests" : [
         {
             "description" : "Kouká na sever. Pokročí.",

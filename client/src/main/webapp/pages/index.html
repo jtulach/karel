@@ -104,6 +104,9 @@
                           data-bind="text: name,click: $root.invoke,enable: !$root.running()">
                         </button>
                         <!-- /ko -->
+                        <button type="button" class="btn btn-default" data-bind="click: $root.edit">
+                            Definuj <span data-bind="text: command"></span>
+                        </button>
                         <!--
                         <progress max="1000" data-bind="value: speed"></progress>
                         -->

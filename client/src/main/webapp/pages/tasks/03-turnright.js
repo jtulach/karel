@@ -18,6 +18,7 @@
 [{
     "description" : "Jestliže už Karel umí vlevo-vbok a čelem-vzad, mělo by být snadné naučit jej i vpravo-vbok. " + 
         "Při vytváření nového příkazu zkus využít čelem-vzad.",
+    "command" : "vpravo-vbok",
     "tests" : [
         {
             "description" : "Kouká na sever. Otočí se na východ.",
