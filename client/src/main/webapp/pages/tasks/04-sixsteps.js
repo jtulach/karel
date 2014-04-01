@@ -18,7 +18,7 @@
 [{
     "description" : "Vytvoř příkaz, který udělá šest kroků. " + 
         "Neopakuj příkaz 'krok' šestkrát. Raději využij příkaz 'opakuj'!",
-    "command" : "vpravo-vbok",
+    "command" : "šest-kroků",
     "tests" : [
         {
             "description" : "Šest kroků na sever.",
