@@ -20,5 +20,6 @@
     { "name" : "Dva kroky", "url": "tasks/02-twosteps.js" },
     { "name" : "Vpravo vbok", "url": "tasks/03-turnright.js" },
     { "name" : "Šest kroků", "url": "tasks/04-sixsteps.js" },
-    { "name" : "Ke zdi", "url": "tasks/05-wall.js" }
+    { "name" : "Ke zdi", "url": "tasks/05-safestep.js" },
+    { "name" : "Ke zdi", "url": "tasks/06-wall.js" }
 ]

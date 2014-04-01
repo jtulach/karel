@@ -126,6 +126,15 @@ public class TasksTest {
             + "konec\n";
     }
     
+    public String safestepSolution() {
+        return "safestep\n"
+            + "  kdyz neni zed\n"
+            + "    krok\n"
+            + "  konec\n"
+            + "konec\n"
+            + "";
+    }
+    
     @Test public void checkTest() throws Throwable {
         KAREL.chooseTask(ti);
         class Wait implements Runnable {
