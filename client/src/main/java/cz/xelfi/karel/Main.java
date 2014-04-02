@@ -39,9 +39,7 @@ public final class Main {
     public static Karel onPageLoad(String... args) throws Exception {
         String src = KarelMirror.getLocalText();
         if (src == null) {
-            src = "novy-prikaz\n"
-          + "  \n"
-          + "konec\n\n\n";
+            src = "\n\n";
         }
         final Scratch s = new Scratch();
         s.getTown().clear();
