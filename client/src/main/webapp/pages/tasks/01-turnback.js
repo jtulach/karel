@@ -16,9 +16,13 @@
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
 [{
-    "description" : "Robot Karel se umí otočit jen doleva. " + 
-        "Ale také umí skládat příkazy dohromady. " + 
-        "Prosím nauč jej otočit se čelem vzad.",
+    "description" : "Další základní příkaz, který robot Karel umí, je otočit se doleva. " + 
+        "Avšak nejdůležitější je, že se Karel umí učit nové příkazy a skládat je dohromady. " + 
+        "Prosím nauč jej otočit se čelem vzad. Vyber si 'definuj čelem-vzad' " +
+        "a v editoru vlož mezi 'čelem-vzad' a 'konec' příkazy, které se mají vykonat, " +
+        "vyvolá-li někdo 'čelem-vzad'. Pak zadej 'Přeložit' a spusť nově vytvořený " +
+        "příkaz. Je-li správně nadefinován, vyřeší všechny tři připravené situace."
+        ,
     "command" : "čelem-vzad",
     "tests" : [
         {

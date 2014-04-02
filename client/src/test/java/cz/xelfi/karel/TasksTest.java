@@ -88,6 +88,11 @@ public class TasksTest {
         this.ti = info;
     }
     
+    public String stepSolution() {
+        return "udelej-krok\n"
+                + "  krok\n"
+                + "konec\n";
+    }
     public String turnbackSolution() {
         return "celem\n"
                 + "  vlevo-vbok\n"

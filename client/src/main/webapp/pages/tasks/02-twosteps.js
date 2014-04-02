@@ -16,7 +16,7 @@
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
 [{
-    "description" : "Robot Karel se umí udělat jeden krok. " + 
+    "description" : "Robot Karel umí udělat jeden krok. " + 
         "Ale také umí skládat příkazy dohromady. " + 
         "Prosím nauč jej nový příkaz, kterým udělá dva kroky.",
     "command" : "dva-kroky",

@@ -16,10 +16,11 @@
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
 [
+    { "name" : "Udělej krok", "url": "tasks/00-step.js" },
     { "name" : "Otoč se čelem vzad", "url": "tasks/01-turnback.js" },
     { "name" : "Dva kroky", "url": "tasks/02-twosteps.js" },
     { "name" : "Vpravo vbok", "url": "tasks/03-turnright.js" },
     { "name" : "Šest kroků", "url": "tasks/04-sixsteps.js" },
-    { "name" : "Ke zdi", "url": "tasks/05-safestep.js" },
+    { "name" : "Opatrný krok", "url": "tasks/05-safestep.js" },
     { "name" : "Ke zdi", "url": "tasks/06-wall.js" }
 ]

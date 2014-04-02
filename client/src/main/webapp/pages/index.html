@@ -104,7 +104,7 @@
                           data-bind="text: name,click: $root.invoke,enable: !$root.running()">
                         </button>
                         <!-- /ko -->
-                        <button type="button" class="btn btn-default" data-bind="click: $root.edit">
+                        <button type="button" class="btn btn-default" data-bind="click: $root.edit, visible: command">
                             Definuj <span data-bind="text: command"></span>
                         </button>
                         <!--
