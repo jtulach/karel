@@ -220,7 +220,7 @@ public class TasksTest {
         }
         
         for (TaskTestCase c : ct.getTests()) {
-            assertEquals(c.getState(), "ok", "Case " + c.getDescription() + " is OK");
+            assertEquals(c.getState(), "ok", "Case " + c.getDescription() + " from " + ti.getUrl() + " is OK");
         }
     }
     

@@ -27,8 +27,14 @@
         },
         {
             "description" : "K západní zdi.",
-            "start" : {"rows":[null,null,null,null,null,null,null,{"columns":[null,null,null,{"robot":3,"marks":0},null,null,null,null,null,null]},null,null]},
-            "end" : {"rows":[{"columns":[null,null,null,{"robot":3,"marks":0},null,null,null,null,null,null]},null,null,null,null,null,null,null,null,null]}
+            "start" : {"rows":[null,null,null,null,null,null,null,
+                {"columns":[null,null,null,{"robot":3,"marks":0},null,null,null,null,null,null]},
+                null,null
+            ]},
+            "end" : {"rows":[null,null,null,null,null,null,null,
+                {"columns":[{"robot":3,"marks":0},null,null,null,null,null,null,null,null,null]},
+                null,null
+            ]}
         },
         {
             "description" : "Ke prostřední zdi.",

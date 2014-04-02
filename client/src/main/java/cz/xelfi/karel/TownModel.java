@@ -246,16 +246,24 @@ class TownModel {
 
     static void load(Town real, Town simple) {
         init(real, 10, 10);
-        for (int i = 0; i < real.getRows().size(); i++) {
+        int rowsSize = Math.min(
+            real.getRows().size(),
+            simple.getRows().size()
+        );
+        for (int i = 0; i < rowsSize; i++) {
             Row r = simple.getRows().get(i);
             if (r == null) {
                 continue;
             }
             final List<Square> cols = r.getColumns();
-            for (int j = 0; j < cols.size(); j++) {
+            final List<Square> realCols = real.getRows().get(i).getColumns();
+            int colSize = Math.min(
+                cols.size(), realCols.size()
+            );
+            for (int j = 0; j < colSize; j++) {
                 Square sq = cols.get(j);
                 if (sq != null) {
-                    real.getRows().get(i).getColumns().set(j, sq.clone());
+                    realCols.set(j, sq.clone());
                 }
             }
         }
