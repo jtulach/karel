@@ -95,13 +95,11 @@ table.town div.mark-111 {
     vertical-align: middle;
 }
 
-.ok:after {
+.glyphicon-thumbs-up {
     color: green;
-    content: '\002714';
 }
 
-.fail:after {
+.glyphicon-thumbs-down {
     color: red;
-    content: '\002717';
 }
 

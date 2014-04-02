@@ -116,7 +116,9 @@
                 <span data-bind="foreach: tests">
                     <p></p>
                     <div class="alert alert-info" >
-                        <span class="karel-result" data-bind="css: state"></span>
+                        <span class="karel-result glyphicon" 
+                          data-bind="css: { 'glyphicon-thumbs-up' : state() == 'ok', 'glyphicon-thumbs-down' : state() == 'fail' }"
+                        ></span>
                         <a href="#" data-bind="text: description, click: $parents[0].showHide"></a>
                     </div>
                     <div class="row" data-bind="visible: showing">
