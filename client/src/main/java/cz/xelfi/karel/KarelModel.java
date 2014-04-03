@@ -36,6 +36,7 @@ import net.java.html.json.Property;
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "currentTask", type = TaskDescription.class),
+    @Property(name = "currentInfo", type = TaskInfo.class),
     @Property(name = "scratch", type = Scratch.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
@@ -85,10 +86,17 @@ final class KarelModel {
             KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
             List<TaskTestCase> arr = m.getCurrentTask().getTests();
             List<KarelCompiler> comps = new ArrayList<KarelCompiler>(arr.size());
+            TaskTestCase showing = null;
             for (TaskTestCase c : arr) {
                 TaskModel.TestCaseModel.reset(c, false, null);
+                if (c.getShowing() != null) {
+                    showing = c;
+                }
                 KarelCompiler frame = KarelCompiler.execute(c.getCurrent(), root, data.getName());
                 comps.add(frame);
+            }
+            if (showing == null && arr.size() > 0) {
+                arr.get(0).setShowing("current");
             }
             m.animate(comps);
         } catch (SyntaxException ex) {
@@ -137,8 +145,12 @@ final class KarelModel {
             }, spd);
         } else {
             model.setRunning(false);
+            boolean ok = true;
             for (TaskTestCase c : model.getCurrentTask().getTests()) {
-                TaskModel.TestCaseModel.checkState(c);
+                ok &= TaskModel.TestCaseModel.checkState(c);
+            }
+            if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < 1) {
+                model.getCurrentInfo().setAwarded(1);
             }
         }
     }
@@ -194,14 +206,35 @@ final class KarelModel {
     static class CompletionModel {
     }
     
+    private static boolean containsURL(List<TaskInfo> arr, String url) {
+        for (TaskInfo ti : arr) {
+            if (url.equals(ti.getUrl())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @OnReceive(url = "{url}", onError = "errorLoadingTask") 
     static void loadTasks(Karel m, TaskInfo[] arr) {
-        m.getTasks().clear();
-        m.getTasks().addAll(Arrays.asList(arr));
+        for (TaskInfo ti : arr) {
+            if (!containsURL(m.getTasks(), ti.getUrl())) {
+                m.getTasks().add(ti);
+            }
+        }
+            
+        int gathered = 0;
+        for (TaskInfo ti : m.getTasks()) {
+            gathered += ti.getAwarded();
+        }
+        for (TaskInfo ti : m.getTasks()) {
+            ti.setDisabled(ti.getRequired() > gathered);
+        }
     }
 
     @ModelOperation @Function static void chooseTask(Karel m, TaskInfo data) {
         m.setCurrentTask(null);
+        m.setCurrentInfo(data);
         m.loadTaskDescription(data.getUrl());
     }
     

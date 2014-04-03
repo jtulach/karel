@@ -80,9 +80,22 @@
     </script>
     
     <script type="text/html" id="task">
-        <ul data-bind="foreach: tasks">
-            <li><a href="#" data-bind="text: name, click: $root.chooseTask"></a></li>
-        </ul>
+        <div class="list-group" data-bind="foreach: tasks">
+            <!-- ko if: disabled -->
+            <a href="#" class="disabled list-group-item">
+               <span data-bind="text: name"></span>
+               <span class="badge" data-bind="text: required"></span>
+            </a>
+            <!-- /ko -->
+            <!-- ko ifnot: disabled -->
+            <a class="list-group-item list-group-item-info" href="#" 
+               data-bind="click: $root.chooseTask">
+               <span class="glyphicon glyphicon-star" style="color: #f5f577" data-bind="visible: awarded"></span>
+               <span data-bind="text: name"></span>
+               <span class="badge" data-bind="text: required"></span>
+            </a>
+            <!-- /ko -->
+        </div>
     </script>
 
     <script type="text/html" id="town">

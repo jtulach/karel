@@ -28,7 +28,10 @@ import net.java.html.json.Property;
  */
 @Model(className = "TaskInfo", properties = {
     @Property(name = "name", type = String.class),
-    @Property(name = "url", type = String.class)
+    @Property(name = "url", type = String.class),
+    @Property(name = "required", type = int.class),
+    @Property(name = "awarded", type = int.class),
+    @Property(name = "disabled", type = boolean.class),
 })
 class TaskModel {
     @Model(className = "TaskDescription", properties = {
@@ -87,12 +90,14 @@ class TaskModel {
             c.setShowing("end");
         }
         
-        static void checkState(TaskTestCase c) {
+        static boolean checkState(TaskTestCase c) {
             if (c.getCurrent() != null && c.getCurrent().equals(c.getEnd())) {
                 c.setState("ok");
                 c.setShowing(null);
+                return true;
             } else {
                 c.setState("fail");
+                return false;
             }
         }
         
