@@ -109,7 +109,16 @@
                 <div class="well">
                     <p data-bind="text: description"></p>
                 </div>
-                <div class="row">
+                <div class="row" data-bind="visible: awarded" style="font-size: 64px">
+                    <center>
+                    <button type="button" class="btn btn-info" data-bind="click: reset">Znovu
+                        <span class="glyphicon glyphicon-repeat"></span>
+                    </button>
+                    <span class="glyphicon glyphicon-star" style="color: yellow"> </span>
+                    <button type="button" class="btn btn-success" data-bind="click: $root.changeTabTask">Další úkol &raquo;</button>
+                    </center>
+                </div>
+                <div class="row" data-bind="visible: awarded() == 0">
                     <div class="col-sm-12">
                         <p></p>
                         <!-- ko foreach: $root.commands -->

@@ -38,6 +38,7 @@ class TaskModel {
         @Property(name = "name", type = String.class),
         @Property(name = "description", type = String.class),
         @Property(name = "command", type = String.class),
+        @Property(name = "awarded", type = int.class),
         @Property(name = "tests", array = true, type = TaskTestCase.class)
     })
     static class DescriptionModel {
@@ -62,7 +63,12 @@ class TaskModel {
                 data.setShowing(null);
             }
         }
-
+        @Function static void reset(TaskDescription td) {
+            td.setAwarded(0);
+            for (TaskTestCase c : td.getTests()) {
+                TestCaseModel.reset(c, true, null);
+            }
+        }
     }
     
     @Model(className = "TaskTestCase", properties = {

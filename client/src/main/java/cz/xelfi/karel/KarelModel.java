@@ -149,9 +149,11 @@ final class KarelModel {
             for (TaskTestCase c : model.getCurrentTask().getTests()) {
                 ok &= TaskModel.TestCaseModel.checkState(c);
             }
-            if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < 1) {
-                model.getCurrentInfo().setAwarded(1);
+            int award = 1;
+            if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < award) {
+                model.getCurrentInfo().setAwarded(award);
             }
+            model.getCurrentTask().setAwarded(1);
         }
     }
     
@@ -254,7 +256,7 @@ final class KarelModel {
     }
     
     static void errorLoadingTask(Karel m, Exception ex) {
-        TaskDescription td = new TaskDescription("Error", "Cannot load task: " + ex.getLocalizedMessage(), null);
+        TaskDescription td = new TaskDescription("Error", "Cannot load task: " + ex.getLocalizedMessage(), null, 0);
         m.setCurrentTask(td);
     }
 }
