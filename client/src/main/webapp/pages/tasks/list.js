@@ -22,5 +22,8 @@
     { "name" : "Vpravo vbok", "url": "tasks/03-turnright.js", "required" : 3 },
     { "name" : "Šest kroků", "url": "tasks/04-sixsteps.js", "required" : 4 },
     { "name" : "Opatrný krok", "url": "tasks/05-safestep.js", "required" : 4 },
-    { "name" : "Ke zdi", "url": "tasks/06-wall.js", "required" : 6 }
+    { "name" : "Ke zdi", "url": "tasks/06-wall.js", "required" : 6 },
+    { "name" : "Přidej, uber značku", "url": "tasks/07-addremove.js", "required" : 6 },
+    { "name" : "Vysbírej značky", "url": "tasks/08-pickupall.js", "required" : 6 },
+    { "name" : "Kde domov můj?", "url": "tasks/09-home.js", "required" : 9 }
 ]

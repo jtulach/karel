@@ -140,6 +140,37 @@ public class TasksTest {
             + "";
     }
     
+    public String addremoveSolution() {
+        return "addremove\n"
+            + "  kdyz je znacka\n"
+            + "    zvedni\n"
+            + "  jinak\n"
+            + "    poloz\n"
+            + "  konec\n"
+            + "konec\n";
+    }
+
+    public String pickupallSolution() {
+        return "pickup\n"
+            + "  dokud je znacka\n"
+            + "    zvedni\n"
+            + "  konec\n"
+            + "konec\n";
+    }
+
+    public String homeSolution() {
+        return "domu\n"
+            + "  dokud neni zapad\n"
+            + "    vlevo-vbok\n"
+            + "  konec\n"
+            + "  opakuj 2\n"
+            + "    towall\n"
+            + "    vlevo-vbok\n"
+            + "  konec\n"
+            + "konec\n" 
+            + wallSolution();
+    }
+    
     @Test public void checkTest() throws Throwable {
         KAREL.chooseTask(ti);
         class Wait implements Runnable {
