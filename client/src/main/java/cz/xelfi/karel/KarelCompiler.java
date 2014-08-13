@@ -71,7 +71,7 @@ class KarelCompiler {
     }
     
     public KarelCompiler next() throws SyntaxException {
-        if (instructions.size() <= pc) {
+        if (instructions == null || instructions.size() <= pc) {
             int cnt = owner.repeatFrame(this, count);
             count = cnt;
             if (cnt > 0) {

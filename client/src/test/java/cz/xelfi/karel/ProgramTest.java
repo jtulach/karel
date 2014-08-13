@@ -62,6 +62,39 @@ public class ProgramTest {
         
         assertNull(inst, "No next instruction");
     }
+    
+    @Test
+    public void testSafeStep() throws SyntaxException {
+        Town t = new Town();
+        t.clear();
+        
+        KarelCompiler.AST root = KarelCompiler.toAST(
+          "opatrny-krok\n"
+        + "  kdyz je zed\n"
+        + "  jinak\n"
+        + "    krok\n"
+        + "  konec\n"
+        + "konec\n"
+        + "");
+
+        {
+            KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "opatrny-krok");
+            assertNotNull(inst, "Instruction created");
+
+            while (inst != null) {
+                inst = inst.next();
+            }
+        }
+        assertLocation(t, 1, 9, 1, "One step heading east");
+        
+        for (int i = 0; i < 20; i++) {
+            KarelCompiler inst = KarelCompiler.execute(t, (KarelCompiler.Root)root, "opatrny-krok");
+            while (inst != null) {
+                inst = inst.next();
+            }
+        }
+        assertLocation(t, 9, 9, 1, "Got to the wall and still heading to east");
+    }
 
     @Test public void advance() throws Exception {
         KarelCompiler.AST root = KarelCompiler.toAST(
