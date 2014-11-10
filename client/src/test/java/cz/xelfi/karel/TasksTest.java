@@ -19,6 +19,7 @@ package cz.xelfi.karel;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -40,6 +41,7 @@ public class TasksTest {
     private static Karel KAREL;
     
     @Factory public static Object[] initMirror() throws Throwable {
+        Locale.setDefault(new Locale("cs", "CZ"));
         final BrowserBuilder bb = BrowserBuilder.newBrowser().
             loadClass(TasksTest.class).
             loadPage("pages/index.html").
