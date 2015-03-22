@@ -204,10 +204,12 @@
 
     <div data-bind="template: { name : tab(), afterRender: $root.templateShown }"></div>
 
+    <!-- boot bck2brwsr -->
     <script type="text/javascript" src="bck2brwsr.js"></script>
     <script>
-        var vm = bck2brwsr('${project.build.finalName}.jar');
-        vm.loadClass('cz.xelfi.karel.MainBrwsr');
+        var vm = bck2brwsr('karel.js');
+        var c = vm.loadClass('cz.xelfi.karel.BrowserMain');
+        c.invoke('main');
     </script>
 
 
