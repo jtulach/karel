@@ -32,7 +32,7 @@ import net.java.html.json.Property;
 /** Model annotation generates class Data with 
  * one message property, boolean property and read only words property
  */
-@Model(className = "Karel", properties = {
+@Model(className = "Karel", targetId = "", properties = {
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "currentTask", type = TaskDescription.class),
