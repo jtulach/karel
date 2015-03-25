@@ -3,6 +3,7 @@ package cz.xelfi.karel;
 import net.java.html.boot.BrowserBuilder;
 
 public final class Main {
+    private static Karel karel;
     private Main() {
     }
     
@@ -21,10 +22,10 @@ public final class Main {
         final Scratch s = new Scratch();
         s.getTown().clear();
     
-        Karel d = new Karel("home", "msg", null, null, s, src, 300, false);
-        KarelModel.compile(d, false);
-        d.applyBindings();
+        karel = new Karel("home", "msg", null, null, s, src, 300, false);
+        KarelModel.compile(karel, false);
+        karel.applyBindings();
         
-        return d;
+        return karel;
     }
 }
