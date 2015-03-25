@@ -17,10 +17,7 @@ public final class Main {
 
     /** Called when page is ready */
     public static Karel onPageLoad(String... args) throws Exception {
-        String src = KarelMirror.getLocalText();
-        if (src == null) {
-            src = "\n\n";
-    }
+        String src = Storage.getDefault().get("source", "\n\n");
         final Scratch s = new Scratch();
         s.getTown().clear();
     

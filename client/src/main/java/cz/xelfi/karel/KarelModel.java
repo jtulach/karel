@@ -18,7 +18,6 @@
 package cz.xelfi.karel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -181,7 +180,7 @@ final class KarelModel {
     }
     
     @OnPropertyChange("source") static void storeSource(Karel m) {
-        KarelMirror.setLocalText(m.getSource());
+        Storage.getDefault().put("source", m.getSource());
     }
     
     @ModelOperation static void updateCompletions(Karel m, List<Completion> compl) {
@@ -224,10 +223,16 @@ final class KarelModel {
                 m.getTasks().add(ti);
             }
         }
-            
+
         int gathered = 0;
         for (TaskInfo ti : m.getTasks()) {
             gathered += ti.getAwarded();
+        }
+        int persistGathered = Storage.getDefault().getInt("gathered", 0);
+        if (persistGathered > gathered) {
+            gathered = persistGathered;
+        } else {
+            Storage.getDefault().putInt("gathered", gathered);
         }
         for (TaskInfo ti : m.getTasks()) {
             ti.setDisabled(ti.getRequired() > gathered);
