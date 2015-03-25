@@ -20,13 +20,6 @@
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <project.mainclass>cz.xelfi.karel.NbMain</project.mainclass>
     </properties>
-    <repositories>
-        <repository>
-            <id>netbeans</id>
-            <name>NetBeans</name>
-            <url>http://bits.netbeans.org/maven2/</url>
-        </repository>
-    </repositories>
     <build>
         <plugins>
             <plugin>
