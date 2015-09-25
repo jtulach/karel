@@ -3,9 +3,10 @@
  Karel blocks
  */
 
-/* global workspace, Blockly */
+/* global Blockly */
 
 (function() {
+function injectKarel(id) {
     var workspace;
 
     var negDropdown = [
@@ -159,16 +160,14 @@ Blockly.Blocks['karel_call'] = {
     this.setHelpUrl('help.html');
   }
 };
-
+    workspace = Blockly.inject(id, {
+        'media': 'media/',
+        'toolbox': toolbox()
+    });
+    workspace.addChangeListener(toolbox);
+}
 
 Blockly.karel = {
-    'toolbox' : toolbox,
-    'inject' : function(id) {
-        workspace = Blockly.inject(id,
-           {'media': 'media/',
-            'toolbox': toolbox()});
-        workspace.addChangeListener(Blockly.karel.toolbox);
-    }
+  'inject' : injectKarel
 };
-
 })();
