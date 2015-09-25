@@ -27,6 +27,8 @@
         var arr = [];
         arr.push(['krok', 'STEP']);
         arr.push(['vlevo-vbok', 'LEFT']);
+        arr.push(['polož', 'PUT']);
+        arr.push(['zvedni', 'TAKE']);
         if (workspace) {
             workspace.getTopBlocks().forEach(function (b) {
                 var n = b.getFieldValue("NAME");
