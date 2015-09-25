@@ -13,20 +13,8 @@
     <body>
         <div id="blocklyDiv" style="height: 720px; width: 800px;"></div>
 
-        <xml id="toolbox" style="display: block">
-            <block type="karel_funkce"></block>
-            <block type="karel_krok"></block>
-            <block type="karel_vlevo"></block>
-            <block type="karel_if"></block>
-            <block type="karel_if_else"></block>
-            <block type="karel_while"></block>
-            <block type="karel_repeat"></block>
-        </xml>
-
         <script>
-          var workspace = Blockly.inject('blocklyDiv',
-              {media: 'media/',
-               toolbox: document.getElementById('toolbox')});
+          var workspace = Blockly.karel.inject('blocklyDiv');
         </script>
 
     </body>

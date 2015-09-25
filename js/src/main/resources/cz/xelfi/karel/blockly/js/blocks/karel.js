@@ -3,7 +3,11 @@
  Karel blocks
  */
 
+/* global workspace, Blockly */
+
 (function() {
+    var workspace;
+
     var negDropdown = [
         ["je", "TRUE"], ["není", "FALSE"]
     ];
@@ -18,6 +22,41 @@
     ];
 
     var ifColor = 210;
+    
+    function procedures() {
+        var arr = [];
+        arr.push(['krok', 'STEP']);
+        arr.push(['vlevo-vbok', 'LEFT']);
+        if (workspace) {
+            workspace.getTopBlocks().forEach(function (b) {
+                var n = b.getFieldValue("NAME");
+                if (n) {
+                    arr.push([ n, n ]);
+                }
+            });
+        }
+        return arr;
+    }
+
+    function toolbox(modify) {
+        var s = '<xml>\n' +
+            '<block type="karel_funkce"></block>\n' +
+            '<block type="karel_if"></block>\n' +
+            '<block type="karel_if_else"></block>\n' +
+            '<block type="karel_while"></block>\n' +
+            '<block type="karel_repeat"></block>\n';
+
+        procedures().forEach(function (b) {
+            s += '<block type="karel_call"><field name="CALL">' + b[0] + '</field></block>\n';
+        });
+
+        s += '</xml>\n';
+
+        if (modify) {
+            workspace.updateToolbox(s);
+        }
+        return s;
+    };
 
 Blockly.Blocks['karel_funkce'] = {
   init: function() {
@@ -107,10 +146,10 @@ Blockly.Blocks['karel_repeat'] = {
   }
 };
 
-Blockly.Blocks['karel_vlevo'] = {
+Blockly.Blocks['karel_call'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("vlevo-vbok");
+        .appendField(new Blockly.FieldDropdown(procedures), "CALL");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(330);
@@ -118,16 +157,16 @@ Blockly.Blocks['karel_vlevo'] = {
     this.setHelpUrl('help.html');
   }
 };
-Blockly.Blocks['karel_krok'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("krok");
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour(330);
-    this.setTooltip('');
-    this.setHelpUrl('help.html');
-  }
+
+
+Blockly.karel = {
+    'toolbox' : toolbox,
+    'inject' : function(id) {
+        workspace = Blockly.inject('blocklyDiv',
+           {'media': 'media/',
+            'toolbox': toolbox()});
+        workspace.addChangeListener(Blockly.karel.toolbox);
+    }
 };
 
 })();
