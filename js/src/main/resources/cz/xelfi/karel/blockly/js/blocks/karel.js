@@ -162,7 +162,7 @@ Blockly.Blocks['karel_call'] = {
 Blockly.karel = {
     'toolbox' : toolbox,
     'inject' : function(id) {
-        workspace = Blockly.inject('blocklyDiv',
+        workspace = Blockly.inject(id,
            {'media': 'media/',
             'toolbox': toolbox()});
         workspace.addChangeListener(Blockly.karel.toolbox);
