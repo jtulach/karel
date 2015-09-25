@@ -3,6 +3,21 @@
  Karel blocks
  */
 
+(function() {
+    var negDropdown = [
+        ["je", "TRUE"], ["není", "FALSE"]
+    ];
+
+    var condDropdown = [
+        ["zeď", "WALL"],
+        ["značka", "STAMP"],
+        ["sever", "NORTH"],
+        ["jih", "SOUTH"],
+        ["západ", "WEST"],
+        ["východ", "EAST"]
+    ];
+
+    var ifColor = 210;
 
 Blockly.Blocks['karel_funkce'] = {
   init: function() {
@@ -19,17 +34,17 @@ Blockly.Blocks['karel_funkce'] = {
 
 Blockly.Blocks['karel_if'] = {
   init: function() {
-    this.appendValueInput("IF")
-        .setCheck("Boolean")
+    this.appendDummyInput()
         .appendField("Když")
-        .appendField(new Blockly.FieldDropdown([["je", "TRUE"], ["není", "FALSE"]]), "COND");
-    this.appendStatementInput("COMMANDS");
+        .appendField(new Blockly.FieldDropdown(negDropdown), "NEG")
+        .appendField(new Blockly.FieldDropdown(condDropdown), "COND");
+    this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
         .appendField("konec");
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(210);
+    this.setColour(ifColor);
     this.setTooltip('');
     this.setHelpUrl('help.html');
   }
@@ -37,10 +52,10 @@ Blockly.Blocks['karel_if'] = {
 
 Blockly.Blocks['karel_if_else'] = {
   init: function() {
-    this.appendValueInput("IF")
-        .setCheck("Boolean")
+    this.appendDummyInput()
         .appendField("Když")
-        .appendField(new Blockly.FieldDropdown([["je", "TRUE"], ["není", "FALSE"]]), "COND");
+        .appendField(new Blockly.FieldDropdown(negDropdown), "NEG")
+        .appendField(new Blockly.FieldDropdown(condDropdown), "COND");
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
         .appendField("jinak");
@@ -50,7 +65,7 @@ Blockly.Blocks['karel_if_else'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(210);
+    this.setColour(ifColor);
     this.setTooltip('');
     this.setHelpUrl('help.html');
   }
@@ -58,10 +73,10 @@ Blockly.Blocks['karel_if_else'] = {
 
 Blockly.Blocks['karel_while'] = {
   init: function() {
-    this.appendValueInput("IF")
-        .setCheck("Boolean")
+    this.appendDummyInput()
         .appendField("dokud")
-        .appendField(new Blockly.FieldDropdown([["je", "TRUE"], ["není", "FALSE"]]), "COND");
+        .appendField(new Blockly.FieldDropdown(negDropdown), "NEG")
+        .appendField(new Blockly.FieldDropdown(condDropdown), "COND");
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
         .appendField("konec");
@@ -115,36 +130,4 @@ Blockly.Blocks['karel_krok'] = {
   }
 };
 
-Blockly.Blocks['karel_wall'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("zeď");
-    this.setOutput(true, "Boolean");
-    this.setColour(65);
-    this.setTooltip('');
-    this.setHelpUrl('help.html');
-  }
-};
-
-Blockly.Blocks['karel_mark'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("značka");
-    this.setOutput(true, "Boolean");
-    this.setColour(65);
-    this.setTooltip('');
-    this.setHelpUrl('help.html');
-  }
-};
-
-Blockly.Blocks['karel_north'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("sever");
-    this.setOutput(true, "Boolean");
-    this.setColour(65);
-    this.setTooltip('');
-    this.setHelpUrl('help.html');
-  }
-};
-
+})();

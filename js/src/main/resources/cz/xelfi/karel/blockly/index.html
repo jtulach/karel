@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Maraboo - Blockly experimet</title>
+        <title>Karel with Blockly</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="#" />
@@ -14,25 +14,13 @@
         <div id="blocklyDiv" style="height: 480px; width: 800px;"></div>
 
         <xml id="toolbox" style="display: block">
-          <category id="catKarel" name="Karel">
             <block type="karel_funkce"></block>
             <block type="karel_krok"></block>
             <block type="karel_vlevo"></block>
-            <block type="karel_if">
-              <value name="IF">
-                <block type="karel_wall">
-                </block>
-              </value>
-            </block>
+            <block type="karel_if"></block>
             <block type="karel_if_else"></block>
             <block type="karel_while"></block>
             <block type="karel_repeat"></block>
-          </category>
-          <category id="catCond" name="Podmínky">
-            <block type="karel_wall"></block>
-            <block type="karel_mark"></block>
-            <block type="karel_north"></block>
-          </category>
         </xml>
 
         <script>
