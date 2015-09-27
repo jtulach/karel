@@ -65,7 +65,7 @@ Blockly.Blocks['karel_funkce'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldTextInput("nový příkaz"), "NAME");
-    this.appendStatementInput("NAME");
+    this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
         .appendField("konec");
     this.setColour(65);
@@ -165,6 +165,8 @@ Blockly.Blocks['karel_call'] = {
         'toolbox': toolbox()
     });
     workspace.addChangeListener(toolbox);
+
+    return workspace;
 }
 
 Blockly.karel = {
