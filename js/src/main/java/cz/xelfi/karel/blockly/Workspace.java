@@ -39,13 +39,16 @@ public final class Workspace {
         return new Workspace(js);
     }
 
+    public Procedure newProcedure(String commandName) {
+        return new Procedure(create1(js, "karel_funkce", commandName), commandName);
+    }
 
 
     public List<Procedure> getProcedures() {
         Object[] blocks = list0(js);
-        List<Procedure> arr = new ArrayList<>(blocks.length);
-        for (Object js : blocks) {
-            arr.add(new Procedure(js));
+        List<Procedure> arr = new ArrayList<>(blocks.length / 2);
+        for (int i = 0; i < blocks.length; i += 2) {
+            arr.add(new Procedure(blocks[i], (String)blocks[i + 1]));
         }
         return arr;
     }
@@ -68,62 +71,21 @@ public final class Workspace {
         "for (var i = 0; i < blocks.length; i++) {\n" +
         "  if (blocks[i].type == 'karel_funkce') {\n" +
         "    arr.push(blocks[i]);\n" +
+        "    arr.push(blocks[i].getFieldValue('NAME'));\n" +
         "  }\n" +
         "}\n" +
         "return arr;\n" +
         ""
     )
-    private static native Object[] list0(Object js);
+    private static native Object[] list0(Object workspace);
 
 
-    @JavaScriptBody(args = { "id" }, body =
-        "if (!id) return false;\n" +
-        "var e = document.createElement('div');\n" +
-        "e.id = id;\n" +
-        "document.body.appendChild(e);\n" +
-        "return e == document.getElementById(id);"
+    @JavaScriptBody(args = { "workspace", "type", "commandName" }, body =
+        "var b = Blockly.Block.obtain(workspace, type);\n" +
+        "b.initSvg();\n" +
+        "b.setFieldValue(commandName, 'NAME');\n" +
+        "b.render();\n" +
+        "return b;"
     )
-    static native boolean defineElement(String id);
-
-    @JavaScriptBody(args = {}, body =
-        "window.XML = {};\n" +
-        "window.XMLList = function XMLList() { return {}; }\n"
-            + ""
-            + ""
-            + "(function(DOMParser) {\n" +
-"	\"use strict\";\n" +
-"\n" +
-"	var\n" +
-"	  DOMParser_proto = DOMParser.prototype\n" +
-"	, real_parseFromString = DOMParser_proto.parseFromString\n" +
-"	;\n" +
-"\n" +
-"	// Firefox/Opera/IE throw errors on unsupported types\n" +
-"	try {\n" +
-"		// WebKit returns null on unsupported types\n" +
-"		if ((new DOMParser).parseFromString(\"\", \"text/html\")) {\n" +
-"			// text/html parsing is natively supported\n" +
-"			return;\n" +
-"		}\n" +
-"	} catch (ex) {}\n" +
-"\n" +
-"	DOMParser_proto.parseFromString = function(markup, type) {\n" +
-"		if (/^\\s*text\\/html\\s*(?:;|$)/i.test(type)) {\n" +
-"			var\n" +
-"			  doc = document.implementation.createHTMLDocument(\"\")\n" +
-"			;\n" +
-"	      		if (markup.toLowerCase().indexOf('<!doctype') > -1) {\n" +
-"        			doc.documentElement.innerHTML = markup;\n" +
-"      			}\n" +
-"      			else {\n" +
-"        			doc.body.innerHTML = markup;\n" +
-"      			}\n" +
-"			return doc;\n" +
-"		} else {\n" +
-"			return real_parseFromString.apply(this, arguments);\n" +
-"		}\n" +
-"	};\n" +
-"}(DOMParser));"
-    )
-    static native void defineXML();
+    private static native Object create1(Object workspace, String type, String commandName);
 }

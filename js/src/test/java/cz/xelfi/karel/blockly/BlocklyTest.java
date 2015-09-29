@@ -17,12 +17,15 @@
  */
 package cz.xelfi.karel.blockly;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import net.java.html.BrwsrCtx;
 import net.java.html.boot.BrowserBuilder;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -54,16 +57,22 @@ public class BlocklyTest {
         Assert.assertNotNull(CTX, "Context is ready");
     }
 
-    @Test public void testWorkingWithWorkspace() throws Exception {
+    @Test
+    public void testWorkingWithWorkspace() throws Throwable {
         doTest("doWorkingWithWorkspace");
     }
     
     private void doWorkingWithWorkspace() throws Exception {
         Workspace w = Workspace.create("any");
         assertEquals(w.getProcedures().size(), 0, "No top blocks yet");
+        Procedure p = w.newProcedure("vpravo-vbok");
+        assertNotNull(p);
+        final List<Procedure> p2 = w.getProcedures();
+        assertEquals(p2.size(), 1, "One top block now");
+        assertEquals(p2.get(0).getName(), "vpravo-vbok");
     }
 
-    private void doTest(String method) throws Exception {
+    private void doTest(String method) throws Throwable {
         final Method m = this.getClass().getDeclaredMethod(method);
         m.setAccessible(true);
         final Exception[] arr = { null };
@@ -82,6 +91,10 @@ public class BlocklyTest {
         });
         cdl.await();
         if (arr[0] != null) {
+            if (arr[0] instanceof InvocationTargetException) {
+                InvocationTargetException ite = (InvocationTargetException) arr[0];
+                throw ite.getTargetException();
+            }
             throw arr[0];
         }
     }

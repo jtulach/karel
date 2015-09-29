@@ -19,8 +19,14 @@ package cz.xelfi.karel.blockly;
 
 public final class Procedure {
     private final Object js;
+    private final String name;
     
-    Procedure(Object js) {
+    Procedure(Object js, String name) {
         this.js = js;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }
