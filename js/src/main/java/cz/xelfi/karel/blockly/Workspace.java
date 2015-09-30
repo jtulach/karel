@@ -129,6 +129,7 @@ public final class Workspace {
       + "  js.getInputTargetBlock('IFFALSE'),\n"
       + "  js.getFieldValue('CALL'),\n"
       + "  js.getSurroundParent(),\n"
+      + "  js.getFieldValue('N'),\n"
       + "  ''\n"
       + "];\n"
     )

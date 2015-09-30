@@ -51,6 +51,7 @@ public final class Execution {
         final Object ifFalse;
         final String call;
         final Object parent;
+        final int n;
 
         Info(Object block) {
             Object[] arr = Workspace.info(block);
@@ -63,6 +64,17 @@ public final class Execution {
             this.ifFalse = arr[6];
             this.call = (String) arr[7];
             this.parent = arr[8];
+            this.n = arr[9] == null ? 0 : Integer.parseInt((String) arr[9]);
+        }
+    }
+
+    private static final class Counter {
+        final Object repeat;
+        int counter;
+
+        Counter(Object repeat, int counter) {
+            this.repeat = repeat;
+            this.counter = counter;
         }
     }
 
@@ -90,11 +102,28 @@ public final class Execution {
                 }
                 next = info.next;
                 break;
+            case "karel_repeat":
+                Object top = stack.getLast();
+                if (top instanceof Counter && ((Counter)top).repeat.equals(current)) {
+                    Counter cnt = (Counter) top;
+                    if (--cnt.counter <= 0) {
+                        stack.removeLast();
+                        next = null;
+                        break;
+                    }
+                } else {
+                    stack.add(new Counter(current, info.n));
+                }
+                next = info.child;
+                break;
             case "karel_call":
                 if (info.call.equals("krok")) {
                     if (!env.step()) {
                         return (State) (current = State.ERROR_WALL);
                     }
+                }
+                if (info.call.equals("vlevo-vbok")) {
+                    env.left();
                 }
                 next = info.next;
                 break;

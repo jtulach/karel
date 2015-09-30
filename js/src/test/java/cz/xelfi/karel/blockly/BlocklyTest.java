@@ -161,6 +161,93 @@ public class BlocklyTest {
         assertEquals(exec.next(), State.FINISHED);
     }
 
+
+    @Test
+    public void testTurnRight() throws Throwable {
+        doTest("doTurnRight");
+    }
+
+    private void doTurnRight() throws Exception {
+        Workspace w = Workspace.create("any");
+        w.clear();
+
+        w.loadXML(
+"<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+"  <block type=\"karel_funkce\" x=\"36\" y=\"115\">\n" +
+"    <field name=\"NAME\">vpravo-vbok</field>\n" +
+"    <statement name=\"IFTRUE\">\n" +
+"      <block type=\"karel_repeat\">\n" +
+"        <field name=\"N\">3</field>\n" +
+"        <statement name=\"IFTRUE\">\n" +
+"          <block type=\"karel_call\">\n" +
+"            <field name=\"CALL\">vlevo-vbok</field>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"      </block>\n" +
+"    </statement>\n" +
+"  </block>\n" +
+"</xml>"
+        );
+
+        List<Procedure> arr = w.getProcedures();
+        assertEquals(arr.size(), 1, "One proc: " + arr);
+
+        class FewTurns implements Execution.Environment {
+            int cnt;
+
+            public FewTurns() {
+            }
+
+            @Override
+            public boolean isCondition(Execution.Condition c) {
+                return false;
+            }
+
+            @Override
+            public void left() {
+                cnt++;
+            }
+
+            @Override
+            public boolean step() {
+                return true;
+            }
+
+            @Override
+            public boolean put() {
+                return false;
+            }
+
+            @Override
+            public boolean pick() {
+                return false;
+            }
+        }
+
+        FewTurns env = new FewTurns();
+
+        Execution exec = arr.get(0).prepareExecution(env);
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_repeat");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_call");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_repeat");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_call");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_repeat");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_call");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_repeat");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_funkce");
+        assertEquals(exec.next(), State.FINISHED);
+
+        assertEquals(env.cnt, 3, "Three turns left");
+    }
+
     private void doTest(String method) throws Throwable {
         final Method m = this.getClass().getDeclaredMethod(method);
         m.setAccessible(true);
