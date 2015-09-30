@@ -17,6 +17,7 @@
  */
 package cz.xelfi.karel.blockly;
 
+import cz.xelfi.karel.blockly.Execution.State;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -70,6 +71,94 @@ public class BlocklyTest {
         final List<Procedure> p2 = w.getProcedures();
         assertEquals(p2.size(), 1, "One top block now");
         assertEquals(p2.get(0).getName(), "vpravo-vbok");
+    }
+
+    @Test
+    public void testReachTheWall() throws Throwable {
+        doTest("doReachTheWall");
+    }
+
+    private void doReachTheWall() throws Exception {
+        Workspace w = Workspace.create("any");
+        w.clear();
+
+        w.loadXML(
+"<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+"  <block type=\"karel_funkce\" x=\"36\" y=\"115\">\n" +
+"    <field name=\"NAME\">ke-zdi</field>\n" +
+"    <statement name=\"IFTRUE\">\n" +
+"      <block type=\"karel_while\">\n" +
+"        <field name=\"NEG\">FALSE</field>\n" +
+"        <field name=\"COND\">WALL</field>\n" +
+"        <statement name=\"IFTRUE\">\n" +
+"          <block type=\"karel_call\">\n" +
+"            <field name=\"CALL\">krok</field>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"      </block>\n" +
+"    </statement>\n" +
+"  </block>\n" +
+"</xml>"
+        );
+
+        List<Procedure> arr = w.getProcedures();
+        assertEquals(arr.size(), 1, "One proc: " + arr);
+
+        class FewSteps implements Execution.Environment {
+            int steps;
+
+            public FewSteps(int steps) {
+                this.steps = steps;
+            }
+
+            @Override
+            public boolean isCondition(Execution.Condition c) {
+                if (c == Execution.Condition.WALL) {
+                    return steps == 0;
+                }
+                return false;
+            }
+
+            @Override
+            public void left() {
+            }
+
+            @Override
+            public boolean step() {
+                if (steps == 0) {
+                    return false;
+                }
+                steps--;
+                return true;
+            }
+
+            @Override
+            public boolean put() {
+                return false;
+            }
+
+            @Override
+            public boolean pick() {
+                return false;
+            }
+        }
+
+        FewSteps env = new FewSteps(2);
+
+        Execution exec = arr.get(0).prepareExecution(env);
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_while");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_call");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_while");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_call");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_while");
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_funkce");
+        assertEquals(exec.next(), State.FINISHED);
     }
 
     private void doTest(String method) throws Throwable {

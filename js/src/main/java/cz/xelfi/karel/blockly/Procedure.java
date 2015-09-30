@@ -29,4 +29,8 @@ public final class Procedure {
     public String getName() {
         return name;
     }
+
+    public Execution prepareExecution(Execution.Environment env) {
+        return new Execution(env, js);
+    }
 }

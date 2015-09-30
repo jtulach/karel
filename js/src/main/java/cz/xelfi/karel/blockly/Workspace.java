@@ -53,6 +53,19 @@ public final class Workspace {
         return arr;
     }
 
+    public void clear() {
+        clear0(js);
+    }
+
+    public void loadXML(String xml) {
+        load0(js, xml);
+    }
+
+    @Override
+    public String toString() {
+        return toString0(js);
+    }
+
     Object rawJS() {
         return js;
     }
@@ -88,4 +101,36 @@ public final class Workspace {
         "return b;"
     )
     private static native Object create1(Object workspace, String type, String commandName);
+
+    @JavaScriptBody(args = { "workspace" }, body = "workspace.clear();", wait4js = false)
+    private static native void clear0(Object workspace);
+
+    @JavaScriptBody(args = { "workspace", "xml" }, body =
+        "Blockly.Xml.domToWorkspace(workspace, Blockly.Xml.textToDom(xml));"
+    )
+    private static native void load0(Object workspace, String xml);
+
+    @JavaScriptBody(args = { "workspace" }, body =
+        "return Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));"
+    )
+    private static native String toString0(Object workspace);
+    @JavaScriptBody(args = { "js" }, body = "js.select();", wait4js = false
+    )
+    static native void select(Object js);
+
+    @JavaScriptBody(args = { "js" }, body =
+        "return [\n"
+      + "  js.type,\n"
+      + "  js.getChildren()[0],\n"
+      + "  js.getNextBlock(),\n"
+      + "  js.getFieldValue('NEG'),\n"
+      + "  js.getFieldValue('COND'),\n"
+      + "  js.getInputTargetBlock('IFTRUE'),\n"
+      + "  js.getInputTargetBlock('IFFALSE'),\n"
+      + "  js.getFieldValue('CALL'),\n"
+      + "  js.getSurroundParent(),\n"
+      + "  ''\n"
+      + "];\n"
+    )
+    static native Object[] info(Object js);
 }
