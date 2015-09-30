@@ -61,6 +61,35 @@
                     </execution>
                 </executions>              
             </plugin>
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version>
+                <executions>
+                    <execution>
+                        <id>license-headers</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <basedir>${basedir}</basedir>
+                    <header>COPYING</header>
+                    <strictCheck>true</strictCheck>
+                    <excludes>
+                        <exclude>*</exclude>
+                        <exclude>.*/**</exclude>
+                        <exclude>client/src/main/webapp/pages/codemirror-3.22/**</exclude>
+                        <exclude>client/src/main/webapp/pages/bootstrap-3.1.1-dist/**</exclude>
+                        <exclude>**/private/**</exclude>
+                        <exclude>js/src/main/resources/cz/xelfi/karel/blockly/**</exclude>
+                        <exclude>js/src/main/resources/cz/xelfi/karel/closure-library/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
