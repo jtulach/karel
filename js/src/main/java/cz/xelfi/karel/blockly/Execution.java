@@ -58,7 +58,7 @@ public final class Execution {
             this.type = (String)arr[0];
             this.child = arr[1];
             this.next = arr[2];
-            this.negCond = Boolean.TRUE.equals(arr[3]);
+            this.negCond = "TRUE".equals(arr[3]); // NOI18N
             this.cond = arr[4] == null ? null : Condition.valueOf((String)arr[4]);
             this.ifTrue = arr[5];
             this.ifFalse = arr[6];
@@ -127,17 +127,38 @@ public final class Execution {
                 }
                 next = info.next;
                 break;
+            case "karel_if":
+            case "karel_if_else":
+                if (env.isCondition(info.cond) == info.negCond) {
+                    next = info.ifTrue;
+                } else {
+                    next = info.ifFalse;
+                }
+                if (next == null) {
+                    next = info.next;
+                }
+                break;
             default:
                 throw new IllegalStateException(info.type);
         }
         if (next != null) {
             current = next;
         } else {
-            current = info.parent;
-            Info parentInfo = new Info(current);
-            if (parentInfo.type.equals("karel_funkce")) {
-                Object obj = stack.removeLast();
-                assert obj.equals(current);
+            END: for (;;) {
+                current = info.parent;
+                Info parentInfo = new Info(current);
+                switch (parentInfo.type) {
+                    case "karel_funkce":
+                        Object obj = stack.removeLast();
+                        assert obj.equals(current);
+                        break END;
+                    case "karel_if":
+                    case "karel_if_else":
+                        info = parentInfo;
+                        continue;
+                    default:
+                        break END;
+                }
             }
         }
         Workspace.select(current);

@@ -248,6 +248,108 @@ public class BlocklyTest {
         assertEquals(env.cnt, 3, "Three turns left");
     }
 
+
+    @Test
+    public void testIfWhile() throws Throwable {
+        doTest("doIfWhile");
+    }
+
+    private void doIfWhile() throws Exception {
+        Workspace w = Workspace.create("any");
+        w.clear();
+
+        w.loadXML(
+"<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+"  <block type=\"karel_funkce\" x=\"133\" y=\"147\">\n" +
+"    <field name=\"NAME\">step-north</field>\n" +
+"    <statement name=\"IFTRUE\">\n" +
+"      <block type=\"karel_if_else\">\n" +
+"        <field name=\"NEG\">TRUE</field>\n" +
+"        <field name=\"COND\">NORTH</field>\n" +
+"        <statement name=\"IFTRUE\">\n" +
+"          <block type=\"karel_call\">\n" +
+"            <field name=\"CALL\">krok</field>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"        <statement name=\"IFFALSE\">\n" +
+"          <block type=\"karel_call\">\n" +
+"            <field name=\"CALL\">vlevo-vbok</field>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"      </block>\n" +
+"    </statement>\n" +
+"  </block>\n" +
+"</xml>"
+        );
+
+        List<Procedure> arr = w.getProcedures();
+        assertEquals(arr.size(), 1, "One proc: " + arr);
+
+        class StepNorth implements Execution.Environment {
+            int direction;
+
+            public StepNorth(int initDir) {
+                direction = initDir;
+            }
+
+            @Override
+            public boolean isCondition(Execution.Condition c) {
+                if (c == Execution.Condition.NORTH) {
+                    return direction == 0;
+                }
+                return false;
+            }
+
+            @Override
+            public void left() {
+                if (--direction < 0) {
+                    direction = 4;
+                }
+            }
+
+            @Override
+            public boolean step() {
+                return false;
+            }
+
+            @Override
+            public boolean put() {
+                return false;
+            }
+
+            @Override
+            public boolean pick() {
+                return false;
+            }
+        }
+
+        StepNorth env = new StepNorth(1);
+
+        {
+            Execution exec = arr.get(0).prepareExecution(env);
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_if_else");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_call");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_funkce");
+            assertEquals(exec.next(), State.FINISHED);
+
+            assertEquals(env.direction, 0, "Heading north");
+        }
+
+        {
+            Execution exec = arr.get(0).prepareExecution(env);
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_if_else");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_call");
+            assertEquals(exec.next(), State.ERROR_WALL);
+
+            assertEquals(env.direction, 0, "Still Heading north");
+        }
+    }
+
     private void doTest(String method) throws Throwable {
         final Method m = this.getClass().getDeclaredMethod(method);
         m.setAccessible(true);
