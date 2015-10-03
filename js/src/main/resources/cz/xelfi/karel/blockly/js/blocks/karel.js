@@ -63,7 +63,7 @@ function injectKarel(id) {
             '<block type="karel_repeat"></block>\n';
 
         procedures().forEach(function (b) {
-            s += '<block type="karel_call"><field name="CALL">' + b[0] + '</field></block>\n';
+            s += '<block type="karel_call"><field name="CALL">' + b[1] + '</field></block>\n';
         });
 
         s += '</xml>\n';

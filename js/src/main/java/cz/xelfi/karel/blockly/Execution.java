@@ -144,11 +144,11 @@ public final class Execution {
                     break;
                 case "karel_call":
                     if (!returned) {
-                        if (info.call.equals("krok")) {
+                        if (info.call.equals("STEP")) {
                             if (!env.step()) {
                                 return (State) (current = State.ERROR_WALL);
                             }
-                        } else if (info.call.equals("vlevo-vbok")) {
+                        } else if (info.call.equals("LEFT")) {
                             env.left();
                         } else {
                             Procedure found = null;

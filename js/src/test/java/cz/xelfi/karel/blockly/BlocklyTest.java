@@ -93,7 +93,7 @@ public class BlocklyTest {
 "        <field name=\"COND\">WALL</field>\n" +
 "        <statement name=\"IFTRUE\">\n" +
 "          <block type=\"karel_call\">\n" +
-"            <field name=\"CALL\">krok</field>\n" +
+"            <field name=\"CALL\">STEP</field>\n" +
 "          </block>\n" +
 "        </statement>\n" +
 "      </block>\n" +
@@ -140,7 +140,7 @@ public class BlocklyTest {
 "        <field name=\"N\">3</field>\n" +
 "        <statement name=\"IFTRUE\">\n" +
 "          <block type=\"karel_call\">\n" +
-"            <field name=\"CALL\">vlevo-vbok</field>\n" +
+"            <field name=\"CALL\">LEFT</field>\n" +
 "          </block>\n" +
 "        </statement>\n" +
 "      </block>\n" +
@@ -226,12 +226,12 @@ public class BlocklyTest {
 "        <field name=\"COND\">NORTH</field>\n" +
 "        <statement name=\"IFTRUE\">\n" +
 "          <block type=\"karel_call\">\n" +
-"            <field name=\"CALL\">krok</field>\n" +
+"            <field name=\"CALL\">STEP</field>\n" +
 "          </block>\n" +
 "        </statement>\n" +
 "        <statement name=\"IFFALSE\">\n" +
 "          <block type=\"karel_call\">\n" +
-"            <field name=\"CALL\">vlevo-vbok</field>\n" +
+"            <field name=\"CALL\">LEFT</field>\n" +
 "          </block>\n" +
 "        </statement>\n" +
 "      </block>\n" +
@@ -325,7 +325,7 @@ public class BlocklyTest {
 "        <field name=\"COND\">NORTH</field>\n" +
 "        <statement name=\"IFTRUE\">\n" +
 "          <block type=\"karel_call\">\n" +
-"            <field name=\"CALL\">vlevo-vbok</field>\n" +
+"            <field name=\"CALL\">LEFT</field>\n" +
 "          </block>\n" +
 "        </statement>\n" +
 "      </block>\n" +
@@ -428,7 +428,7 @@ public class BlocklyTest {
 "        <field name=\"COND\">WALL</field>\n" +
 "        <statement name=\"IFTRUE\">\n" +
 "          <block type=\"karel_call\">\n" +
-"            <field name=\"CALL\">krok</field>\n" +
+"            <field name=\"CALL\">STEP</field>\n" +
 "          </block>\n" +
 "        </statement>\n" +
 "      </block>\n" +
