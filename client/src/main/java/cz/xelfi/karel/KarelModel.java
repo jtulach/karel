@@ -142,7 +142,22 @@ final class KarelModel {
                     continue;
                 default:
                     final Town t = frame.town;
-                    t.setError(nxt.ordinal());
+                    int e = 0;
+                    switch (nxt) {
+                        case ERROR_EMPTY:
+                            e = 2;
+                            break;
+                        case ERROR_FULL:
+                            e = 3;
+                            break;
+                        case ERROR_WALL:
+                            e = 1;
+                            break;
+                        case ERROR_NOT_FOUND:
+                            e = 4;
+                            break;
+                    }
+                    t.setError(e);
                     t.getErrorParams().clear();
                     //ex.fillParams(t.getErrorParams());
             }
