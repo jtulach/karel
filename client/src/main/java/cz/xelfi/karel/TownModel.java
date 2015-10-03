@@ -17,6 +17,7 @@
  */
 package cz.xelfi.karel;
 
+import cz.xelfi.karel.blockly.Execution;
 import java.util.List;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
@@ -43,25 +44,25 @@ class TownModel {
         NORTH, EAST, SOUTH, WEST;
     }
 
-    static boolean isCondition(Town town, KarelToken cond) {
+    static boolean isCondition(Town town, Execution.Condition cond) {
         int[] xyd = findKarel(town);
-        if (KarelToken.EAST == cond) {
+        if (Execution.Condition.EAST == cond) {
             return xyd[2] == 1;
         }
-        if (KarelToken.SOUTH == cond) {
+        if (Execution.Condition.SOUTH == cond) {
             return xyd[2] == 2;
         }
-        if (KarelToken.WEST == cond) {
+        if (Execution.Condition.WEST == cond) {
             return xyd[2] == 3;
         }
-        if (KarelToken.NORTH == cond) {
+        if (Execution.Condition.NORTH == cond) {
             return xyd[2] == 4;
         }
-        if (KarelToken.SIGN == cond) {
+        if (Execution.Condition.MARK == cond) {
             final int m = town.getRows().get(xyd[1]).getColumns().get(xyd[0]).getMarks();
             return m > 0 && m < 100;
         }
-        if (KarelToken.WALL != cond) {
+        if (Execution.Condition.WALL != cond) {
             throw new IllegalStateException("" + cond);
         }
         int[] next = stepInDirection(xyd);

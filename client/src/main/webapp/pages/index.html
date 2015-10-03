@@ -23,10 +23,6 @@
         <title>Karel - programování pro každého</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link href="karel.css" rel="stylesheet">
-        <link rel="stylesheet" href="codemirror-3.22/lib/codemirror.css">
-        <script src="codemirror-3.22/lib/codemirror.js"></script>
-        <link rel="stylesheet" href="codemirror-3.22/addon/hint/show-hint.css">
-        <script src="codemirror-3.22/addon/hint/show-hint.js"></script>
         
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -160,13 +156,9 @@
     <script type="text/html" id="edit">
         <div class="row">
             <div class="col-sm-6">
-                <textarea id="editor" data-bind="value: source, valueUpdate: 'input'" rows="30" columns="80"></textarea>
+                <div id="workspace"></div>
             </div>
             <div class="col-sm-6">
-                <button type="button" class="btn btn-lg btn-default" data-bind="click: $root.newLine">&#x21A9;</button>
-                <!-- ko foreach: completions -->
-                <button type="button" class="btn btn-info" data-bind="text: name, click: $root.complete"></button>
-                <!-- /ko -->
                 <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
             </div>    
         </div>

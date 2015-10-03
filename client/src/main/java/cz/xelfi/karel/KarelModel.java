@@ -17,6 +17,9 @@
  */
 package cz.xelfi.karel;
 
+import cz.xelfi.karel.blockly.Execution.State;
+import cz.xelfi.karel.blockly.Procedure;
+import cz.xelfi.karel.blockly.Workspace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -46,6 +49,8 @@ import net.java.html.json.Property;
 })
 final class KarelModel {
     private static final Timer KAREL = new Timer("Karel Moves");
+    private static Workspace workspace;
+    
     @Model(className = "Command", properties = {
         @Property(name = "name", type = String.class)
     })
@@ -75,56 +80,71 @@ final class KarelModel {
     
     @Function static void templateShown(Karel m) {
         if ("edit".equals(m.getTab())) {
-            KarelMirror.initialize();
-            Object cm = KarelMirror.initCodeMirror(m, "editor");
+            if (workspace == null) {
+                workspace = Workspace.create("workspace");
+            }
+        } else if ("town".equals(m.getTab())) {
+            refreshCommands(m);
         }
     }
-    
-    @Function static void invoke(Karel m, Command data) {   
-        try {
-            KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
-            List<TaskTestCase> arr = m.getCurrentTask().getTests();
-            List<KarelCompiler> comps = new ArrayList<KarelCompiler>(arr.size());
-            TaskTestCase showing = null;
-            for (TaskTestCase c : arr) {
-                TaskModel.TestCaseModel.reset(c, false, null);
-                if (c.getShowing() != null) {
-                    showing = c;
-                }
-                KarelCompiler frame = KarelCompiler.execute(c.getCurrent(), root, data.getName());
-                comps.add(frame);
+
+    private static void refreshCommands(Karel m) {
+        List<Command> arr = new ArrayList<>();
+        if (workspace != null) {
+            for (Procedure p : workspace.getProcedures()) {
+                arr.add(new Command(p.getName()));
             }
-            if (showing == null && arr.size() > 0) {
-                arr.get(0).setShowing("current");
-            }
-            m.animate(comps);
-        } catch (SyntaxException ex) {
-            throw new IllegalStateException(ex);
         }
+        m.getCommands().clear();
+        m.getCommands().addAll(arr);
+    }
+    
+    @Function static void invoke(Karel m, Command data) {
+        Procedure procedure = workspace.findProcedure(data.getName());
+        if (procedure == null) {
+            refreshCommands(m);
+            return;
+        }
+        List<TaskTestCase> arr = m.getCurrentTask().getTests();
+        TaskTestCase showing = null;
+        List<KarelCompiler> comps = new ArrayList<>();
+        for (TaskTestCase c : arr) {
+            TaskModel.TestCaseModel.reset(c, false, null);
+            if (c.getShowing() != null) {
+                showing = c;
+            }
+            KarelCompiler frame = KarelCompiler.execute(c.getCurrent(), procedure, data.getName());
+            comps.add(frame);
+        }
+        if (showing == null && arr.size() > 0) {
+            arr.get(0).setShowing("current");
+        }
+        m.animate(comps);
     }
     
     @Function static void edit(Karel m) {
         String cmd = m.getCurrentTask().getCommand();
         if (!m.getSource().contains(cmd)) {
-            m.setSource(m.getSource() + "\n\n" + cmd +"\n  \n" + KarelToken.END.text() + "\n");
+//            m.setSource(m.getSource() + "\n\n" + cmd +"\n  \n" + KarelToken.END.text() + "\n");
         }
         m.setTab("edit");
     }
     
     @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
-        final List<KarelCompiler> next = new ArrayList<KarelCompiler>(frames.size());
+        final List<KarelCompiler> next = new ArrayList<>();
         for (KarelCompiler frame : frames) {
-            try {
-                KarelCompiler nxt = frame.next();
-                if (nxt == null) {
+            State nxt = frame.exec.next();
+            switch (nxt) {
+                case RUNNING:
+                    next.add(frame);
                     continue;
-                }
-                next.add(nxt);
-            } catch (SyntaxException ex) {
-                final Town t = frame.getTown();
-                t.setError(ex.getErrorCode());
-                t.getErrorParams().clear();
-                ex.fillParams(t.getErrorParams());
+                case FINISHED:
+                    continue;
+                default:
+                    final Town t = frame.town;
+                    t.setError(nxt.ordinal());
+                    t.getErrorParams().clear();
+                    //ex.fillParams(t.getErrorParams());
             }
         }
         if (!next.isEmpty()) {
@@ -161,39 +181,20 @@ final class KarelModel {
         compile(m, true);
     }
     static void compile(Karel m, boolean switchToTown) {
-        try {
-            KarelCompiler.Root root = (KarelCompiler.Root) KarelCompiler.toAST(m.getSource());
-            List<Command> lst = m.getCommands();
-            lst.clear();
-            for (KarelCompiler.AST ast : root.children) {
-                if (ast instanceof KarelCompiler.Define) {
-                    KarelCompiler.Define d = (KarelCompiler.Define) ast;
-                    m.getCommands().add(new Command(d.token.text().toString()));
-                }
-            }
-            if (switchToTown) {
-                m.setTab("town");
-            }
-        } catch (SyntaxException ex) {
-            throw new IllegalStateException(ex);
+        refreshCommands(m);
+        if (switchToTown) {
+            m.setTab("town");
         }
     }
     
-    @OnPropertyChange("source") static void storeSource(Karel m) {
+    @OnPropertyChange("source")
+    static void storeSource(Karel m) {
         Storage.getDefault().put("source", m.getSource());
     }
     
     @ModelOperation static void updateCompletions(Karel m, List<Completion> compl) {
         m.getCompletions().clear();
         m.getCompletions().addAll(compl);
-    }
-    
-    @Function static void complete(Karel m, Completion data) {
-        KarelMirror.complete("editor", data.getWord(), data.getThen(), data.getLine(), data.getStart(), data.getEnd());
-    }
-    
-    @Function static void newLine(Karel m) {
-        KarelMirror.newLine("editor");
     }
     
     @Model(className="Completion", properties = {

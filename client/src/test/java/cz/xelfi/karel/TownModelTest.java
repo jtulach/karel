@@ -17,6 +17,7 @@
  */
 package cz.xelfi.karel;
 
+import cz.xelfi.karel.blockly.Execution;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
@@ -76,7 +77,7 @@ public class TownModelTest {
         assertLocation(t, 0, 9, 1, "Same position remains");
         assertEquals(t.getError(), 1, "Hit the wall");
         
-        boolean isWall = TownModel.isCondition(t, KarelToken.WALL);
+        boolean isWall = TownModel.isCondition(t, Execution.Condition.WALL);
         assertTrue(isWall, "Yes, heading towards the wall");
     }
     
