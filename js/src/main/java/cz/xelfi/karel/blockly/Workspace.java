@@ -53,6 +53,16 @@ public final class Workspace {
         return arr;
     }
 
+    public Procedure findProcedure(String name) {
+        for (Procedure p : getProcedures()) {
+            if (name.equals(p.getName())) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+
     public void clear() {
         clear0(js);
     }
