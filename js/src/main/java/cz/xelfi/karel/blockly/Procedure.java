@@ -19,10 +19,12 @@ package cz.xelfi.karel.blockly;
 
 public final class Procedure {
     private final Object js;
+    private final Workspace ws;
     private final String name;
     
-    Procedure(Object js, String name) {
+    Procedure(Object js, Workspace ws, String name) {
         this.js = js;
+        this.ws = ws;
         this.name = name;
     }
 
@@ -31,6 +33,10 @@ public final class Procedure {
     }
 
     public Execution prepareExecution(Execution.Environment env) {
-        return new Execution(env, js);
+        return new Execution(env, ws.getProcedures(), js);
+    }
+
+    Object rawJS() {
+        return js;
     }
 }

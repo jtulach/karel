@@ -105,45 +105,6 @@ public class BlocklyTest {
         List<Procedure> arr = w.getProcedures();
         assertEquals(arr.size(), 1, "One proc: " + arr);
 
-        class FewSteps implements Execution.Environment {
-            int steps;
-
-            public FewSteps(int steps) {
-                this.steps = steps;
-            }
-
-            @Override
-            public boolean isCondition(Execution.Condition c) {
-                if (c == Execution.Condition.WALL) {
-                    return steps == 0;
-                }
-                return false;
-            }
-
-            @Override
-            public void left() {
-            }
-
-            @Override
-            public boolean step() {
-                if (steps == 0) {
-                    return false;
-                }
-                steps--;
-                return true;
-            }
-
-            @Override
-            public boolean put() {
-                return false;
-            }
-
-            @Override
-            public boolean pick() {
-                return false;
-            }
-        }
-
         FewSteps env = new FewSteps(2);
 
         Execution exec = arr.get(0).prepareExecution(env);
@@ -460,6 +421,82 @@ public class BlocklyTest {
         }
     }
 
+    @Test
+    public void testProcedureCall() throws Throwable {
+        doTest("doProcedureCall");
+    }
+
+    private void doProcedureCall() throws Exception {
+        Workspace w = Workspace.create("any");
+        w.clear();
+
+        w.loadXML(
+"<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+"  <block type=\"karel_funkce\" x=\"38\" y=\"45\">\n" +
+"    <field name=\"NAME\">safe-step</field>\n" +
+"    <statement name=\"IFTRUE\">\n" +
+"      <block type=\"karel_if\">\n" +
+"        <field name=\"NEG\">FALSE</field>\n" +
+"        <field name=\"COND\">WALL</field>\n" +
+"        <statement name=\"IFTRUE\">\n" +
+"          <block type=\"karel_call\">\n" +
+"            <field name=\"CALL\">krok</field>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"      </block>\n" +
+"    </statement>\n" +
+"  </block>\n" +
+"  <block type=\"karel_funkce\" x=\"259\" y=\"44\">\n" +
+"    <field name=\"NAME\">ten-safe-steps</field>\n" +
+"    <statement name=\"IFTRUE\">\n" +
+"      <block type=\"karel_repeat\">\n" +
+"        <field name=\"N\">10</field>\n" +
+"        <statement name=\"IFTRUE\">\n" +
+"          <block type=\"karel_call\">\n" +
+"            <field name=\"CALL\">safe-step</field>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"      </block>\n" +
+"    </statement>\n" +
+"  </block>\n" +
+"</xml>"
+        );
+
+        List<Procedure> arr = w.getProcedures();
+        assertEquals(arr.size(), 2, "Two procs: " + arr);
+
+        FewSteps env = new FewSteps(10);
+
+        Procedure tenSafeSteps = w.findProcedure("ten-safe-steps");
+
+        {
+            Execution exec = tenSafeSteps.prepareExecution(env);
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_repeat");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_call");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_funkce");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_if");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_call");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_funkce");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_repeat");
+
+            State state;
+            for (;;) {
+                state = exec.next();
+                if (state != State.RUNNING) {
+                    break;
+                }
+            }
+            assertEquals(exec.next(), State.FINISHED, "At the end reached successful state");
+        }
+    }
+
     private void doTest(String method) throws Throwable {
         final Method m = this.getClass().getDeclaredMethod(method);
         m.setAccessible(true);
@@ -484,6 +521,46 @@ public class BlocklyTest {
                 throw ite.getTargetException();
             }
             throw arr[0];
+        }
+    }
+    
+    static class FewSteps implements Execution.Environment {
+
+        int steps;
+
+        public FewSteps(int steps) {
+            this.steps = steps;
+        }
+
+        @Override
+        public boolean isCondition(Execution.Condition c) {
+            if (c == Execution.Condition.WALL) {
+                return steps == 0;
+            }
+            return false;
+        }
+
+        @Override
+        public void left() {
+        }
+
+        @Override
+        public boolean step() {
+            if (steps == 0) {
+                return false;
+            }
+            steps--;
+            return true;
+        }
+
+        @Override
+        public boolean put() {
+            return false;
+        }
+
+        @Override
+        public boolean pick() {
+            return false;
         }
     }
 

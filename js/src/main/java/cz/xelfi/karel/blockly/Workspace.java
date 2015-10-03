@@ -40,7 +40,7 @@ public final class Workspace {
     }
 
     public Procedure newProcedure(String commandName) {
-        return new Procedure(create1(js, "karel_funkce", commandName), commandName);
+        return new Procedure(create1(js, "karel_funkce", commandName), this, commandName);
     }
 
 
@@ -48,7 +48,7 @@ public final class Workspace {
         Object[] blocks = list0(js);
         List<Procedure> arr = new ArrayList<>(blocks.length / 2);
         for (int i = 0; i < blocks.length; i += 2) {
-            arr.add(new Procedure(blocks[i], (String)blocks[i + 1]));
+            arr.add(new Procedure(blocks[i], this, (String)blocks[i + 1]));
         }
         return arr;
     }

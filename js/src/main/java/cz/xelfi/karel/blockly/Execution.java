@@ -17,19 +17,23 @@
  */
 package cz.xelfi.karel.blockly;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public final class Execution {
     private final Environment env;
+    private final List<Procedure> procedures;
     private final LinkedList<Object> stack;
     private Object current;
 
-    Execution(Environment env, Object current) {
+    Execution(Environment env, List<Procedure> procedures, Object current) {
         this.env = env;
+        this.procedures = new ArrayList<>(procedures);
         this.current = current;
         this.stack = new LinkedList<>();
-        this.stack.add(current);
+        this.stack.add(new Call(null, current));
         Workspace.select(current);
     }
 
@@ -38,7 +42,7 @@ public final class Execution {
     }
 
     public enum State {
-        RUNNING, FINISHED, ERROR_WALL, ERROR_EMPTY, ERROR_FULL;
+        RUNNING, FINISHED, ERROR_WALL, ERROR_EMPTY, ERROR_FULL, ERROR_NOT_FOUND;
     }
 
     private static final class Info {
@@ -78,6 +82,23 @@ public final class Execution {
         }
     }
 
+    private static final class Call {
+        final Object caller;
+        final Object top;
+
+        public Call(Object caller, Object top) {
+            this.caller = caller;
+            this.top = top;
+        }
+
+        static Object top(Object obj) {
+            if (obj instanceof Call) {
+                return ((Call)obj).top;
+            }
+            return null;
+        }
+    }
+
     public State next() {
         if (current instanceof State) {
             return (State)current;
@@ -89,7 +110,7 @@ public final class Execution {
         Object next;
         switch (info.type) {
             case "karel_funkce":
-                if (current.equals(stack.getLast())) {
+                if (current.equals(Call.top(stack.getLast()))) {
                     next = info.child;
                 } else {
                     next = null;
@@ -121,8 +142,7 @@ public final class Execution {
                     if (!env.step()) {
                         return (State) (current = State.ERROR_WALL);
                     }
-                }
-                if (info.call.equals("vlevo-vbok")) {
+                } else if (info.call.equals("vlevo-vbok")) {
                     env.left();
                 }
                 next = info.next;
@@ -150,7 +170,8 @@ public final class Execution {
                 switch (parentInfo.type) {
                     case "karel_funkce":
                         Object obj = stack.removeLast();
-                        assert obj.equals(current);
+                        assert obj instanceof Call;
+                        assert ((Call)obj).top.equals(current);
                         break END;
                     case "karel_if":
                     case "karel_if_else":
