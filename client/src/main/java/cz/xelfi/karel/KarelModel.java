@@ -88,6 +88,10 @@ final class KarelModel {
     private static Workspace findWorkspace() {
         if (workspace == null) {
             workspace = Workspace.create("workspace");
+            String xml = Storage.getDefault().get("workspace", null);
+            if (xml != null) {
+                workspace.loadXML(xml);
+            }
         }
         return workspace;
     }
@@ -98,6 +102,7 @@ final class KarelModel {
             for (Procedure p : workspace.getProcedures()) {
                 arr.add(new Command(p.getName()));
             }
+            Storage.getDefault().put("workspace", workspace.toString());
         }
         m.getCommands().clear();
         m.getCommands().addAll(arr);
