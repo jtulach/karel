@@ -59,7 +59,7 @@ final class KarelCompiler implements Execution.Environment {
     }
 
     @Override
-    public boolean pick() {
+    public boolean take() {
         town.take();
         return town.getError() == 0;
     }

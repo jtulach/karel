@@ -28,7 +28,7 @@ function injectKarel(id) {
 
     var condDropdown = [
         ["zeď", "WALL"],
-        ["značka", "STAMP"],
+        ["značka", "MARK"],
         ["sever", "NORTH"],
         ["jih", "SOUTH"],
         ["západ", "WEST"],

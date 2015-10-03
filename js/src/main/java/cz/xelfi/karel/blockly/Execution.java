@@ -150,6 +150,14 @@ public final class Execution {
                             }
                         } else if (info.call.equals("LEFT")) {
                             env.left();
+                        } else if (info.call.equals("PUT")) {
+                            if (!env.put()) {
+                                return (State) (current = State.ERROR_FULL);
+                            }
+                        } else if (info.call.equals("TAKE")) {
+                            if (!env.take()) {
+                                return (State) (current = State.ERROR_EMPTY);
+                            }
                         } else {
                             Procedure found = null;
                             for (Procedure p : procedures) {
@@ -220,7 +228,7 @@ public final class Execution {
         public void left();
         public boolean step();
         public boolean put();
-        public boolean pick();
+        public boolean take();
     }
 
 }

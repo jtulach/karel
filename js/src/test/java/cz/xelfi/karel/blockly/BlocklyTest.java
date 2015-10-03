@@ -179,7 +179,7 @@ public class BlocklyTest {
             }
 
             @Override
-            public boolean pick() {
+            public boolean take() {
                 return false;
             }
         }
@@ -276,7 +276,7 @@ public class BlocklyTest {
             }
 
             @Override
-            public boolean pick() {
+            public boolean take() {
                 return false;
             }
         }
@@ -370,7 +370,7 @@ public class BlocklyTest {
             }
 
             @Override
-            public boolean pick() {
+            public boolean take() {
                 return false;
             }
         }
@@ -545,7 +545,7 @@ public class BlocklyTest {
         }
 
         @Override
-        public boolean pick() {
+        public boolean take() {
             return false;
         }
     }
