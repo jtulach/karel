@@ -31,7 +31,7 @@ import net.java.html.json.OnPropertyChange;
 import net.java.html.json.OnReceive;
 import net.java.html.json.Property;
 
-/** Model annotation generates class Data with 
+/** Model annotation generates class Data with
  * one message property, boolean property and read only words property
  */
 @Model(className = "Karel", targetId = "", properties = {
@@ -49,13 +49,13 @@ import net.java.html.json.Property;
 final class KarelModel {
     private static final Timer KAREL = new Timer("Karel Moves");
     private static Workspace workspace;
-    
+
     @Model(className = "Command", properties = {
         @Property(name = "name", type = String.class)
     })
     final static class CommandModel {
     }
-    
+
     @Function static void changeTabTown(Karel m) {
         m.setTab("town");
     }
@@ -72,11 +72,11 @@ final class KarelModel {
     @Function static void changeTabHome(Karel m) {
         m.setTab("home");
     }
-    
+
     @Function static void changeTabAbout(Karel m) {
         m.setTab("about");
     }
-    
+
     @Function static void templateShown(Karel m) {
         if ("edit".equals(m.getTab())) {
             findWorkspace();
@@ -107,7 +107,7 @@ final class KarelModel {
         m.getCommands().clear();
         m.getCommands().addAll(arr);
     }
-    
+
     @Function static void invoke(Karel m, Command data) {
         Procedure procedure = workspace.findProcedure(data.getName());
         if (procedure == null) {
@@ -130,7 +130,7 @@ final class KarelModel {
         }
         m.animate(comps);
     }
-    
+
     @Function static void edit(Karel m) {
         String cmd = m.getCurrentTask().getCommand();
         Workspace w = findWorkspace();
@@ -141,7 +141,7 @@ final class KarelModel {
         proc.select();
         m.setTab("edit");
     }
-    
+
     @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
         final List<KarelCompiler> next = new ArrayList<>();
         for (KarelCompiler frame : frames) {
@@ -202,7 +202,7 @@ final class KarelModel {
             model.getCurrentTask().setAwarded(1);
         }
     }
-    
+
     @ModelOperation @Function static void compile(Karel m) {
         TaskModel.DescriptionModel.reset(m.getCurrentTask(), false);
         compile(m, true);
@@ -213,12 +213,12 @@ final class KarelModel {
             m.setTab("town");
         }
     }
-    
+
     @OnPropertyChange("source")
     static void storeSource(Karel m) {
         Storage.getDefault().put("source", m.getSource());
     }
-    
+
     private static boolean containsURL(List<TaskInfo> arr, String url) {
         for (TaskInfo ti : arr) {
             if (url.equals(ti.getUrl())) {
@@ -227,8 +227,8 @@ final class KarelModel {
         }
         return false;
     }
-    
-    @OnReceive(url = "{url}", onError = "errorLoadingTask") 
+
+    @OnReceive(url = "{url}", onError = "errorLoadingTask")
     static void loadTasks(Karel m, TaskInfo[] arr) {
         for (TaskInfo ti : arr) {
             if (!containsURL(m.getTasks(), ti.getUrl())) {
@@ -256,8 +256,8 @@ final class KarelModel {
         m.setCurrentInfo(data);
         m.loadTaskDescription(data.getUrl());
     }
-    
-    @OnReceive(url = "{url}", onError = "errorLoadingTask") 
+
+    @OnReceive(url = "{url}", onError = "errorLoadingTask")
     static void loadTaskDescription(Karel m, TaskDescription td) {
         for (TaskTestCase c : td.getTests()) {
             Town e = new Town();
@@ -271,7 +271,7 @@ final class KarelModel {
         m.setCurrentTask(td);
         m.setTab("town");
     }
-    
+
     static void errorLoadingTask(Karel m, Exception ex) {
         TaskDescription td = new TaskDescription("Error", "Cannot load task: " + ex.getLocalizedMessage(), null, 0);
         m.setCurrentTask(td);
