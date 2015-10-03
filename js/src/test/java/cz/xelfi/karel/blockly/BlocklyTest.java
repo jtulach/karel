@@ -118,8 +118,6 @@ public class BlocklyTest {
         assertEquals(exec.currentType(), "karel_call");
         assertEquals(exec.next(), State.RUNNING, "OK, running");
         assertEquals(exec.currentType(), "karel_while");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_funkce");
         assertEquals(exec.next(), State.FINISHED);
     }
 
@@ -203,8 +201,6 @@ public class BlocklyTest {
         assertEquals(exec.currentType(), "karel_call");
         assertEquals(exec.next(), State.RUNNING, "OK, running");
         assertEquals(exec.currentType(), "karel_repeat");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_funkce");
         assertEquals(exec.next(), State.FINISHED);
 
         assertEquals(env.cnt, 3, "Three turns left");
@@ -293,8 +289,6 @@ public class BlocklyTest {
             assertEquals(exec.currentType(), "karel_if_else");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_funkce");
             assertEquals(exec.next(), State.FINISHED);
 
             assertEquals(env.direction, 0, "Heading north");
@@ -389,8 +383,6 @@ public class BlocklyTest {
             assertEquals(exec.currentType(), "karel_if");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_funkce");
             assertEquals(exec.next(), State.FINISHED);
 
             assertNotEquals(env.direction, 0, "Not Heading north");
@@ -402,8 +394,6 @@ public class BlocklyTest {
             assertEquals(exec.currentType(), "karel_if");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_funkce");
             assertEquals(exec.next(), State.FINISHED);
 
             assertEquals(env.direction, 0, "Now Heading north");
@@ -413,8 +403,6 @@ public class BlocklyTest {
             Execution exec = arr.get(0).prepareExecution(env);
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_if");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_funkce");
             assertEquals(exec.next(), State.FINISHED);
 
             assertEquals(env.direction, 0, "Still Heading north");
@@ -481,8 +469,6 @@ public class BlocklyTest {
             assertEquals(exec.currentType(), "karel_if");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_funkce");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_repeat");
 

@@ -18,22 +18,20 @@
 package cz.xelfi.karel.blockly;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 
 public final class Execution {
     private final Environment env;
     private final List<Procedure> procedures;
-    private final LinkedList<Object> stack;
+    private Execution delegate;
+    private Counter repeat;
     private Object current;
 
     Execution(Environment env, List<Procedure> procedures, Object current) {
         this.env = env;
         this.procedures = new ArrayList<>(procedures);
         this.current = current;
-        this.stack = new LinkedList<>();
-        this.stack.add(new Call(null, current));
         Workspace.select(current);
     }
 
@@ -74,9 +72,11 @@ public final class Execution {
 
     private static final class Counter {
         final Object repeat;
+        final Counter previous;
         int counter;
 
-        Counter(Object repeat, int counter) {
+        Counter(Counter previous, Object repeat, int counter) {
+            this.previous = previous;
             this.repeat = repeat;
             this.counter = counter;
         }
@@ -103,90 +103,112 @@ public final class Execution {
         if (current instanceof State) {
             return (State)current;
         }
-        if (stack.isEmpty()) {
-            return (State)(current = State.FINISHED);
-        }
-        Info info = new Info(current);
-        Object next;
-        switch (info.type) {
-            case "karel_funkce":
-                if (current.equals(Call.top(stack.getLast()))) {
-                    next = info.child;
+        AGAIN: for (;;) {
+            boolean returned = false;
+            if (delegate != null) {
+                State exec = delegate.next();
+                if (exec == State.RUNNING) {
+                    return exec;
+                }
+                if (exec == State.FINISHED) {
+                    delegate = null;
+                    returned = true;
                 } else {
-                    next = null;
-                }
-                break;
-            case "karel_while":
-                if (env.isCondition(info.cond) == info.negCond && info.child != null) {
-                    next = info.child;
-                    break;
-                }
-                next = info.next;
-                break;
-            case "karel_repeat":
-                Object top = stack.getLast();
-                if (top instanceof Counter && ((Counter)top).repeat.equals(current)) {
-                    Counter cnt = (Counter) top;
-                    if (--cnt.counter <= 0) {
-                        stack.removeLast();
-                        next = null;
-                        break;
-                    }
-                } else {
-                    stack.add(new Counter(current, info.n));
-                }
-                next = info.child;
-                break;
-            case "karel_call":
-                if (info.call.equals("krok")) {
-                    if (!env.step()) {
-                        return (State) (current = State.ERROR_WALL);
-                    }
-                } else if (info.call.equals("vlevo-vbok")) {
-                    env.left();
-                }
-                next = info.next;
-                break;
-            case "karel_if":
-            case "karel_if_else":
-                if (env.isCondition(info.cond) == info.negCond) {
-                    next = info.ifTrue;
-                } else {
-                    next = info.ifFalse;
-                }
-                if (next == null) {
-                    next = info.next;
-                }
-                break;
-            default:
-                throw new IllegalStateException(info.type);
-        }
-        if (next != null) {
-            current = next;
-        } else {
-            END: for (;;) {
-                current = info.parent;
-                Info parentInfo = new Info(current);
-                switch (parentInfo.type) {
-                    case "karel_funkce":
-                        Object obj = stack.removeLast();
-                        assert obj instanceof Call;
-                        assert ((Call)obj).top.equals(current);
-                        break END;
-                    case "karel_if":
-                    case "karel_if_else":
-                        info = parentInfo;
-                        continue;
-                    default:
-                        break END;
+                    return (State)(current = exec);
                 }
             }
+            Info info = new Info(current);
+            Object next;
+            switch (info.type) {
+                case "karel_funkce":
+                    next = info.child;
+                    break;
+                case "karel_while":
+                    if (env.isCondition(info.cond) == info.negCond && info.child != null) {
+                        next = info.child;
+                        break;
+                    }
+                    next = info.next;
+                    break;
+                case "karel_repeat":
+                    if (repeat != null && repeat.repeat.equals(current)) {
+                        if (--repeat.counter <= 0) {
+                            repeat = repeat.previous;
+                            next = null;
+                            break;
+                        }
+                    } else {
+                        repeat = new Counter(repeat, current, info.n);
+                    }
+                    next = info.child;
+                    break;
+                case "karel_call":
+                    if (!returned) {
+                        if (info.call.equals("krok")) {
+                            if (!env.step()) {
+                                return (State) (current = State.ERROR_WALL);
+                            }
+                        } else if (info.call.equals("vlevo-vbok")) {
+                            env.left();
+                        } else {
+                            Procedure found = null;
+                            for (Procedure p : procedures) {
+                                if (p.getName().equals(info.call)) {
+                                    found = p;
+                                    break;
+                                }
+                            }
+                            if (found == null) {
+                                return (State)(current = State.ERROR_NOT_FOUND);
+                            }
+                            delegate = found.prepareExecution(env);
+                            return State.RUNNING;
+                        }
+                    }
+                    next = info.next;
+                    break;
+                case "karel_if":
+                case "karel_if_else":
+                    if (env.isCondition(info.cond) == info.negCond) {
+                        next = info.ifTrue;
+                    } else {
+                        next = info.ifFalse;
+                    }
+                    if (next == null) {
+                        next = info.next;
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException(info.type);
+            }
+            if (next != null) {
+                current = next;
+            } else {
+                END: for (;;) {
+                    current = info.parent;
+                    Info parentInfo = new Info(current);
+                    switch (parentInfo.type) {
+                        case "karel_funkce":
+                            return (State) (current = State.FINISHED);
+                        case "karel_if":
+                        case "karel_if_else":
+                            info = parentInfo;
+                            continue;
+                        default:
+                            break END;
+                    }
+                }
+            }
+            break;
         }
         Workspace.select(current);
         return State.RUNNING;
     }
 
     String currentType() {
+        if (delegate != null) {
+            return delegate.currentType();
+        }
         if (current instanceof State) {
             return null;
         }
