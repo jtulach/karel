@@ -154,14 +154,6 @@
         </div>
     </script>
     <script type="text/html" id="edit">
-        <div class="row">
-            <div class="col-sm-6">
-                <div id="workspace"></div>
-            </div>
-            <div class="col-sm-6">
-                <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
-            </div>    
-        </div>
     </script>
     
     <script id="draw-town" type="text/html">
@@ -195,6 +187,16 @@
     </script>
 
     <div data-bind="template: { name : tab(), afterRender: $root.templateShown }"></div>
+    <div data-bind="visible: tab() === 'edit'">
+        <div class="row">
+            <div class="col-sm-6">
+                <div id="workspace" style="height: 600px"></div>
+            </div>
+            <div class="col-sm-6">
+                <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
+            </div>
+        </div>
+    </div>
 
     <!-- boot bck2brwsr -->
     <script type="text/javascript" src="bck2brwsr.js"></script>
