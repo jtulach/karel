@@ -39,4 +39,8 @@ public final class Procedure {
     Object rawJS() {
         return js;
     }
+
+    public void select() {
+        Workspace.select(js);
+    }
 }

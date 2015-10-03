@@ -80,12 +80,17 @@ final class KarelModel {
     
     @Function static void templateShown(Karel m) {
         if ("edit".equals(m.getTab())) {
-            if (workspace == null) {
-                workspace = Workspace.create("workspace");
-            }
+            findWorkspace();
         } else if ("town".equals(m.getTab())) {
             refreshCommands(m);
         }
+    }
+
+    private static Workspace findWorkspace() {
+        if (workspace == null) {
+            workspace = Workspace.create("workspace");
+        }
+        return workspace;
     }
 
     private static void refreshCommands(Karel m) {
@@ -124,9 +129,12 @@ final class KarelModel {
     
     @Function static void edit(Karel m) {
         String cmd = m.getCurrentTask().getCommand();
-        if (!m.getSource().contains(cmd)) {
-//            m.setSource(m.getSource() + "\n\n" + cmd +"\n  \n" + KarelToken.END.text() + "\n");
+        Workspace w = findWorkspace();
+        Procedure proc = w.findProcedure(cmd);
+        if (proc == null) {
+            proc = w.newProcedure(cmd);
         }
+        proc.select();
         m.setTab("edit");
     }
     
