@@ -42,7 +42,6 @@ import net.java.html.json.Property;
     @Property(name = "scratch", type = Scratch.class),
     @Property(name = "commands", type = Command.class, array = true),
     @Property(name = "source", type = String.class),
-    @Property(name = "completions", type = Completion.class, array = true),
     @Property(name = "speed", type = int.class),
     @Property(name = "running", type = boolean.class),
     @Property(name = "tasks", type = TaskInfo.class, array = true)
@@ -213,22 +212,6 @@ final class KarelModel {
     @OnPropertyChange("source")
     static void storeSource(Karel m) {
         Storage.getDefault().put("source", m.getSource());
-    }
-    
-    @ModelOperation static void updateCompletions(Karel m, List<Completion> compl) {
-        m.getCompletions().clear();
-        m.getCompletions().addAll(compl);
-    }
-    
-    @Model(className="Completion", properties = {
-        @Property(name="name", type = String.class),
-        @Property(name="word", type = String.class),
-        @Property(name="line", type = int.class),
-        @Property(name="start", type = int.class),
-        @Property(name="end", type = int.class),
-        @Property(name="then", type = String.class)
-    })
-    static class CompletionModel {
     }
     
     private static boolean containsURL(List<TaskInfo> arr, String url) {
