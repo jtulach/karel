@@ -198,7 +198,7 @@
         <dependency>
             <groupId>com.dukescript.presenters</groupId>
             <artifactId>ios</artifactId>
-            <version>0.7</version>
+            <version>0.9</version>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
