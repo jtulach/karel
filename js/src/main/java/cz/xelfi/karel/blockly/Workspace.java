@@ -26,7 +26,6 @@ import net.java.html.js.JavaScriptResource;
 public final class Workspace {
     static {
         init0();
-        KarelBlockly.init0();
     }
     private final Object js;
 
@@ -35,7 +34,8 @@ public final class Workspace {
     }
 
     public static Workspace create(String id) {
-        Object js = create0(id);
+        Object karel = KarelBlockly.getDefault();
+        Object js = create0(karel, id);
         return new Workspace(js);
     }
 
@@ -83,10 +83,10 @@ public final class Workspace {
     @JavaScriptBody(args = {}, body = "", wait4js = false)
     private static native void init0();
 
-    @JavaScriptBody(args = { "id" }, wait4js = true, body =
-        "return Blockly['karel'](id);"
+    @JavaScriptBody(args = { "karel", "id" }, wait4js = true, body =
+        "return karel(id);"
     )
-    private static native Object create0(String id);
+    private static native Object create0(Object karel, String id);
 
     @JavaScriptBody(args = { "workspace" }, wait4js = true, body =
         "return workspace.procedures();"

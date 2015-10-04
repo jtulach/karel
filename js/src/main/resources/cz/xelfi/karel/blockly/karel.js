@@ -16,8 +16,6 @@
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
 
-/* global Blockly */
-
 (function() {
 function injectKarel(id) {
     var workspace;
@@ -73,7 +71,7 @@ function injectKarel(id) {
         }
         return s;
     };
-
+var Blockly = window['Blockly'];
 Blockly.Blocks['karel_funkce'] = {
   init: function() {
     this.appendDummyInput()

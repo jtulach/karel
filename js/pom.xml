@@ -12,7 +12,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Karel JavaScript Libraries</name>
+  <name>Karel with Blockly</name>
 
   <properties>
     <netbeans.compile.on.save>none</netbeans.compile.on.save>
@@ -26,8 +26,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>cz.xelfi.karel.js</Export-Package>
-                        <Bundle-SymbolicName>cz.xelfi.karel.js</Bundle-SymbolicName>
+                        <Export-Package>cz.xelfi.karel.blockly</Export-Package>
+                        <Bundle-SymbolicName>cz.xelfi.karel.blockly</Bundle-SymbolicName>
                     </instructions>
                 </configuration>                
             </plugin>

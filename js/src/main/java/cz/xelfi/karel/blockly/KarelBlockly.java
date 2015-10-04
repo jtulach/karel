@@ -20,8 +20,18 @@ package cz.xelfi.karel.blockly;
 import net.java.html.js.JavaScriptBody;
 import net.java.html.js.JavaScriptResource;
 
-@JavaScriptResource("js/blocks/karel.js")
+@JavaScriptResource("karel.js")
 final class KarelBlockly {
-    @JavaScriptBody(args = {}, body = "", wait4js = false)
-    static native void init0();
+    private static Object js;
+
+    static Object getDefault() {
+        if (js == null) {
+            js = init0();
+        }
+        return js;
+    }
+
+
+    @JavaScriptBody(args = {}, body = "return Blockly['karel']")
+    private static native Object init0();
 }
