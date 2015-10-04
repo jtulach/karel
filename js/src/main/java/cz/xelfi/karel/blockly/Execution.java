@@ -99,9 +99,33 @@ public final class Execution {
         }
     }
 
+    private static State buildIn(String name, Environment env) {
+        if (name.equals("STEP")) {
+            if (!env.step()) {
+                return State.ERROR_WALL;
+            }
+        } else if (name.equals("LEFT")) {
+            env.left();
+        } else if (name.equals("PUT")) {
+            if (!env.put()) {
+                return State.ERROR_FULL;
+            }
+        } else if (name.equals("TAKE")) {
+            if (!env.take()) {
+                return State.ERROR_EMPTY;
+            }
+        } else {
+            return null;
+        }
+        return State.FINISHED;
+    }
+
     public State next() {
         if (current instanceof State) {
             return (State)current;
+        }
+        if (current instanceof String) {
+            return (State) (current = buildIn((String) current, env));
         }
         AGAIN: for (;;) {
             boolean returned = false;
@@ -144,21 +168,8 @@ public final class Execution {
                     break;
                 case "karel_call":
                     if (!returned) {
-                        if (info.call.equals("STEP")) {
-                            if (!env.step()) {
-                                return (State) (current = State.ERROR_WALL);
-                            }
-                        } else if (info.call.equals("LEFT")) {
-                            env.left();
-                        } else if (info.call.equals("PUT")) {
-                            if (!env.put()) {
-                                return (State) (current = State.ERROR_FULL);
-                            }
-                        } else if (info.call.equals("TAKE")) {
-                            if (!env.take()) {
-                                return (State) (current = State.ERROR_EMPTY);
-                            }
-                        } else {
+                        State buildIn = buildIn(info.call, env);
+                        if (buildIn == null) {
                             Procedure found = null;
                             for (Procedure p : procedures) {
                                 if (p.getName().equals(info.call)) {
@@ -171,6 +182,8 @@ public final class Execution {
                             }
                             delegate = found.prepareExecution(env);
                             return State.RUNNING;
+                        } else if (buildIn != State.FINISHED) {
+                            return (State) (current = buildIn);
                         }
                     }
                     next = info.next;

@@ -51,6 +51,7 @@ final class KarelModel {
     private static Workspace workspace;
 
     @Model(className = "Command", properties = {
+        @Property(name = "id", type = String.class),
         @Property(name = "name", type = String.class)
     })
     final static class CommandModel {
@@ -98,18 +99,16 @@ final class KarelModel {
 
     private static void refreshCommands(Karel m) {
         List<Command> arr = new ArrayList<>();
-        if (workspace != null) {
-            for (Procedure p : workspace.getProcedures()) {
-                arr.add(new Command(p.getName()));
-            }
-            Storage.getDefault().put("workspace", workspace.toString());
+        for (Procedure p : findWorkspace().getProcedures()) {
+            arr.add(new Command(p.getId(), p.getName()));
         }
+        Storage.getDefault().put("workspace", findWorkspace().toString());
         m.getCommands().clear();
         m.getCommands().addAll(arr);
     }
 
     @Function static void invoke(Karel m, Command data) {
-        Procedure procedure = workspace.findProcedure(data.getName());
+        Procedure procedure = findWorkspace().findProcedure(data.getId());
         if (procedure == null) {
             refreshCommands(m);
             return;

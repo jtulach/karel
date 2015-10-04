@@ -40,22 +40,22 @@ public final class Workspace {
     }
 
     public Procedure newProcedure(String commandName) {
-        return new Procedure(create1(js, "karel_funkce", commandName), this, commandName);
+        return new Procedure(create1(js, "karel_funkce", commandName), this, commandName, commandName);
     }
 
 
     public List<Procedure> getProcedures() {
         Object[] blocks = list0(js);
-        List<Procedure> arr = new ArrayList<>(blocks.length / 2);
-        for (int i = 0; i < blocks.length; i += 2) {
-            arr.add(new Procedure(blocks[i], this, (String)blocks[i + 1]));
+        List<Procedure> arr = new ArrayList<>(blocks.length / 3);
+        for (int i = 0; i < blocks.length; i += 3) {
+            arr.add(new Procedure(blocks[i + 2], this, (String)blocks[i + 0], (String)blocks[i + 1]));
         }
         return arr;
     }
 
-    public Procedure findProcedure(String name) {
+    public Procedure findProcedure(String id) {
         for (Procedure p : getProcedures()) {
-            if (name.equals(p.getName())) {
+            if (id.equals(p.getId())) {
                 return p;
             }
         }
@@ -84,31 +84,18 @@ public final class Workspace {
     private static native void init0();
 
     @JavaScriptBody(args = { "id" }, wait4js = true, body =
-        "return Blockly.karel.inject(id);"
+        "return Blockly['karel'](id);"
     )
     private static native Object create0(String id);
 
     @JavaScriptBody(args = { "workspace" }, wait4js = true, body =
-        "var arr = [];\n" +
-        "var blocks = workspace.getTopBlocks();\n" +
-        "for (var i = 0; i < blocks.length; i++) {\n" +
-        "  if (blocks[i].type == 'karel_funkce') {\n" +
-        "    arr.push(blocks[i]);\n" +
-        "    arr.push(blocks[i].getFieldValue('NAME'));\n" +
-        "  }\n" +
-        "}\n" +
-        "return arr;\n" +
-        ""
+        "return workspace.procedures();"
     )
     private static native Object[] list0(Object workspace);
 
 
     @JavaScriptBody(args = { "workspace", "type", "commandName" }, body =
-        "var b = Blockly.Block.obtain(workspace, type);\n" +
-        "b.initSvg();\n" +
-        "b.setFieldValue(commandName, 'NAME');\n" +
-        "b.render();\n" +
-        "return b;"
+        "return workspace.newBlock(type, commandName);"
     )
     private static native Object create1(Object workspace, String type, String commandName);
 
@@ -116,15 +103,15 @@ public final class Workspace {
     private static native void clear0(Object workspace);
 
     @JavaScriptBody(args = { "workspace", "xml" }, body =
-        "Blockly.Xml.domToWorkspace(workspace, Blockly.Xml.textToDom(xml));"
+        "workspace.loadXml(xml);"
     )
     private static native void load0(Object workspace, String xml);
 
     @JavaScriptBody(args = { "workspace" }, body =
-        "return Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));"
+        "return workspace.toXml();"
     )
     private static native String toString0(Object workspace);
-    @JavaScriptBody(args = { "js" }, body = "js.select();", wait4js = false
+    @JavaScriptBody(args = { "js" }, body = "if (js.select) js.select();", wait4js = false
     )
     static native void select(Object js);
 

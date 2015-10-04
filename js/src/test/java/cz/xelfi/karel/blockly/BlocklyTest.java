@@ -66,10 +66,10 @@ public class BlocklyTest {
     
     private void doWorkingWithWorkspace() throws Exception {
         Workspace w = Workspace.create("any");
-        assertEquals(w.getProcedures().size(), 0, "No top blocks yet");
+        assertEquals(filterProcedures(w).size(), 0, "No top blocks yet");
         Procedure p = w.newProcedure("vpravo-vbok");
         assertNotNull(p);
-        final List<Procedure> p2 = w.getProcedures();
+        final List<Procedure> p2 = filterProcedures(w);
         assertEquals(p2.size(), 1, "One top block now");
         assertEquals(p2.get(0).getName(), "vpravo-vbok");
     }
@@ -102,7 +102,7 @@ public class BlocklyTest {
 "</xml>"
         );
 
-        List<Procedure> arr = w.getProcedures();
+        List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 1, "One proc: " + arr);
 
         FewSteps env = new FewSteps(2);
@@ -149,7 +149,7 @@ public class BlocklyTest {
 "</xml>"
         );
 
-        List<Procedure> arr = w.getProcedures();
+        List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 1, "One proc: " + arr);
 
         class FewTurns implements Execution.Environment {
@@ -240,7 +240,7 @@ public class BlocklyTest {
 "</xml>"
         );
 
-        List<Procedure> arr = w.getProcedures();
+        List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 1, "One proc: " + arr);
 
         class StepNorth implements Execution.Environment {
@@ -334,7 +334,7 @@ public class BlocklyTest {
 "</xml>"
         );
 
-        List<Procedure> arr = w.getProcedures();
+        List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 1, "One proc: " + arr);
 
         class StepNorth implements Execution.Environment {
@@ -410,6 +410,27 @@ public class BlocklyTest {
     }
 
     @Test
+    public void testPrimitiveCall() throws Throwable {
+        doTest("doPrimitiveCall");
+    }
+
+    private void doPrimitiveCall() throws Exception {
+        Workspace w = Workspace.create("any");
+        w.clear();
+
+        FewSteps env = new FewSteps(1);
+
+        Procedure step = w.findProcedure("STEP");
+        assertNotNull(step, "Step is always present");
+
+        Execution exec = step.prepareExecution(env);
+        assertEquals(exec.next(), State.FINISHED, "one step is OK");
+
+        Execution exec2 = step.prepareExecution(env);
+        assertEquals(exec2.next(), State.ERROR_WALL, "second isn't");
+    }
+
+    @Test
     public void testProcedureCall() throws Throwable {
         doTest("doProcedureCall");
     }
@@ -450,7 +471,7 @@ public class BlocklyTest {
 "</xml>"
         );
 
-        List<Procedure> arr = w.getProcedures();
+        List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 2, "Two procs: " + arr);
 
         FewSteps env = new FewSteps(10);
@@ -508,6 +529,15 @@ public class BlocklyTest {
             }
             throw arr[0];
         }
+    }
+
+    private List<Procedure> filterProcedures(Workspace w) {
+        List<Procedure> arr = w.getProcedures();
+        assertEquals(arr.get(0).getId(), "STEP");
+        assertEquals(arr.get(1).getId(), "LEFT");
+        assertEquals(arr.get(2).getId(), "PUT");
+        assertEquals(arr.get(3).getId(), "TAKE");
+        return arr.subList(4, arr.size());
     }
     
     static class FewSteps implements Execution.Environment {

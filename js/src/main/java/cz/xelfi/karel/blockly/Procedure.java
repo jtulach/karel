@@ -20,20 +20,29 @@ package cz.xelfi.karel.blockly;
 public final class Procedure {
     private final Object js;
     private final Workspace ws;
+    private final String id;
     private final String name;
     
-    Procedure(Object js, Workspace ws, String name) {
+    Procedure(Object js, Workspace ws, String name, String id) {
         this.js = js;
         this.ws = ws;
         this.name = name;
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    /** Universtal, non-tranlatable name of the procedure.
+     * @return values like <code>STEP</code>, <code>LEFT</code>, etc.
+     */
+    public String getId() {
+        return id;
+    }
+
     public Execution prepareExecution(Execution.Environment env) {
-        return new Execution(env, ws.getProcedures(), js);
+        return new Execution(env, ws.getProcedures(), js == null ? id : js);
     }
 
     Object rawJS() {

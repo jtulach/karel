@@ -39,15 +39,15 @@ function injectKarel(id) {
     
     function procedures() {
         var arr = [];
-        arr.push(['krok', 'STEP']);
-        arr.push(['vlevo-vbok', 'LEFT']);
-        arr.push(['polož', 'PUT']);
-        arr.push(['zvedni', 'TAKE']);
+        arr.push(['krok', 'STEP', null]);
+        arr.push(['vlevo-vbok', 'LEFT', null]);
+        arr.push(['polož', 'PUT', null]);
+        arr.push(['zvedni', 'TAKE', null]);
         if (workspace) {
             workspace.getTopBlocks().forEach(function (b) {
                 var n = b.getFieldValue("NAME");
                 if (n) {
-                    arr.push([ n, n ]);
+                    arr.push([ n, n, b ]);
                 }
             });
         }
@@ -179,10 +179,45 @@ Blockly.Blocks['karel_call'] = {
     });
     workspace.addChangeListener(toolbox);
 
-    return workspace;
-}
+    function loadXml(xml) {
+        Blockly.Xml.domToWorkspace(workspace, Blockly.Xml.textToDom(xml));
+    }
 
-Blockly.karel = {
-  'inject' : injectKarel
-};
+    function toXml() {
+        return Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));
+    }
+
+    function newBlock(type, commandName) {
+        var b = Blockly.Block.obtain(workspace, type);
+        b.initSvg();
+        b.setFieldValue(commandName, 'NAME');
+        b.render();
+        return b;
+    }
+
+    function clear() {
+        return workspace.clear();
+    }
+
+    function flatProcedures() {
+        var arr = procedures();
+        var res = [];
+        for (var i = 0; i < arr.length; i++) {
+            var nameIdRef = arr[i];
+            res.push(nameIdRef[0]);
+            res.push(nameIdRef[1]);
+            res.push(nameIdRef[2]);
+        }
+        return res;
+    }
+
+    return {
+        'clear' : clear,
+        'loadXml' : loadXml,
+        'toXml' : toXml,
+        'procedures': flatProcedures,
+        'newBlock': newBlock
+    };
+}
+Blockly['karel'] = injectKarel;
 })();
