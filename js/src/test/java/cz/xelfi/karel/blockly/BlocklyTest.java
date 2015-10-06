@@ -26,8 +26,10 @@ import net.java.html.BrwsrCtx;
 import net.java.html.boot.BrowserBuilder;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -83,6 +85,8 @@ public class BlocklyTest {
         Workspace w = Workspace.create("any");
         w.clear();
 
+        assertTrue(w.isEmpty(), "Empty now");
+
         w.loadXML(
 "<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
 "  <block type=\"karel_funkce\" x=\"36\" y=\"115\">\n" +
@@ -104,6 +108,7 @@ public class BlocklyTest {
 
         List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 1, "One proc: " + arr);
+        assertFalse(w.isEmpty(), "Not empty now");
         arr.get(0).setCollapsed(true);
 
         FewSteps env = new FewSteps(2);

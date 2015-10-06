@@ -62,6 +62,14 @@ public final class Workspace {
         return null;
     }
 
+    public boolean isEmpty() {
+        for (Procedure p : getProcedures()) {
+            if (p.rawJS() != null) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void clear() {
         clear0(js);

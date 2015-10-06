@@ -95,7 +95,7 @@ final class KarelModel {
     }
 
     @Function static void templateShown(Karel m) {
-        if ("town".equals(m.getTab())) {
+        if ("edit".equals(m.getTab())) {
             refreshCommands(m);
         }
     }
@@ -103,18 +103,22 @@ final class KarelModel {
     static Workspace findWorkspace() {
         if (workspace == null) {
             workspace = Workspace.create("workspace");
-            String xml = Storage.getDefault().get("workspace", null);
-            if (xml != null) {
-                workspace.loadXML(xml);
-            }
-            for (Procedure p : workspace.getProcedures()) {
-                p.setCollapsed(true);
-            }
         }
         return workspace;
     }
 
+    @Function
+    static void loadWorkspace(Karel m) {
+        String xml = Storage.getDefault().get("workspace", null);
+        if (xml != null) {
+            findWorkspace().loadXML(xml);
+        }
+    }
+
     private static void refreshCommands(Karel m) {
+        if (findWorkspace().isEmpty()) {
+            return;
+        }
         List<Command> arr = new ArrayList<>();
         for (Procedure p : findWorkspace().getProcedures()) {
             arr.add(new Command(p.getId(), p.getName()));

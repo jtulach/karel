@@ -191,7 +191,8 @@
         <div class="container theme-showcase" role="main">
         <div class="row">
             <div class="col-sm-8">
-                <div id="workspace" style="height: 90vh"></div>
+                <button data-bind="click: $root.loadWorkspace">Load</button>
+                <div id="workspace" style="height: 90vh; width: 50vw"></div>
             </div>
             <div class="col-sm-4">
             <div data-bind="with: scratch">
