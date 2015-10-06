@@ -107,6 +107,9 @@ final class KarelModel {
             if (xml != null) {
                 workspace.loadXML(xml);
             }
+            for (Procedure p : workspace.getProcedures()) {
+                p.setCollapsed(true);
+            }
         }
         return workspace;
     }

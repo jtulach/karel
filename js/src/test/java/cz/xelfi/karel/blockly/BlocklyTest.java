@@ -104,6 +104,7 @@ public class BlocklyTest {
 
         List<Procedure> arr = filterProcedures(w);
         assertEquals(arr.size(), 1, "One proc: " + arr);
+        arr.get(0).setCollapsed(true);
 
         FewSteps env = new FewSteps(2);
 

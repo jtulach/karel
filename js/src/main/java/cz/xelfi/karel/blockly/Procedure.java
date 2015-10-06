@@ -50,6 +50,14 @@ public final class Procedure {
     }
 
     public void select() {
-        Workspace.select(js);
+        if (js != null) {
+            Workspace.select(js);
+        }
+    }
+
+    public void setCollapsed(boolean b) {
+        if (js != null) {
+            Workspace.setCollapsed(js, b);
+        }
     }
 }

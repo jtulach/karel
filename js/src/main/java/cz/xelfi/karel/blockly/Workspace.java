@@ -111,9 +111,11 @@ public final class Workspace {
         "return workspace.toXml();"
     )
     private static native String toString0(Object workspace);
-    @JavaScriptBody(args = { "js" }, body = "if (js.select) js.select();", wait4js = false
-    )
+    @JavaScriptBody(args = { "js" }, body = "if (js.select) js.select();", wait4js = false)
     static native void select(Object js);
+
+    @JavaScriptBody(args = { "js", "b" }, body = "js.setCollapsed(b);", wait4js = false)
+    static native void setCollapsed(Object js, boolean b);
 
     @JavaScriptBody(args = { "js" }, body =
         "return [\n"
