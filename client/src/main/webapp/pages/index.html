@@ -188,12 +188,35 @@
 
     <div data-bind="template: { name : tab(), afterRender: $root.templateShown }"></div>
     <div data-bind="visible: tab() === 'edit'">
+        <div class="container theme-showcase" role="main">
         <div class="row">
-            <div class="col-sm-6">
-                <div id="workspace" style="height: 600px"></div>
+            <div class="col-sm-8">
+                <div id="workspace" style="height: 90vh"></div>
             </div>
-            <div class="col-sm-6">
-                <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Přeložit</button>
+            <div class="col-sm-4">
+            <div data-bind="with: scratch">
+                <div data-bind="with: town">
+                    <div data-bind="template: 'draw-town'"></div>
+                    <p></p>
+                    <!-- ko foreach: $root.commands -->
+                    <button type="button" class="btn btn-info"
+                      data-bind="text: name,click: $root.invokeScratch,enable: !$root.running()">
+                    </button>
+                    <!-- /ko -->
+                    <!--
+                    <div class="col-sm-12" data-bind="visible: text">
+                        <textarea width="100%" cols="70" data-bind="value: text"/>
+                    </div>
+                    <button type="button" class="btn-sm btn-success" data-bind="click: dump">Ulož město</button>
+                    <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Zkusit</button>
+                    <div class="col-sm-12">
+                        <p></p>
+                        <button type="button" class="btn btn-info" data-bind="click: left">Vlevo-vbok</button>
+                        <button type="button" class="btn btn-info" data-bind="click: step">Krok</button>
+                        <p></p>
+                    </div>
+                    -->
+                </div>
             </div>
         </div>
     </div>
@@ -208,49 +231,6 @@
 
 
     <script type="text/html" id="about">
-      <div data-bind="with: scratch">
-          <div data-bind="with: town">
-              <div class="row">
-                  <div class="col-sm-12">
-                      <p></p>
-                      <button type="button" class="btn btn-info" data-bind="click: left">Vlevo-vbok</button>
-                      <button type="button" class="btn btn-info" data-bind="click: step">Krok</button>
-                      <p></p>
-                  </div>
-              </div>
-              <table class="town">
-                <tbody>
-                    <!-- ko foreach: rows -->
-                    <tr>
-                        <!-- ko foreach: columns -->
-                        <td data-bind="click: rotate">
-                            <div class="karel" data-bind="css: ('direction-' + robot())"></div>
-                            <div class="karel" data-bind="css: ('mark-' + marks())"></div>
-                        </td>
-                        <!-- /ko -->
-                    </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
-              <div class="alert alert-warning" data-bind="visible: error() == 1">
-                  <strong>Pozor!</strong> Narazil jsem do zdi!
-              </div>
-              <div class="alert alert-warning" data-bind="visible: error() == 2">
-                  <strong>Pozor!</strong> Nelze sebrat značku!
-              </div>
-              <div class="alert alert-warning" data-bind="visible: error() == 3">
-                  <strong>Pozor!</strong> Příliš mnoho značek!
-              </div>
-              <div class="alert alert-warning" data-bind="visible: error() == 4">
-                  <strong>Pozor!</strong>
-                  Neznámý příkaz <span data-bind="text: errorParams"></span>!
-              </div>
-          </div>
-        <div class="col-sm-12" data-bind="visible: text">
-            <textarea width="100%" cols="70" data-bind="value: text"/>
-        </div>
-        <button type="button" class="btn-sm btn-success" data-bind="click: dump">Ulož město</button>
-      </div>
     </script>
 
     <!-- Bootstrap core JavaScript

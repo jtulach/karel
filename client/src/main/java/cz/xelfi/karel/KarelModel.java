@@ -47,8 +47,24 @@ import net.java.html.json.Property;
     @Property(name = "tasks", type = TaskInfo.class, array = true)
 })
 final class KarelModel {
+    private static Karel karel;
     private static final Timer KAREL = new Timer("Karel Moves");
     private static Workspace workspace;
+
+    static Karel onPageLoad(String... args) throws Exception {
+        String src = Storage.getDefault().get("source", "\n\n");
+        final Scratch s = new Scratch();
+        s.getTown().clear();
+
+        karel = new Karel("home", "msg", null, null, s, src, 300, false);
+        KarelModel.compile(karel, false);
+        karel.applyBindings();
+
+        KarelModel.findWorkspace();
+
+
+        return karel;
+    }
 
     @Model(className = "Command", properties = {
         @Property(name = "id", type = String.class),
@@ -79,14 +95,12 @@ final class KarelModel {
     }
 
     @Function static void templateShown(Karel m) {
-        if ("edit".equals(m.getTab())) {
-            findWorkspace();
-        } else if ("town".equals(m.getTab())) {
+        if ("town".equals(m.getTab())) {
             refreshCommands(m);
         }
     }
 
-    private static Workspace findWorkspace() {
+    static Workspace findWorkspace() {
         if (workspace == null) {
             workspace = Workspace.create("workspace");
             String xml = Storage.getDefault().get("workspace", null);
@@ -105,6 +119,18 @@ final class KarelModel {
         Storage.getDefault().put("workspace", findWorkspace().toString());
         m.getCommands().clear();
         m.getCommands().addAll(arr);
+    }
+
+    @Function static void invokeScratch(Karel m, Command data) {
+        Procedure procedure = findWorkspace().findProcedure(data.getId());
+        if (procedure == null) {
+            refreshCommands(m);
+            return;
+        }
+        List<KarelCompiler> comps = new ArrayList<>();
+        KarelCompiler frame = KarelCompiler.execute(m.getScratch().getTown(), procedure, data.getName());
+        comps.add(frame);
+        m.animate(comps);
     }
 
     @Function static void invoke(Karel m, Command data) {
