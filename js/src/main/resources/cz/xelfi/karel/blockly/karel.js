@@ -163,7 +163,13 @@ Blockly.Blocks['karel_repeat'] = {
 Blockly.Blocks['karel_call'] = {
   init: function() {
     this.appendDummyInput()
+        .appendField("     ");
+    this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(procedures), "CALL");
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("     ");
+    this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(330);
