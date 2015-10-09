@@ -183,6 +183,10 @@ Blockly.Blocks['karel_call'] = {
     });
     workspace.addChangeListener(toolbox);
 
+    function addListeners(callback) {
+        workspace.getCanvas().addEventListener('blocklySelectChange', callback, false);
+    }
+
     function loadXml(xml) {
         Blockly.Xml.domToWorkspace(workspace, Blockly.Xml.textToDom(xml));
     }
@@ -246,6 +250,7 @@ Blockly.Blocks['karel_call'] = {
         'toXml' : toXml,
         'procedures': flatProcedures,
         'newBlock': newBlock,
+        'listen': addListeners,
         'selected': selectedProcedure
     };
 }

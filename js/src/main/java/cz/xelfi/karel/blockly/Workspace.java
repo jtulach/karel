@@ -29,8 +29,11 @@ public final class Workspace {
     }
     private final Object js;
 
+    private Runnable selectChange;
+
     private Workspace(Object js) {
         this.js = js;
+        listen0(js, this);
     }
 
     public static Workspace create(String id) {
@@ -89,6 +92,16 @@ public final class Workspace {
         return toString0(js);
     }
 
+    public void addSelectionChange(Runnable r) {
+        selectChange = OnChange.add(selectChange, r);
+    }
+
+    void change(Object[] params) {
+        if ("blocklySelectChange".equals(params[0])) {
+            OnChange.fire(selectChange);
+        }
+    }
+
     Object rawJS() {
         return js;
     }
@@ -101,11 +114,17 @@ public final class Workspace {
     )
     private static native Object create0(Object karel, String id);
 
+    @JavaScriptBody(args = { "workspace", "thiz" }, wait4js = false, javacall = true, body =
+        "workspace.listen(function(ev) {\n" +
+        "  thiz.@cz.xelfi.karel.blockly.Workspace::change([Ljava/lang/Object;)([ev.type, ev.target]);\n" +
+        "});\n"
+    )
+    private static native void listen0(Object workspace, Workspace thiz);
+
     @JavaScriptBody(args = { "workspace" }, wait4js = true, body =
         "return workspace.procedures();"
     )
     private static native Object[] list0(Object workspace);
-
 
     @JavaScriptBody(args = { "workspace", "type", "commandName" }, body =
         "return workspace.newBlock(type, commandName);"

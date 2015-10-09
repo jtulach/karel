@@ -20,8 +20,11 @@ package cz.xelfi.karel.blockly;
 import cz.xelfi.karel.blockly.Execution.State;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import net.java.html.BrwsrCtx;
 import net.java.html.boot.BrowserBuilder;
 import org.testng.Assert;
@@ -443,7 +446,7 @@ public class BlocklyTest {
     }
 
     private void doProcedureCall() throws Exception {
-        Workspace w = Workspace.create("any");
+        final Workspace w = Workspace.create("any");
         w.clear();
 
         w.loadXML(
@@ -484,51 +487,104 @@ public class BlocklyTest {
         FewSteps env = new FewSteps(10);
 
         Procedure tenSafeSteps = w.findProcedure("ten-safe-steps");
-        Procedure safeStep = w.findProcedure("safe-step");
+        final Procedure safeStep = w.findProcedure("safe-step");
 
-        assertNull(w.getSelectedProcedure(), "no selected procedure yet");
-        {
-            Execution exec = tenSafeSteps.prepareExecution(env);
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_repeat");
-            assertEquals(w.getSelectedProcedure(), tenSafeSteps, "ten steps is selected");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_funkce");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if");
-            assertEquals(w.getSelectedProcedure(), safeStep, "one safe step is selected");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_repeat");
+        class SelectionChanged implements Runnable {
+            boolean changed;
 
-            State state;
-            for (;;) {
-                state = exec.next();
-                if (state != State.RUNNING) {
-                    break;
-                }
+            @Override
+            public void run() {
+                changed = true;
             }
-            assertEquals(exec.next(), State.FINISHED, "At the end reached successful state");
+
+            void assertChange() {
+                assertTrue(changed, "Message delivered");
+                changed = false;
+            }
         }
+        final SelectionChanged selectionChanged = new SelectionChanged();
+        w.addSelectionChange(selectionChanged);
+        assertNull(w.getSelectedProcedure(), "no selected procedure yet");
+
+        final Execution exec = tenSafeSteps.prepareExecution(env);
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_repeat");
+        assertEquals(w.getSelectedProcedure(), tenSafeSteps, "ten steps is selected");
+
+        new Later() {
+            @Override
+            public Void call() {
+                selectionChanged.assertChange();
+                assertEquals(exec.next(), State.RUNNING, "OK, running");
+                assertEquals(exec.currentType(), "karel_call");
+                assertEquals(exec.next(), State.RUNNING, "OK, running");
+                assertEquals(exec.currentType(), "karel_funkce");
+                assertEquals(exec.next(), State.RUNNING, "OK, running");
+                assertEquals(exec.currentType(), "karel_if");
+                assertEquals(w.getSelectedProcedure(), safeStep, "one safe step is selected");
+                return null;
+            }
+        };
+
+        new Later() {
+            @Override
+            public Void call() {
+                selectionChanged.assertChange();
+                assertEquals(exec.next(), State.RUNNING, "OK, running");
+                assertEquals(exec.currentType(), "karel_call");
+                assertEquals(exec.next(), State.RUNNING, "OK, running");
+                assertEquals(exec.currentType(), "karel_repeat");
+
+                State state;
+                for (;;) {
+                    state = exec.next();
+                    if (state != State.RUNNING) {
+                        break;
+                    }
+                }
+                assertEquals(exec.next(), State.FINISHED, "At the end reached successful state");
+                return null;
+            }
+        };
     }
 
+    private final LinkedList<Later> pending = new LinkedList<>();
     private void doTest(String method) throws Throwable {
         final Method m = this.getClass().getDeclaredMethod(method);
         m.setAccessible(true);
+
+        new Later() {
+            @Override
+            public Void call() throws Exception {
+                m.invoke(BlocklyTest.this);
+                return null;
+            }
+        };
+
         final Exception[] arr = { null };
         final CountDownLatch cdl = new CountDownLatch(1);
         CTX.execute(new Runnable() {
             @Override
             public void run() {
+                boolean goesOn = false;
                 try {
-                    m.invoke(BlocklyTest.this);
+                    Later toRun = pending.removeFirst();
+                    toRun.call();
+                    goesOn = pending.size() > 0;
                 } catch (Exception ex) {
                     arr[0] = ex;
                 } finally {
-                    cdl.countDown();
+                    if (!goesOn) {
+                        cdl.countDown();
+                    } else {
+                        final Runnable thiz = this;
+                        Executors.newSingleThreadExecutor().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                CTX.execute(thiz);
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -539,6 +595,12 @@ public class BlocklyTest {
                 throw ite.getTargetException();
             }
             throw arr[0];
+        }
+    }
+
+    abstract class Later implements Callable<Void> {
+        protected Later() {
+            pending.add(this);
         }
     }
 
