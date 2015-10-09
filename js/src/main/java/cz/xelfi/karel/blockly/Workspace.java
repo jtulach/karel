@@ -53,6 +53,11 @@ public final class Workspace {
         return arr;
     }
 
+    public Procedure getSelectedProcedure() {
+        Object[] jsProc = selected0(js);
+        return jsProc == null ? null : new Procedure(jsProc[2], this, (String)jsProc[0], (String)jsProc[1]);
+    }
+
     public Procedure findProcedure(String id) {
         for (Procedure p : getProcedures()) {
             if (id.equals(p.getId())) {
@@ -141,4 +146,9 @@ public final class Workspace {
       + "];\n"
     )
     static native Object[] info(Object js);
+
+    @JavaScriptBody(args = { "workspace" }, body =
+        "return workspace.selected();\n"
+    )
+    private static native Object[] selected0(Object workspace);
 }

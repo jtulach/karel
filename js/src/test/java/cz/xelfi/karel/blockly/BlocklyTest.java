@@ -29,6 +29,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -483,17 +484,21 @@ public class BlocklyTest {
         FewSteps env = new FewSteps(10);
 
         Procedure tenSafeSteps = w.findProcedure("ten-safe-steps");
+        Procedure safeStep = w.findProcedure("safe-step");
 
+        assertNull(w.getSelectedProcedure(), "no selected procedure yet");
         {
             Execution exec = tenSafeSteps.prepareExecution(env);
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_repeat");
+            assertEquals(w.getSelectedProcedure(), tenSafeSteps, "ten steps is selected");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_call");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_funkce");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_if");
+            assertEquals(w.getSelectedProcedure(), safeStep, "one safe step is selected");
             assertEquals(exec.next(), State.RUNNING, "OK, running");
             assertEquals(exec.currentType(), "karel_call");
             assertEquals(exec.next(), State.RUNNING, "OK, running");

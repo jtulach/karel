@@ -215,12 +215,38 @@ Blockly.Blocks['karel_call'] = {
         return res;
     }
 
+    function selectedProcedure() {
+        var element = Blockly.selected;
+        if (!element) {
+            return null;
+        }
+        for (;;) {
+            var parent = element.getSurroundParent();
+            if (!parent) {
+                break;
+            }
+            element = parent;
+        }
+        var ret = null;
+        workspace.getTopBlocks().forEach(function (b) {
+            if (element !== b) {
+                return;
+            }
+            var n = b.getFieldValue("NAME");
+            if (n) {
+                ret = [ n, n, b ];
+            }
+        });
+        return ret;
+    }
+
     return {
         'clear' : clear,
         'loadXml' : loadXml,
         'toXml' : toXml,
         'procedures': flatProcedures,
-        'newBlock': newBlock
+        'newBlock': newBlock,
+        'selected': selectedProcedure
     };
 }
 Blockly['karel'] = injectKarel;

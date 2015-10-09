@@ -60,4 +60,23 @@ public final class Procedure {
             Workspace.setCollapsed(js, b);
         }
     }
+
+    @Override
+    public String toString() {
+        return "Procedure[" + id + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode() * 7 + 5432543;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Procedure) {
+            Procedure p = (Procedure) obj;
+            return js.equals(p.js);
+        }
+        return false;
+    }
 }
