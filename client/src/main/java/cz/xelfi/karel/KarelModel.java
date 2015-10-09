@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import net.java.html.json.ComputedProperty;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
@@ -41,6 +42,7 @@ import net.java.html.json.Property;
     @Property(name = "currentInfo", type = TaskInfo.class),
     @Property(name = "scratch", type = Scratch.class),
     @Property(name = "commands", type = Command.class, array = true),
+    @Property(name = "selectedCommand", type = Command.class),
     @Property(name = "source", type = String.class),
     @Property(name = "speed", type = int.class),
     @Property(name = "running", type = boolean.class),
@@ -56,14 +58,29 @@ final class KarelModel {
         final Scratch s = new Scratch();
         s.getTown().clear();
 
-        karel = new Karel("home", "msg", null, null, s, src, 300, false);
+        karel = new Karel("home", "msg", null, null, s, null, src, 300, false);
         KarelModel.compile(karel, false);
         karel.applyBindings();
 
-        KarelModel.findWorkspace();
-
+        final Workspace workArea = KarelModel.findWorkspace(karel);
+        workArea.addSelectionChange(new Runnable() {
+            @Override
+            public void run() {
+                Procedure proc = workArea.getSelectedProcedure();
+                if (proc == null) {
+                    karel.setSelectedCommand(null);
+                } else {
+                    karel.setSelectedCommand(new Command(proc.getId(), proc.getName()));
+                }
+            }
+        });
 
         return karel;
+    }
+
+    @ComputedProperty
+    static boolean canStartScratch(Command selectedCommand, boolean running) {
+        return !running && selectedCommand != null;
     }
 
     @Model(className = "Command", properties = {
@@ -100,7 +117,7 @@ final class KarelModel {
         }
     }
 
-    static Workspace findWorkspace() {
+    static Workspace findWorkspace(Karel model) {
         if (workspace == null) {
             workspace = Workspace.create("workspace");
         }
@@ -111,25 +128,29 @@ final class KarelModel {
     static void loadWorkspace(Karel m) {
         String xml = Storage.getDefault().get("workspace", null);
         if (xml != null) {
-            findWorkspace().loadXML(xml);
+            findWorkspace(m).loadXML(xml);
         }
     }
 
     private static void refreshCommands(Karel m) {
-        if (findWorkspace().isEmpty()) {
+        if (findWorkspace(m).isEmpty()) {
             return;
         }
         List<Command> arr = new ArrayList<>();
-        for (Procedure p : findWorkspace().getProcedures()) {
+        for (Procedure p : findWorkspace(m).getProcedures()) {
             arr.add(new Command(p.getId(), p.getName()));
         }
-        Storage.getDefault().put("workspace", findWorkspace().toString());
+        Storage.getDefault().put("workspace", findWorkspace(m).toString());
         m.getCommands().clear();
         m.getCommands().addAll(arr);
     }
 
-    @Function static void invokeScratch(Karel m, Command data) {
-        Procedure procedure = findWorkspace().findProcedure(data.getId());
+    @Function static void invokeScratch(Karel m) {
+        Command data = m.getSelectedCommand();
+        if (data == null) {
+            return;
+        }
+        Procedure procedure = findWorkspace(m).findProcedure(data.getId());
         if (procedure == null) {
             refreshCommands(m);
             return;
@@ -141,7 +162,7 @@ final class KarelModel {
     }
 
     @Function static void invoke(Karel m, Command data) {
-        Procedure procedure = findWorkspace().findProcedure(data.getId());
+        Procedure procedure = findWorkspace(m).findProcedure(data.getId());
         if (procedure == null) {
             refreshCommands(m);
             return;
@@ -165,7 +186,7 @@ final class KarelModel {
 
     @Function static void edit(Karel m) {
         String cmd = m.getCurrentTask().getCommand();
-        Workspace w = findWorkspace();
+        Workspace w = findWorkspace(m);
         Procedure proc = w.findProcedure(cmd);
         if (proc == null) {
             proc = w.newProcedure(cmd);

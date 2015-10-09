@@ -56,7 +56,7 @@ public class KarelModelTest {
         TaskDescription td = new TaskDescription("xyz", "xyz", null, 0,
             new TaskTestCase("xyz", init, null, end, prg, "current")
         );
-        Karel km = new Karel("town", null, td, null, null, prg, 10, false);
+        Karel km = new Karel("town", null, td, null, null, null, prg, 10, false);
         km.compile();
         
         Command cmd = null;

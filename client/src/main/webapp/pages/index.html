@@ -199,11 +199,15 @@
                 <div data-bind="with: town">
                     <div data-bind="template: 'draw-town'"></div>
                     <p></p>
-                    <!-- ko foreach: $root.commands -->
                     <button type="button" class="btn btn-info"
-                      data-bind="text: name,click: $root.invokeScratch,enable: !$root.running()">
+                      data-bind="click: $root.invokeScratch, enable: $root.canStartScratch">
+                        <span data-bind="if: $root.selectedCommand">
+                            <span data-bind="with: $root.selectedCommand">
+                                <span data-bind="text: name"></span>
+                            </span>
+                        </span>
+                        <span data-bind="ifnot: : $root.selectedCommand">Start</span>
                     </button>
-                    <!-- /ko -->
                     <!--
                     <div class="col-sm-12" data-bind="visible: text">
                         <textarea width="100%" cols="70" data-bind="value: text"/>
