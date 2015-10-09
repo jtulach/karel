@@ -192,6 +192,8 @@
         <div class="row">
             <div class="col-sm-8">
                 <button data-bind="click: $root.loadWorkspace">Load</button>
+                <button data-bind="click: $root.collapse, enable: $root.selectedCommand">Collapse</button>
+                <button data-bind="click: $root.expand, enable: $root.selectedCommand">Expand</button>
                 <div id="workspace" style="height: 80vh; background-color: red"></div>
             </div>
             <div class="col-sm-4">

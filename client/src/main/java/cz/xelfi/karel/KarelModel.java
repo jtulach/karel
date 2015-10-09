@@ -83,6 +83,22 @@ final class KarelModel {
         return !running && selectedCommand != null;
     }
 
+    @Function
+    static void collapse(Karel model) {
+        Procedure proc = workspace.getSelectedProcedure();
+        if (proc != null) {
+            proc.setCollapsed(true);
+        }
+    }
+
+    @Function
+    static void expand(Karel model) {
+        Procedure proc = workspace.getSelectedProcedure();
+        if (proc != null) {
+            proc.setCollapsed(false);
+        }
+    }
+
     @Model(className = "Command", properties = {
         @Property(name = "id", type = String.class),
         @Property(name = "name", type = String.class)
