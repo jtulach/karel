@@ -17,29 +17,32 @@
  */
 package cz.xelfi.karel;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 
-public class AndroidMain extends Activity {
-    public AndroidMain() {
+final class AndroidStorage extends Storage {
+    private final SharedPreferences prefs;
+
+    public AndroidStorage(SharedPreferences aprefs) {
+        prefs = aprefs;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("karel.prefs", 0);
-        new AndroidStorage(prefs);
-        try {
-            startActivity(new Intent(getApplicationContext(), Class.forName("com.dukescript.presenters.Android")));
-        } catch (ClassNotFoundException ex) {
-            throw new IllegalStateException(ex);
-        }
-        finish();
+    public void put(String key, String value) {
+        prefs.edit().putString(key, value).apply();
     }
-    
-    public static void main(String... args) throws Exception {
-        Main.onPageLoad();
+
+    @Override
+    public String get(String key, String defaultValue) {
+        return prefs.getString(key, defaultValue);
+    }
+
+    @Override
+    public void putInt(String key, int value) {
+        prefs.edit().putInt(key, value).apply();
+    }
+
+    @Override
+    public int getInt(String key, int defaultValue) {
+        return prefs.getInt(key, defaultValue);
     }
 }

@@ -26,17 +26,26 @@ import java.util.prefs.Preferences;
  * @author Jaroslav Tulach
  */
 public abstract class Storage {
-    private static final Storage DEFAULT;
+    private static Storage DEFAULT;
     static {
         Iterator<Storage> it = ServiceLoader.load(Storage.class).iterator();
-        if (it.hasNext()) {
-            DEFAULT = it.next();
-        } else {
-            DEFAULT = new Impl();
+        while (DEFAULT == null && it.hasNext()) {
+            it.next();
         }
     }
+
+    protected Storage() {
+        if (DEFAULT == null) {
+            DEFAULT = this;
+        }
+    }
+
+
     
     public static Storage getDefault() {
+        if (DEFAULT == null) {
+            DEFAULT = new Impl();
+        }
         return DEFAULT;
     }
     
