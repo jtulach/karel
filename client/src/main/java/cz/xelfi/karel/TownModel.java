@@ -73,7 +73,21 @@ class TownModel {
             return true;
         }
     }
-    
+
+    @ModelOperation
+    static void copyTo(Town model, Town to) {
+        to.setError(model.getError());
+        to.getErrorParams().clear();
+        to.getErrorParams().addAll(model.getErrorParams());
+        to.getRows().clear();
+        for (Row row : model.getRows()) {
+            Row newRow = new Row();
+            for (Square column : row.getColumns()) {
+                newRow.getColumns().add(column.clone());
+            }
+            to.getRows().add(newRow);
+        }
+    }
     
     @Model(className = "Square", properties = {
         @Property(name = "robot", type = int.class),

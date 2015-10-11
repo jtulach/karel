@@ -99,6 +99,11 @@ final class KarelModel {
         }
     }
 
+    @Function
+    static void useTestForScratch(Karel model, TaskTestCase data) {
+        data.getStart().copyTo(model.getScratch().getTown());
+    }
+
     @Model(className = "Command", properties = {
         @Property(name = "id", type = String.class),
         @Property(name = "name", type = String.class)

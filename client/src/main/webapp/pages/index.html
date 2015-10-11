@@ -197,6 +197,40 @@
                 <div id="workspace" style="height: 80vh; background-color: red"></div>
             </div>
             <div class="col-sm-4">
+                <div data-bind="visible: currentInfo">
+                <div data-bind="with: currentInfo">Úkol: <span data-bind="text: name"></span></div>
+                <div class="input-group" data-bind="visible: currentTask, with: currentTask">
+                    <form role="form">
+                    <div class="input-group-btn">
+                        <input type="text" class="form-control" data-bind="textInput: description">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                        <ul id="color-dropdown-menu" class="dropdown-menu dropdown-menu-right" role="menu" data-bind="foreach: tests">
+                            <li class="input-lg"><a href="#" data-bind="click: $root.useTestForScratch, text: description"></a></li>
+                        </ul>
+                    </div>
+                    </form>
+                </div>
+<!--
+                <span data-bind="foreach: tests">
+                    <div class="alert alert-info" >
+                        <span class="karel-result glyphicon"
+                          data-bind="css: { 'glyphicon-thumbs-up' : state() == 'ok', 'glyphicon-thumbs-down' : state() == 'fail' }"
+                        ></span>
+                        <a href="#" data-bind="text: description, click: $parents[0].showHide"></a>
+                    </div>
+                    <div class="row" data-bind="visible: showing">
+                        <ul class="nav nav-pills nav-justified">
+                            <li data-bind="css: { 'active' : showing() == 'start' }, click: begin"><a href="#">Počáteční pozice</a></li>
+                            <li data-bind="css: { 'active' : showing() == 'current' }, click: now"><a href="#">Nyní</a></li>
+                            <li data-bind="css: { 'active' : showing() == 'end' }, click: finish"><a href="#">Cílová pozice</a></li>
+                        </ul>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: start, if: showing() == 'start' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: current, if: showing() == 'current' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: end, if: showing() == 'end' }"></div>
+                    </div>
+                </span>
+-->
+                </div>
             <div data-bind="with: scratch">
                 <div data-bind="with: town">
                     <div data-bind="template: 'draw-town'"></div>
