@@ -66,6 +66,17 @@ public final class Procedure {
         return "Procedure[" + id + "]";
     }
 
+    /**
+     * Converts the procedure into textual representation. The code is
+     * written in English mimics the standard Karel's way of writing its
+     * code.
+     * 
+     * @return human readable code of the procedure
+     */
+    public String getCode() {
+        return Workspace.procedureToString(ws.rawJS(), js);
+    }
+
     @Override
     public int hashCode() {
         return id.hashCode() * 7 + 5432543;

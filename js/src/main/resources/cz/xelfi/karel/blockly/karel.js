@@ -244,6 +244,81 @@ Blockly.Blocks['karel_call'] = {
         return ret;
     }
 
+    function dumpCondition(command, proc) {
+        var str = command;
+        if (proc.getFieldValue("NEG") === 'FALSE') {
+            str += " NOT";
+        }
+        str += ' ' + proc.getFieldValue("COND") + '\n';
+        return str;
+    }
+
+    function dump(proc, indent) {
+        if (!indent) {
+            indent = "";
+        }
+        var str = indent;
+        var middle = '';
+        switch (proc.type) {
+            case 'karel_funkce':
+                str += "PROCEDURE " + proc.getFieldValue("NAME") + '\n';
+                break;
+            case 'karel_while':
+                str += dumpCondition('WHILE', proc);
+                break;
+            case 'karel_if_else':
+                middle = indent + 'ELSE\n';
+                // fall through
+            case 'karel_if':
+                str += dumpCondition('IF', proc);
+                break;
+            case 'karel_repeat':
+                str += 'REPEAT ' + proc.getFieldValue("N") + " TIMES\n";
+                break;
+            case 'karel_call':
+                str += proc.getFieldValue("CALL") + "\n";
+                break;
+            default:
+                str += proc.type + ' call ' + proc.getFieldValue("CALL") + ' name ' + proc.getFieldValue("NAME") + '\n';
+                break;
+        }
+        var arr = proc.getChildren();
+        var cnt = 1;
+        for (var i = 0; i < arr.length; i++) {
+            var ch = arr[i];
+            if (ch.getSurroundParent() === proc) {
+                if (cnt == 0) {
+                    str += middle;
+                }
+                str += dump(ch, "  " + indent);
+                cnt--;
+            }
+            for (;;) {
+                ch = ch.getNextBlock();
+                if (ch === null) {
+                    break;
+                }
+                if (ch.getSurroundParent() === proc) {
+                    if (cnt == 0) {
+                        str += middle;
+                    }
+                    str += dump(ch, "  " + indent);
+                    cnt--;
+                }
+            }
+        }
+        switch (proc.type) {
+            case 'karel_funkce':
+            case 'karel_while':
+            case 'karel_repeat':
+            case 'karel_if':
+            case 'karel_if_else':
+                str += indent + "END\n";
+                break;
+        }
+        return str;
+    }
+
     return {
         'clear' : clear,
         'loadXml' : loadXml,
@@ -251,7 +326,8 @@ Blockly.Blocks['karel_call'] = {
         'procedures': flatProcedures,
         'newBlock': newBlock,
         'listen': addListeners,
-        'selected': selectedProcedure
+        'selected': selectedProcedure,
+        'procedureToString': dump
     };
 }
 Blockly['karel'] = injectKarel;

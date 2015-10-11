@@ -170,4 +170,7 @@ public final class Workspace {
         "return workspace.selected();\n"
     )
     private static native Object[] selected0(Object workspace);
+
+    @JavaScriptBody(args = { "workspace", "proc" }, body = "return workspace.procedureToString(proc);")
+    static native String procedureToString(Object workspace, Object proc);
 }

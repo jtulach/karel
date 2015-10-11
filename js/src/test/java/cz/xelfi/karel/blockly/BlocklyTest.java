@@ -129,6 +129,9 @@ public class BlocklyTest {
         assertEquals(exec.next(), State.RUNNING, "OK, running");
         assertEquals(exec.currentType(), "karel_while");
         assertEquals(exec.next(), State.FINISHED);
+
+        final String code = arr.get(0).getCode();
+        assertTrue(code.contains("WHILE NOT WALL"), code);
     }
 
 
@@ -214,6 +217,9 @@ public class BlocklyTest {
         assertEquals(exec.next(), State.FINISHED);
 
         assertEquals(env.cnt, 3, "Three turns left");
+
+        String code = arr.get(0).getCode();
+        assertTrue(code.contains("REPEAT 3 TIMES"), code);
     }
 
 
@@ -314,6 +320,9 @@ public class BlocklyTest {
 
             assertEquals(env.direction, 0, "Still Heading north");
         }
+
+        String code = arr.get(0).getCode();
+        assertTrue(code.contains("ELSE"), code);
     }
 
     @Test
@@ -417,6 +426,9 @@ public class BlocklyTest {
 
             assertEquals(env.direction, 0, "Still Heading north");
         }
+
+        String code = arr.get(0).getCode();
+        assertTrue(code.contains("IF NOT NORTH"), code);
     }
 
     @Test
