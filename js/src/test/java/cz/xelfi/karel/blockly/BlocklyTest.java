@@ -704,7 +704,7 @@ public class BlocklyTest {
         }
     }
 
-    private List<Procedure> filterProcedures(Workspace w) {
+    static List<Procedure> filterProcedures(Workspace w) {
         List<Procedure> arr = w.getProcedures();
         assertEquals(arr.get(0).getId(), "STEP");
         assertEquals(arr.get(1).getId(), "LEFT");
