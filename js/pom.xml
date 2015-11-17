@@ -58,6 +58,18 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>2.15</version>
          </plugin>
+         <plugin>
+             <groupId>org.antlr</groupId>
+             <artifactId>antlr4-maven-plugin</artifactId>
+             <version>4.5.1</version>
+             <executions>
+                 <execution>
+                     <goals>
+                         <goal>antlr4</goal>
+                     </goals>
+                 </execution>
+             </executions>
+         </plugin>
       </plugins>
   </build>
   <dependencies>
@@ -77,6 +89,11 @@
       <version>${net.java.html.version}</version>
       <scope>test</scope>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>4.5.1</version>
     </dependency>
   </dependencies>
 </project>

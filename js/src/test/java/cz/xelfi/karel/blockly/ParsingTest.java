@@ -114,7 +114,7 @@ public class ParsingTest {
         private static final LinkedList<Later> PENDING = new LinkedList<>();
         private boolean executed;
         private R result;
-        private Exception ex;
+        private Throwable ex;
 
         protected Later() {
             PENDING.add(this);
@@ -129,7 +129,7 @@ public class ParsingTest {
             }
             try {
                 result = work();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 this.ex = ex;
             } finally {
                 synchronized (this) {
@@ -149,10 +149,32 @@ public class ParsingTest {
                     wait();
                 }
             }
-            if (ex != null) {
-                throw ex;
+            if (ex instanceof Exception) {
+                throw (Exception)ex;
+            }
+            if (ex instanceof Error) {
+                throw (Error)ex;
             }
             return result;
         }
+    }
+
+    @Test
+    public void testLexer() throws Exception {
+        Procedure[] procs = new Later<Procedure[]>() {
+            @Override
+            Procedure[] work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w.parse(
+                    "PROCEDURE safe-step\n" +
+                    "  IF NOT WALL\n" +
+                    "    STEP\n" +
+                    "  END\n" +
+                    "END\n"
+                );
+            }
+        }.get();
+       // assertEquals(procs.length, "One found");
     }
 }

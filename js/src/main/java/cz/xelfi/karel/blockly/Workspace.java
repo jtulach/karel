@@ -17,10 +17,17 @@
  */
 package cz.xelfi.karel.blockly;
 
+import cz.xelfi.karel.blockly.grammar.KarelBaseListener;
+import cz.xelfi.karel.blockly.grammar.KarelLexer;
+import cz.xelfi.karel.blockly.grammar.KarelParser;
 import java.util.ArrayList;
 import java.util.List;
 import net.java.html.js.JavaScriptBody;
 import net.java.html.js.JavaScriptResource;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 @JavaScriptResource("blockly_compressed.js")
 public final class Workspace {
@@ -44,6 +51,81 @@ public final class Workspace {
 
     public Procedure newProcedure(String commandName) {
         return new Procedure(create1(js, "karel_funkce", commandName), this, commandName, commandName);
+    }
+
+    public Procedure[] parse(String code) {
+        KarelLexer lexer = new KarelLexer(new ANTLRInputStream(code));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        KarelParser parser = new KarelParser(tokens);
+        ParseTree tree = parser.karel();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        class KarelWalker extends KarelBaseListener {
+            @Override
+            public void enterCondition(KarelParser.ConditionContext ctx) {
+                System.err.println("condition: " + ctx.getText());
+            }
+
+            @Override
+            public void enterKcall(KarelParser.KcallContext ctx) {
+                System.err.println("CALL " + ctx.ID().getText());
+            }
+
+            @Override
+            public void enterKrepeat(KarelParser.KrepeatContext ctx) {
+                System.err.println("REPEAT " + ctx.NUM().getText());
+            }
+
+            @Override
+            public void enterKifelse(KarelParser.KifelseContext ctx) {
+                System.err.println("IFELSE " + ctx.getText());
+            }
+
+            @Override
+            public void enterKif(KarelParser.KifContext ctx) {
+                System.err.println("IF " + ctx.getText());
+            }
+
+            @Override
+            public void enterKwhile(KarelParser.KwhileContext ctx) {
+                System.err.println("WHILE " + ctx.getText());
+                super.enterKwhile(ctx); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void exitKwhile(KarelParser.KwhileContext ctx) {
+                System.err.println("END");
+            }
+
+            @Override
+            public void exitKif(KarelParser.KifContext ctx) {
+                System.err.println("ENDIF");
+            }
+            
+            @Override
+            public void exitProcedure(KarelParser.ProcedureContext ctx) {
+                System.out.println("exit procedure: " + ctx);
+                super.exitProcedure(ctx);
+            }
+
+            @Override
+            public void enterProcedure(KarelParser.ProcedureContext ctx) {
+                System.out.println("Entering procedure : " + ctx.ID().getText());
+                super.enterProcedure(ctx);
+            }
+
+            @Override
+            public void exitKarel(KarelParser.KarelContext ctx) {
+                System.out.println("Exiting karel");
+            }
+
+            @Override
+            public void enterKarel(KarelParser.KarelContext ctx) {
+                System.out.println("Entering karel : " + ctx);
+            }
+        }
+        walker.walk(new KarelWalker(), tree);
+
+        return new Procedure[0];
     }
 
 
