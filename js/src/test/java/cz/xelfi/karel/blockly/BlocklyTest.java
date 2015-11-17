@@ -222,6 +222,94 @@ public class BlocklyTest {
         assertTrue(code.contains("REPEAT 3 TIMES"), code);
     }
 
+    @Test
+    public void testInfiniteRepeat() throws Throwable {
+        doTest("doInfiniteRepeat");
+    }
+
+    private void doInfiniteRepeat() throws Exception {
+        Workspace w = Workspace.create("any");
+        w.clear();
+
+        w.loadXML(
+"<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+"  <block type=\"karel_funkce\" x=\"76\" y=\"59\">\n" +
+"    <field name=\"NAME\">zmatek</field>\n" +
+"    <statement name=\"IFTRUE\">\n" +
+"      <block type=\"karel_while\">\n" +
+"        <field name=\"NEG\">FALSE</field>\n" +
+"        <field name=\"COND\">NORTH</field>\n" +
+"        <statement name=\"IFTRUE\">\n" +
+"          <block type=\"karel_if\">\n" +
+"            <field name=\"NEG\">FALSE</field>\n" +
+"            <field name=\"COND\">WALL</field>\n" +
+"            <statement name=\"IFTRUE\">\n" +
+"              <block type=\"karel_call\">\n" +
+"                <field name=\"CALL\">LEFT</field>\n" +
+"              </block>\n" +
+"            </statement>\n" +
+"          </block>\n" +
+"        </statement>\n" +
+"      </block>\n" +
+"    </statement>\n" +
+"  </block>\n" +
+"</xml>"
+        );
+
+        List<Procedure> arr = filterProcedures(w);
+        assertEquals(arr.size(), 1, "One proc: " + arr);
+
+        class NorthNoWall implements Execution.Environment {
+            int cnt;
+
+            public NorthNoWall() {
+            }
+
+            @Override
+            public boolean isCondition(Execution.Condition c) {
+                if (c == Execution.Condition.NORTH) {
+                    return cnt % 4 == 3;
+                }
+                return false;
+            }
+
+            @Override
+            public void left() {
+                cnt++;
+            }
+
+            @Override
+            public boolean step() {
+                return true;
+            }
+
+            @Override
+            public boolean put() {
+                return false;
+            }
+
+            @Override
+            public boolean take() {
+                return false;
+            }
+        }
+
+        NorthNoWall env = new NorthNoWall();
+
+        Execution exec = arr.get(0).prepareExecution(env);
+        assertEquals(exec.next(), State.RUNNING, "OK, running");
+        assertEquals(exec.currentType(), "karel_while");
+        for (int i = 0; i < 3; i++) {
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_if");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_call");
+            assertEquals(exec.next(), State.RUNNING, "OK, running");
+            assertEquals(exec.currentType(), "karel_while");
+        }
+        assertEquals(exec.next(), State.FINISHED);
+    }
+
 
     @Test
     public void testIfWhile() throws Throwable {
