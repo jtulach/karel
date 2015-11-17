@@ -175,6 +175,8 @@ public class ParsingTest {
                 );
             }
         }.get();
-       // assertEquals(procs.length, "One found");
+        assertEquals(procs.length, 1, "One procedure has been defined");
+        assertEquals(procs[0].getName(), "safe-step", "right name");
+        assertEquals(procs[0].getId(), "safe-step", "right id");
     }
 }

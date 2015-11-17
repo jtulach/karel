@@ -21,6 +21,7 @@ import cz.xelfi.karel.blockly.grammar.KarelBaseListener;
 import cz.xelfi.karel.blockly.grammar.KarelLexer;
 import cz.xelfi.karel.blockly.grammar.KarelParser;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import net.java.html.js.JavaScriptBody;
 import net.java.html.js.JavaScriptResource;
@@ -60,6 +61,15 @@ public final class Workspace {
         ParseTree tree = parser.karel();
         ParseTreeWalker walker = new ParseTreeWalker();
         class KarelWalker extends KarelBaseListener {
+            StringBuilder sb = new StringBuilder();
+            List<String> procNames = new ArrayList<>();
+            KarelWalker() {
+            }
+            @Override
+            public void enterKarel(KarelParser.KarelContext ctx) {
+                sb.append("var arr = [];\n");
+            }
+            
             @Override
             public void enterCondition(KarelParser.ConditionContext ctx) {
                 System.err.println("condition: " + ctx.getText());
@@ -102,32 +112,36 @@ public final class Workspace {
             }
             
             @Override
-            public void exitProcedure(KarelParser.ProcedureContext ctx) {
-                System.out.println("exit procedure: " + ctx);
-                super.exitProcedure(ctx);
-            }
-
-            @Override
             public void enterProcedure(KarelParser.ProcedureContext ctx) {
-                System.out.println("Entering procedure : " + ctx.ID().getText());
-                super.enterProcedure(ctx);
+                final String procName = ctx.ID().getText();
+                sb.append("var x =  workspace.newBlock('karel_funkce','").append(procName).append("');\n");
+                procNames.add(procName);
+            }
+            
+            @Override
+            public void exitProcedure(KarelParser.ProcedureContext ctx) {
+                sb.append("x.initSvg(workspace);\n");
+                sb.append("x.render(false);\n");
+                sb.append("arr.push(x);\n");
             }
 
             @Override
             public void exitKarel(KarelParser.KarelContext ctx) {
-                System.out.println("Exiting karel");
-            }
-
-            @Override
-            public void enterKarel(KarelParser.KarelContext ctx) {
-                System.out.println("Entering karel : " + ctx);
+                sb.append("return arr;\n");
             }
         }
-        walker.walk(new KarelWalker(), tree);
+        final KarelWalker karel = new KarelWalker();
+        walker.walk(karel, tree);
 
-        return new Procedure[0];
+        Object[] arr = evalProc(js, karel.sb.toString());
+        assert arr.length == karel.procNames.size();
+        Procedure[] proc = new Procedure[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            final String name = karel.procNames.get(i);
+            proc[i] = new Procedure(arr[i], this, name, name);
+        }
+        return proc;
     }
-
 
     public List<Procedure> getProcedures() {
         Object[] blocks = list0(js);
@@ -255,4 +269,9 @@ public final class Workspace {
 
     @JavaScriptBody(args = { "workspace", "proc" }, body = "return workspace.procedureToString(proc);")
     static native String procedureToString(Object workspace, Object proc);
+    
+    @JavaScriptBody(args = { "workspace", "code" }, body = 
+        "return new Function('workspace', code).call(null, workspace);"
+    )
+    private native Object[] evalProc(Object workspace, String code);
 }
