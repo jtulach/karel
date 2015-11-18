@@ -12,6 +12,9 @@ name:
 statements:
     statement;
 
+elsestatements:
+    statement;
+
 next:
     statement;
 
@@ -25,7 +28,7 @@ kif:
     'IF' condition statements 'END' next?;
 
 kifelse:
-    'IF' condition statements 'ELSE' statements 'END' next?;
+    'IF' condition statements 'ELSE' elsestatements 'END' next?;
 
 krepeat:
     'REPEAT' NUM 'TIMES' statements 'END' next?;

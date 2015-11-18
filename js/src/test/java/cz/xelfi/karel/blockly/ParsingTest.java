@@ -212,4 +212,54 @@ public class ParsingTest {
             }
         }.get();
     }
+    @Test
+    public void testIfIfIfElseElseElse() throws Exception {
+        final Workspace w = new Later<Workspace>() {
+            @Override
+            Workspace work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w;
+            }
+        }.get();
+        
+        final StringBuilder sb = new StringBuilder();
+        sb.append(
+            "PROCEDURE safe-step\n" +
+            "  IF NOT WALL\n");
+        for (int i = 0; i < 3; i++) {
+            sb.append(
+            "    STEP\n"
+            );
+        }
+        sb.append("  ELSE\n");
+        for (int i = 0; i < 3; i++) {
+            sb.append(
+            "    PUT\n"
+            );
+        }
+
+        sb.append(
+            "  END\n" +
+            "END\n");
+        
+        final String CODE = sb.toString();
+        
+        final Procedure[] procs = new Later<Procedure[]>() {
+            @Override
+            Procedure[] work() throws Exception {
+                return w.parse(CODE);
+            }
+        }.get();
+        assertEquals(procs.length, 1, "One procedure has been defined");
+        assertEquals(procs[0].getName(), "safe-step", "right name");
+        assertEquals(procs[0].getId(), "safe-step", "right id");
+        new Later<Void>() {
+            @Override
+            Void work() throws Exception {
+                assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same, with\n" + w.toString());
+                return null;
+            }
+        }.get();
+    }
 }

@@ -92,6 +92,16 @@ public final class Workspace {
             }
 
             @Override
+            public void enterElsestatements(KarelParser.ElsestatementsContext ctx) {
+                sb.append(indent()).append("<statement name=\"IFFALSE\">\n");
+            }
+
+            @Override
+            public void exitElsestatements(KarelParser.ElsestatementsContext ctx) {
+                sb.append(deindent()).append("</statement>\n");
+            }
+
+            @Override
             public void enterNext(KarelParser.NextContext ctx) {
                 sb.append(indent()).append("<next>\n");
             }
@@ -139,7 +149,7 @@ public final class Workspace {
 
             @Override
             public void enterKifelse(KarelParser.KifelseContext ctx) {
-                sb.append(indent()).append("<block type=\"karel_if\">\n");
+                sb.append(indent()).append("<block type=\"karel_if_else\">\n");
             }
 
             @Override
@@ -159,6 +169,11 @@ public final class Workspace {
 
             @Override
             public void exitKif(KarelParser.KifContext ctx) {
+                sb.append(deindent()).append("</block>\n");
+            }
+
+            @Override
+            public void exitKifelse(KarelParser.KifelseContext ctx) {
                 sb.append(deindent()).append("</block>\n");
             }
             

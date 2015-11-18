@@ -289,6 +289,7 @@ Blockly.Blocks['karel_call'] = {
             if (ch.getSurroundParent() === proc) {
                 if (cnt == 0) {
                     str += middle;
+                    middle = '';
                 }
                 str += dump(ch, "  " + indent);
                 cnt--;
@@ -299,10 +300,11 @@ Blockly.Blocks['karel_call'] = {
                     break;
                 }
                 if (ch.getSurroundParent() === proc) {
-                    if (cnt == 0) {
-                        str += middle;
-                    }
                     str += dump(ch, "  " + indent);
+                    if (ch.getNextBlock() === null) {
+                        str += middle;
+                        middle = '';
+                    }
                     cnt--;
                 }
             }
