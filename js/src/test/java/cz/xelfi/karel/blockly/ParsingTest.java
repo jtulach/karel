@@ -161,17 +161,17 @@ public class ParsingTest {
 
     @Test
     public void testIf() throws Exception {
-        doType("IF", 1);
+        doType("IF MARK", 1);
     }
 
     @Test
     public void testIfIfIf() throws Exception {
-        doType("IF", 3);
+        doType("IF NOT WALL", 3);
     }
 
     @Test
     public void testWhile22() throws Exception {
-        doType("WHILE", 22);
+        doType("WHILE NORTH", 22);
     }
     
     private void doType(String type, int cnt) throws Exception {
@@ -185,9 +185,8 @@ public class ParsingTest {
         }.get();
         
         final StringBuilder sb = new StringBuilder();
-        sb.append(
-            "PROCEDURE safe-step\n" +
-            "  " + type + " NOT WALL\n");
+        sb.append("PROCEDURE safe-step\n" + "  ").
+            append(type).append("\n");
         while (cnt-- > 0) {
             sb.append(
             "    STEP\n"

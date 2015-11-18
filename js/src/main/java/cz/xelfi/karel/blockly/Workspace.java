@@ -74,7 +74,7 @@ public final class Workspace {
             @Override
             public void enterCondition(KarelParser.ConditionContext ctx) {
                 if (ctx.children.size() == 1) {
-                    sb.append(space).append("<field name=\"NEG\">FALSE</field>\n");
+                    sb.append(space).append("<field name=\"NEG\">TRUE</field>\n");
                 } else {
                     sb.append(space).append("<field name=\"NEG\">FALSE</field>\n");
                 }
