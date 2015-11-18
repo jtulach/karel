@@ -161,15 +161,20 @@ public class ParsingTest {
 
     @Test
     public void testIf() throws Exception {
-        doIf(1);
+        doType("IF", 1);
     }
 
     @Test
     public void testIfIfIf() throws Exception {
-        doIf(3);
+        doType("IF", 3);
+    }
+
+    @Test
+    public void testWhile22() throws Exception {
+        doType("WHILE", 22);
     }
     
-    private void doIf(int cnt) throws Exception {
+    private void doType(String type, int cnt) throws Exception {
         final Workspace w = new Later<Workspace>() {
             @Override
             Workspace work() throws Exception {
@@ -182,7 +187,7 @@ public class ParsingTest {
         final StringBuilder sb = new StringBuilder();
         sb.append(
             "PROCEDURE safe-step\n" +
-            "  IF NOT WALL\n");
+            "  " + type + " NOT WALL\n");
         while (cnt-- > 0) {
             sb.append(
             "    STEP\n"
