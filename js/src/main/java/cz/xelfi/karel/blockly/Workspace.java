@@ -63,84 +63,137 @@ public final class Workspace {
         class KarelWalker extends KarelBaseListener {
             StringBuilder sb = new StringBuilder();
             List<String> procNames = new ArrayList<>();
+            private String space = "";
             KarelWalker() {
             }
             @Override
             public void enterKarel(KarelParser.KarelContext ctx) {
-                sb.append("var arr = [];\n");
+                sb.append("<xml version=\"1.0\" encoding=\"UTF-8\">\n");
             }
             
             @Override
             public void enterCondition(KarelParser.ConditionContext ctx) {
-                System.err.println("condition: " + ctx.getText());
+                if (ctx.children.size() == 1) {
+                    sb.append(space).append("<field name=\"NEG\">FALSE</field>\n");
+                } else {
+                    sb.append(space).append("<field name=\"NEG\">FALSE</field>\n");
+                }
+                sb.append(space).append("<field name=\"COND\">").append(ctx.stop.getText()).append("</field>\n");
+            }
+
+            @Override
+            public void enterStatements(KarelParser.StatementsContext ctx) {
+                sb.append(indent()).append("<statement name=\"IFTRUE\">\n");
+            }
+
+            @Override
+            public void exitStatements(KarelParser.StatementsContext ctx) {
+                sb.append(deindent()).append("</statement>\n");
+            }
+
+            @Override
+            public void enterNext(KarelParser.NextContext ctx) {
+                sb.append(indent()).append("<next>\n");
+            }
+
+            @Override
+            public void exitNext(KarelParser.NextContext ctx) {
+                sb.append(deindent()).append("</next>\n");
             }
 
             @Override
             public void enterKcall(KarelParser.KcallContext ctx) {
-                System.err.println("CALL " + ctx.ID().getText());
+                sb.append(indent()).append("<block type=\"karel_call\">\n");
+            }
+
+            @Override
+            public void enterCall(KarelParser.CallContext ctx) {
+                sb.append(space).append("<field name=\"CALL\">").append(ctx.ID()).append("</field>\n");
+            }
+
+            @Override
+            public void exitKcall(KarelParser.KcallContext ctx) {
+                sb.append(deindent()).append("</block>\n");
+            }
+
+            private String deindent() {
+                return space = space.substring(2);
+            }
+
+            private String indent() {
+                String s = space;
+                space += "  ";
+                return s;
             }
 
             @Override
             public void enterKrepeat(KarelParser.KrepeatContext ctx) {
-                System.err.println("REPEAT " + ctx.NUM().getText());
+                sb.append(indent()).append("<block type=\"karel_repeat\">\n");
+                sb.append(space).append("<field name=\"N\">").append(ctx.NUM().getText()).append("</field>\n");
+            }
+
+            @Override
+            public void exitKrepeat(KarelParser.KrepeatContext ctx) {
+                sb.append(deindent()).append("</block>\n");
             }
 
             @Override
             public void enterKifelse(KarelParser.KifelseContext ctx) {
-                System.err.println("IFELSE " + ctx.getText());
+                sb.append(indent()).append("<block type=\"karel_if\">\n");
             }
 
             @Override
             public void enterKif(KarelParser.KifContext ctx) {
-                System.err.println("IF " + ctx.getText());
+                sb.append(indent()).append("<block type=\"karel_if\">\n");
             }
 
             @Override
             public void enterKwhile(KarelParser.KwhileContext ctx) {
-                System.err.println("WHILE " + ctx.getText());
-                super.enterKwhile(ctx); //To change body of generated methods, choose Tools | Templates.
+                sb.append(indent()).append("<block type=\"karel_while\">\n");
             }
 
             @Override
             public void exitKwhile(KarelParser.KwhileContext ctx) {
-                System.err.println("END");
+                sb.append(deindent()).append("</block>\n");
             }
 
             @Override
             public void exitKif(KarelParser.KifContext ctx) {
-                System.err.println("ENDIF");
+                sb.append(deindent()).append("</block>\n");
             }
             
             @Override
             public void enterProcedure(KarelParser.ProcedureContext ctx) {
-                final String procName = ctx.ID().getText();
-                sb.append("var x =  workspace.newBlock('karel_funkce','").append(procName).append("');\n");
+                final String procName = ctx.name().ID().getText();
+                sb.append(indent()).append("<block type=\"karel_funkce\">\n");
                 procNames.add(procName);
             }
-            
+
+            @Override
+            public void enterName(KarelParser.NameContext ctx) {
+                sb.append(space).append("<field name=\"NAME\">").append(ctx.ID()).append("</field>\n");
+            }
+
             @Override
             public void exitProcedure(KarelParser.ProcedureContext ctx) {
-                sb.append("x.initSvg(workspace);\n");
-                sb.append("x.render(false);\n");
-                sb.append("arr.push(x);\n");
+                sb.append(deindent()).append("</block>\n");
             }
 
             @Override
             public void exitKarel(KarelParser.KarelContext ctx) {
-                sb.append("return arr;\n");
+                sb.append("</xml>\n");
             }
         }
         final KarelWalker karel = new KarelWalker();
         walker.walk(karel, tree);
 
-        Object[] arr = evalProc(js, karel.sb.toString());
-        assert arr.length == karel.procNames.size();
-        Procedure[] proc = new Procedure[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            final String name = karel.procNames.get(i);
-            proc[i] = new Procedure(arr[i], this, name, name);
-        }
-        return proc;
+        loadXML(karel.sb.toString());
+//        Object procJs = stringToProcedure(js, karel.sb.toString());
+//        final String name = karel.procNames.get(0);
+//        return new Procedure[] {
+//            new Procedure(procJs, this, name, name)
+//        };
+        return new Procedure[] { findProcedure(karel.procNames.get(0)) };
     }
 
     public List<Procedure> getProcedures() {
@@ -269,9 +322,5 @@ public final class Workspace {
 
     @JavaScriptBody(args = { "workspace", "proc" }, body = "return workspace.procedureToString(proc);")
     static native String procedureToString(Object workspace, Object proc);
-    
-    @JavaScriptBody(args = { "workspace", "code" }, body = 
-        "return new Function('workspace', code).call(null, workspace);"
-    )
-    private native Object[] evalProc(Object workspace, String code);
+
 }

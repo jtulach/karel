@@ -160,23 +160,32 @@ public class ParsingTest {
     }
 
     @Test
-    public void testLexer() throws Exception {
-        Procedure[] procs = new Later<Procedure[]>() {
+    public void testIf() throws Exception {
+        final String CODE = 
+            "PROCEDURE safe-step\n" +
+            "  IF NOT WALL\n" +
+            "    STEP\n" +
+            "  END\n" +
+            "END\n";
+
+        
+        final Procedure[] procs = new Later<Procedure[]>() {
             @Override
             Procedure[] work() throws Exception {
                 final Workspace w = Workspace.create("any");
                 w.clear();
-                return w.parse(
-                    "PROCEDURE safe-step\n" +
-                    "  IF NOT WALL\n" +
-                    "    STEP\n" +
-                    "  END\n" +
-                    "END\n"
-                );
+                return w.parse(CODE);
             }
         }.get();
         assertEquals(procs.length, 1, "One procedure has been defined");
         assertEquals(procs[0].getName(), "safe-step", "right name");
         assertEquals(procs[0].getId(), "safe-step", "right id");
+        new Later<Void>() {
+            @Override
+            Void work() throws Exception {
+                assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same");
+                return null;
+            }
+        }.get();
     }
 }

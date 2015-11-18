@@ -4,10 +4,16 @@ karel:
     (procedure)* EOF;
 
 procedure:
-    'PROCEDURE' ID statements 'END';
+    'PROCEDURE' name statements 'END';
+
+name:
+    ID;
 
 statements:
-    (statement)*;
+    statement next?;
+
+next:
+    statement next?;
 
 statement:
     kwhile | kif | kifelse | krepeat | kcall;
@@ -25,6 +31,9 @@ krepeat:
     'REPEAT' NUM 'TIMES' statements 'END';
 
 kcall:
+    call;
+
+call:
     ID;
 
 condition:
