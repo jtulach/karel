@@ -154,6 +154,11 @@
         </div>
     </script>
     <script type="text/html" id="edit">
+        <div class="col-sm-12" data-bind="visible: $root.source">
+            <textarea width="100%" cols="70" data-bind="value: $root.source"/>
+        </div>
+        <button type="button" class="btn-sm btn-success" data-bind="click: $root.loadSource">Ukaž kód</button>
+        <button type="button" class="btn btn-lg btn-default" data-bind="click: $root.compileSource">Přeložit</button>
     </script>
     
     <script id="draw-town" type="text/html">
@@ -187,7 +192,7 @@
     </script>
 
     <div data-bind="template: { name : tab(), afterRender: $root.templateShown }"></div>
-    <div data-bind="visible: tab() === 'edit'">
+    <div data-bind="visible: tab() === 'town'">
         <div class="container theme-showcase" role="main">
         <div class="row">
             <div class="col-sm-8">
@@ -244,19 +249,6 @@
                         </span>
                         <span data-bind="ifnot: : $root.selectedCommand">Start</span>
                     </button>
-                    <!--
-                    <div class="col-sm-12" data-bind="visible: text">
-                        <textarea width="100%" cols="70" data-bind="value: text"/>
-                    </div>
-                    <button type="button" class="btn-sm btn-success" data-bind="click: dump">Ulož město</button>
-                    <button type="button" class="btn btn-lg btn-default" data-bind="click: compile">Zkusit</button>
-                    <div class="col-sm-12">
-                        <p></p>
-                        <button type="button" class="btn btn-info" data-bind="click: left">Vlevo-vbok</button>
-                        <button type="button" class="btn btn-info" data-bind="click: step">Krok</button>
-                        <p></p>
-                    </div>
-                    -->
                 </div>
             </div>
         </div>

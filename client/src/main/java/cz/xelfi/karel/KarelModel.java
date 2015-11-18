@@ -288,9 +288,18 @@ final class KarelModel {
         }
     }
 
-    @OnPropertyChange("source")
-    static void storeSource(Karel m) {
-        Storage.getDefault().put("source", m.getSource());
+    @Function
+    static void loadSource(Karel m) {
+        StringBuilder sb = new StringBuilder();
+        for (Procedure p : workspace.getProcedures()) {
+            sb.append("\n").append(p.getCode()).append("\n");
+        }
+        m.setSource(sb.toString());
+    }
+
+    @Function
+    static void compileSource(Karel m) {
+        workspace.parse(m.getSource());
     }
 
     private static boolean containsURL(List<TaskInfo> arr, String url) {
