@@ -161,19 +161,43 @@ public class ParsingTest {
 
     @Test
     public void testIf() throws Exception {
-        final String CODE = 
-            "PROCEDURE safe-step\n" +
-            "  IF NOT WALL\n" +
-            "    STEP\n" +
-            "  END\n" +
-            "END\n";
+        doIf(1);
+    }
 
+    @Test
+    public void testIfIfIf() throws Exception {
+        doIf(3);
+    }
+    
+    private void doIf(int cnt) throws Exception {
+        final Workspace w = new Later<Workspace>() {
+            @Override
+            Workspace work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w;
+            }
+        }.get();
+        
+        final StringBuilder sb = new StringBuilder();
+        sb.append(
+            "PROCEDURE safe-step\n" +
+            "  IF NOT WALL\n");
+        while (cnt-- > 0) {
+            sb.append(
+            "    STEP\n"
+            );
+        }
+
+        sb.append(
+            "  END\n" +
+            "END\n");
+        
+        final String CODE = sb.toString();
         
         final Procedure[] procs = new Later<Procedure[]>() {
             @Override
             Procedure[] work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
                 return w.parse(CODE);
             }
         }.get();
@@ -183,7 +207,7 @@ public class ParsingTest {
         new Later<Void>() {
             @Override
             Void work() throws Exception {
-                assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same");
+                assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same, with\n" + w.toString());
                 return null;
             }
         }.get();

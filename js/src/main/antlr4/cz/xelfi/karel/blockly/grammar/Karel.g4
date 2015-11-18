@@ -10,28 +10,28 @@ name:
     ID;
 
 statements:
-    statement next?;
+    statement;
 
 next:
-    statement next?;
+    statement;
 
 statement:
     kwhile | kif | kifelse | krepeat | kcall;
 
 kwhile:
-    'WHILE' condition statements 'END';
+    'WHILE' condition statements 'END' next?;
 
 kif:
-    'IF' condition statements 'END';
+    'IF' condition statements 'END' next?;
 
 kifelse:
-    'IF' condition statements 'ELSE' statements 'END';
+    'IF' condition statements 'ELSE' statements 'END' next?;
 
 krepeat:
-    'REPEAT' NUM 'TIMES' statements 'END';
+    'REPEAT' NUM 'TIMES' statements 'END' next?;
 
 kcall:
-    call;
+    call next?;
 
 call:
     ID;

@@ -186,7 +186,7 @@ public final class Workspace {
         }
         final KarelWalker karel = new KarelWalker();
         walker.walk(karel, tree);
-
+        
         loadXML(karel.sb.toString());
 //        Object procJs = stringToProcedure(js, karel.sb.toString());
 //        final String name = karel.procNames.get(0);
