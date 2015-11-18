@@ -173,6 +173,11 @@ public class ParsingTest {
     public void testWhile22() throws Exception {
         doType("WHILE NORTH", 22);
     }
+
+    @Test
+    public void testRepeat() throws Exception {
+        doType("REPEAT 10 TIMES", 1);
+    }
     
     private void doType(String type, int cnt) throws Exception {
         final Workspace w = new Later<Workspace>() {
