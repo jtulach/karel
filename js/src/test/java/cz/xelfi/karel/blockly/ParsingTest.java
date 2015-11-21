@@ -178,7 +178,7 @@ public class ParsingTest {
     public void testRepeat() throws Exception {
         doType("REPEAT 10 TIMES", 1);
     }
-    
+
     private void doType(String type, int cnt) throws Exception {
         final Workspace w = new Later<Workspace>() {
             @Override
@@ -188,7 +188,7 @@ public class ParsingTest {
                 return w;
             }
         }.get();
-        
+
         final StringBuilder sb = new StringBuilder();
         sb.append("PROCEDURE safe-step\n" + "  ").
             append(type).append("\n");
@@ -201,9 +201,9 @@ public class ParsingTest {
         sb.append(
             "  END\n" +
             "END\n");
-        
+
         final String CODE = sb.toString();
-        
+
         final Procedure[] procs = new Later<Procedure[]>() {
             @Override
             Procedure[] work() throws Exception {
@@ -231,7 +231,7 @@ public class ParsingTest {
                 return w;
             }
         }.get();
-        
+
         final StringBuilder sb = new StringBuilder();
         sb.append(
             "PROCEDURE safe-step\n" +
@@ -251,9 +251,9 @@ public class ParsingTest {
         sb.append(
             "  END\n" +
             "END\n");
-        
+
         final String CODE = sb.toString();
-        
+
         final Procedure[] procs = new Later<Procedure[]>() {
             @Override
             Procedure[] work() throws Exception {
@@ -267,6 +267,53 @@ public class ParsingTest {
             @Override
             Void work() throws Exception {
                 assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same, with\n" + w.toString());
+                return null;
+            }
+        }.get();
+    }
+
+    @Test
+    public void twoSteps() throws Exception {
+        final Workspace w = new Later<Workspace>() {
+            @Override
+            Workspace work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w;
+            }
+        }.get();
+
+        final String CODE =
+            "PROCEDURE two-steps\n" +
+            "  REPEAT 2 TIMES\n" +
+            "    STEP\n" +
+            "  END\n" +
+            "END\n";
+
+        final Procedure[] procs = new Later<Procedure[]>() {
+            @Override
+            Procedure[] work() throws Exception {
+                return w.parse(CODE);
+            }
+        }.get();
+        assertEquals(procs.length, 1, "One procedure has been defined");
+        assertEquals(procs[0].getName(), "two-steps", "right name");
+        new Later<Void>() {
+            @Override
+            Void work() throws Exception {
+                Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_repeat");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_repeat");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_repeat");
+                assertEquals(e.next(), Execution.State.FINISHED);
+                assertNull(e.currentType());
                 return null;
             }
         }.get();
