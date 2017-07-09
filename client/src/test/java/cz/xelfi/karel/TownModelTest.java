@@ -18,15 +18,18 @@
 package cz.xelfi.karel;
 
 import cz.xelfi.karel.blockly.Execution;
-import static org.testng.Assert.*;
-import org.testng.annotations.Test;
+import net.java.html.junit.BrowserRunner;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  *
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
+@RunWith(BrowserRunner.class)
 public class TownModelTest {
-    
+
     public TownModelTest() {
     }
 
@@ -64,7 +67,7 @@ public class TownModelTest {
         t.step();
         
         assertLocation(t, 0, 9, 3, "Same position remains");
-        assertEquals(t.getError(), 1, "Hit the wall");
+        assertEquals("Hit the wall", 1, t.getError());
     }
 
     @Test public void crashIntoMiddleWall() {
@@ -75,10 +78,10 @@ public class TownModelTest {
         t.step();
         
         assertLocation(t, 0, 9, 1, "Same position remains");
-        assertEquals(t.getError(), 1, "Hit the wall");
+        assertEquals("Hit the wall", 1, t.getError());
         
         boolean isWall = TownModel.isCondition(t, Execution.Condition.WALL);
-        assertTrue(isWall, "Yes, heading towards the wall");
+        assertTrue("Yes, heading towards the wall", isWall);
     }
     
     @Test public void compressTown() throws Exception {
@@ -87,11 +90,11 @@ public class TownModelTest {
         String s = TownModel.toJSON(t);
         
         int first = s.indexOf("\"robot\"");
-        assertNotEquals(first, -1, "Found one");
+        assertNotEquals("Found one", first, -1);
         int second = s.indexOf("\"robot\"", first + 1);
-        assertEquals(second, -1, "Only one robot in the town: " + s);
+        assertEquals("Only one robot in the town: " + s, -1, second);
 
-        assertEquals(s.indexOf("error"), -1, "Don't dump info about errors: " + s);
+        assertEquals("Don't dump info about errors: " + s, -1, s.indexOf("error"));
     }
 
     @Test public void compressTownWithAStep() throws Exception {
@@ -105,22 +108,21 @@ public class TownModelTest {
 
         String s = cl.toString();
         int first = s.indexOf("\"robot\":1");
-        assertNotEquals(first, -1, "Found one");
+        assertNotEquals("Found one", first, -1);
         int second = s.indexOf("\"robot\"", first + 1);
-        assertEquals(second, -1, "Only one robot in the town: " + s);
+        assertEquals("Only one robot in the town: " + s, -1, second);
         
         Town t2 = new Town();
         TownModel.load(t2, cl);
         
-        assertEquals(t2, t, "Towns are the same");
+        assertEquals("Towns are the same", t2, t);
     }
  
     private static void assertLocation(Town t, int x, int y, int d, String msg) {
         int[] xyd = TownModel.findKarel(t);
-        assertNotNull(xyd, "Location of Karel found: " + t);
-        assertEquals(xyd[0], x, "X: " + msg);
-        assertEquals(xyd[1], y, "Y: " + msg);
-        assertEquals(xyd[2], d, "Direction: " + msg);
-        
+        assertNotNull("Location of Karel found: " + t, xyd);
+        assertEquals("X: " + msg, x, xyd[0]);
+        assertEquals("Y: " + msg, y, xyd[1]);
+        assertEquals("Direction: " + msg, d, xyd[2]);
     }
 }

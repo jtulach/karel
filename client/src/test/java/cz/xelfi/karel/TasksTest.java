@@ -20,76 +20,32 @@ package cz.xelfi.karel;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import net.java.html.BrwsrCtx;
-import net.java.html.boot.BrowserBuilder;
-import static org.testng.Assert.*;
-import org.testng.SkipException;
-import org.testng.annotations.Factory;
-import org.testng.annotations.Test;
+import net.java.html.junit.BrowserRunner;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 
 /**
  *
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
+@RunWith(BrowserRunner.class)
 public class TasksTest {
-    private static final CountDownLatch INIT = new CountDownLatch(1);
-    private static Throwable T;
-    private static BrwsrCtx CTX;
-    private static Karel KAREL;
+    private BrwsrCtx CTX;
+    private Karel KAREL;
     
-    @Factory public static Object[] initMirror() throws Throwable {
+    @Before
+    public void initKarel() throws Throwable {
         Locale.setDefault(new Locale("cs", "CZ"));
-        final BrowserBuilder bb = BrowserBuilder.newBrowser().
-            loadClass(TasksTest.class).
-            loadPage("pages/index.html").
-            invoke("ready");
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    bb.showAndWait();
-                } catch (Throwable t) {
-                    T = t;
-                    INIT.countDown();
-                }
-            }
-        });
-        INIT.await();
-        if (T != null) {
-            SkipException se = new SkipException("Problems initializing the mirror!");
-            se.initCause(T);
-            throw se;
-        }
-        assertNotNull(CTX, "Not null");
-        
-        KAREL.changeTabTask();
-        while (KAREL.getTasks().isEmpty()) {
-            Thread.sleep(100);
-        }
-
-        final List<TaskInfo> tasks = KAREL.getTasks();
-        final int size = tasks.size();
-        Object[] arr = new Object[size];
-        for (int i = 0; i < size; i++) {
-            arr[i] = new TasksTest(tasks.get(i));
-        }
-        return arr;
     }
     
-    public static void ready(String... args) throws Exception {
-        CTX = BrwsrCtx.findDefault(TasksTest.class);
-        KAREL = Main.onPageLoad(args);
-        INIT.countDown();
+    public TasksTest() {
     }
-    private final TaskInfo ti;
 
-    private TasksTest(TaskInfo info) {
-        this.ti = info;
-    }
-    
     public String stepSolution() {
         return "udelej-krok\n"
                 + "  krok\n"
@@ -173,7 +129,20 @@ public class TasksTest {
             + wallSolution();
     }
     
-    @Test public void checkTest() throws Throwable {
+    @Test
+    public void allTests() throws Throwable {
+        if (KAREL == null) {
+            KAREL = Main.onPageLoad();
+            KAREL.changeTabTask();
+        }
+        final List<TaskInfo> tasks = KAREL.getTasks();
+        final int size = tasks.size();
+        for (int i = 0; i < size; i++) {
+            checkTest(tasks.get(i));
+        }
+    }
+
+    private void checkTest(TaskInfo ti) throws Throwable {
         KAREL.chooseTask(ti);
         class Wait implements Runnable {
             CountDownLatch down;
@@ -199,7 +168,7 @@ public class TasksTest {
             Thread.sleep(100);
         }
         final TaskDescription ct = w.get();
-        assertNotNull(ct, "Tasks loaded");
+        assertNotNull("Tasks loaded", ct);
 
         int dash = ti.getUrl().indexOf('-');
         int end = ti.getUrl().indexOf(".js");
@@ -228,7 +197,7 @@ public class TasksTest {
             }
             
             private void doTest() throws Exception {
-                assertEquals(KAREL.getCurrentTask(), ct, "Still same");
+                assertEquals("Still same", KAREL.getCurrentTask(), ct);
                 KAREL.setSource(res);
                 KarelModel.compile(KAREL);
                 Command cmd = null;
@@ -238,7 +207,7 @@ public class TasksTest {
                         break;
                     }
                 }
-                assertNotNull(cmd, "Command found");
+                assertNotNull("Command found", cmd);
                 KarelModel.invoke(KAREL, cmd);
             }
         }
@@ -253,7 +222,7 @@ public class TasksTest {
         }
         
         for (TaskTestCase c : ct.getTests()) {
-            assertEquals(c.getState(), "ok", "Case " + c.getDescription() + " from " + ti.getUrl() + " is OK");
+            assertEquals("Case " + c.getDescription() + " from " + ti.getUrl() + " is OK", c.getState(), "ok");
         }
     }
     

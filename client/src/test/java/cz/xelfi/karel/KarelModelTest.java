@@ -18,24 +18,30 @@
 package cz.xelfi.karel;
 
 import java.util.Locale;
-import static org.testng.Assert.*;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import static junit.framework.Assert.assertNotNull;
+import net.java.html.junit.BrowserRunner;
+import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  *
  * @author Jaroslav Tulach
  */
+@RunWith(BrowserRunner.class)
 public class KarelModelTest {
     
     public KarelModelTest() {
     }
     
-    @BeforeClass public static void switchToCzech() {
+    @BeforeClass
+    public static void switchToCzech() {
         Locale.setDefault(new Locale("cs", "CZ"));
     }
 
-    @Test public void animateStopsOnError() throws Exception {
+    @Test
+    public void animateStopsOnError() throws Exception {
         String prg = "naraz\n"
                 + "  vlevo-vbok\n"
                 + "  vlevo-vbok\n"
@@ -66,7 +72,7 @@ public class KarelModelTest {
                 break;
             }
         }
-        assertNotNull(cmd, "naraz found among " + km.getCommands());
+        assertNotNull("naraz found among " + km.getCommands(), cmd);
         
         KarelModel.invoke(km, cmd);
         
@@ -76,11 +82,10 @@ public class KarelModelTest {
         
         final Town cur = km.getCurrentTask().getTests().get(0).getCurrent();
         int[] karel = TownModel.findKarel(cur);
-        assertEquals(karel[0], 0, "left corner");
-        assertEquals(karel[1], 9, "bottom corner");
-        assertEquals(karel[2], 3, "looking west");
-        assertEquals(cur.getError(), 1, "hit the wall");
+        assertEquals("left corner", 0, karel[0]);
+        assertEquals("bottom corner", 9, karel[1]);
+        assertEquals("looking west", 3, karel[2]);
+        assertEquals("hit the wall", 1, cur.getError());
     }
 
-    
 }
