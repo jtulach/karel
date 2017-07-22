@@ -77,7 +77,7 @@ public class TasksTest {
     
     public String sixstepsSolution() {
         return "PROCEDURE six\n"
-            + "  REPEAT 6\n"
+            + "  REPEAT 6 TIMES\n"
             + "    STEP\n"
             + "  END\n"
             + "END\n";
@@ -123,7 +123,7 @@ public class TasksTest {
             + "  WHILE NOT WEST\n"
             + "    LEFT\n"
             + "  END\n"
-            + "  REPEAT 2\n"
+            + "  REPEAT 2 TIMES\n"
             + "    towall\n"
             + "    LEFT\n"
             + "  END\n"
