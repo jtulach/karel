@@ -21,11 +21,6 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.java.html.BrwsrCtx;
 import net.java.html.junit.BrowserRunner;
 import net.java.html.junit.HTMLContent;
 import static org.junit.Assert.assertNotNull;
@@ -43,7 +38,6 @@ import org.junit.runner.RunWith;
     "<div id='workspace' style='height: 80vh; background-color: red'></div>"
 )
 public class TasksTest {
-    private BrwsrCtx CTX;
     private Karel KAREL;
     
     @Before
@@ -55,85 +49,85 @@ public class TasksTest {
     }
 
     public String stepSolution() {
-        return "udelej-krok\n"
-                + "  krok\n"
-                + "konec\n";
+        return "PROCEDURE udelej-krok\n"
+                + "  STEP\n"
+                + "END\n";
     }
     public String turnbackSolution() {
-        return "celem\n"
-                + "  vlevo-vbok\n"
-                + "  vlevo-vbok\n"
-                + "konec\n";
+        return "PROCEDURE celem\n"
+                + "  LEFT\n"
+                + "  LEFT\n"
+                + "END\n";
     }
 
     public String twostepsSolution() {
-        return "two\n"
-                + "  krok\n"
-                + "  krok\n"
-                + "konec\n";
+        return "PROCEDURE two\n"
+                + "  STEP\n"
+                + "  STEP\n"
+                + "END\n";
     }
 
     public String turnrightSolution() {
-        return "right\n"
-                + "  vlevo-vbok\n"
-                + "  vlevo-vbok\n"
-                + "  vlevo-vbok\n"
-                + "konec\n";
+        return "PROCEDURE right\n"
+                + "  LEFT\n"
+                + "  LEFT\n"
+                + "  LEFT\n"
+                + "END\n";
     }
     
     public String sixstepsSolution() {
-        return "six\n" 
-            + "  opakuj 6\n"
-            + "    krok\n"
-            + "  konec\n"
-            + "konec\n";
+        return "PROCEDURE six\n"
+            + "  REPEAT 6\n"
+            + "    STEP\n"
+            + "  END\n"
+            + "END\n";
     }
 
     public String wallSolution() {
-        return "towall\n" 
-            + "  dokud neni zed\n"
-            + "    krok\n"
-            + "  konec\n"
-            + "konec\n";
+        return "PROCEDURE towall\n"
+            + "  WHILE NOT WALL\n"
+            + "    STEP\n"
+            + "  END\n"
+            + "END\n";
     }
     
     public String safestepSolution() {
-        return "safestep\n"
-            + "  kdyz neni zed\n"
-            + "    krok\n"
-            + "  konec\n"
-            + "konec\n"
+        return "PROCEDURE safestep\n"
+            + "  IF NOT WALL\n"
+            + "    STEP\n"
+            + "  END\n"
+            + "END\n"
             + "";
     }
     
     public String addremoveSolution() {
-        return "addremove\n"
-            + "  kdyz je znacka\n"
-            + "    zvedni\n"
-            + "  jinak\n"
-            + "    poloz\n"
-            + "  konec\n"
-            + "konec\n";
+        return "PROCEDURE addremove\n"
+            + "  IF MARK\n"
+            + "    TAKE\n"
+            + "  ELSE\n"
+            + "    PUT\n"
+            + "  END\n"
+            + "END\n";
     }
 
     public String pickupallSolution() {
-        return "pickup\n"
-            + "  dokud je znacka\n"
-            + "    zvedni\n"
-            + "  konec\n"
-            + "konec\n";
+        return "PROCEDURE pickup\n"
+            + "  WHILE MARK\n"
+            + "    TAKE\n"
+            + "  END\n"
+            + "END\n";
     }
 
     public String homeSolution() {
-        return "domu\n"
-            + "  dokud neni zapad\n"
-            + "    vlevo-vbok\n"
-            + "  konec\n"
-            + "  opakuj 2\n"
+        return "PROCEDURE domu\n"
+            + "  WHILE NOT WEST\n"
+            + "    LEFT\n"
+            + "  END\n"
+            + "  REPEAT 2\n"
             + "    towall\n"
-            + "    vlevo-vbok\n"
-            + "  konec\n"
-            + "konec\n" 
+            + "    LEFT\n"
+            + "  END\n"
+            + "END\n"
             + wallSolution();
     }
     
@@ -159,23 +153,24 @@ public class TasksTest {
     private void checkTest(TaskInfo ti) throws Throwable {
         KAREL.chooseTask(ti);
         final TaskDescription ct = KAREL.getCurrentTask();
-        assertNotNull("Tasks loaded", ct);
-
-        int dash = ti.getUrl().indexOf('-');
-        int end = ti.getUrl().indexOf(".js");
-
-        String s = ti.getUrl().substring(dash + 1, end);
-        
-        Method m = getClass().getMethod(s + "Solution");
-        final String res = (String) m.invoke(this);
-        
-        int newLine = res.indexOf('\n');
-        final String name = res.substring(0, newLine);
-        
+        String s = null;
         try {
+            assertNotNull("Tasks loaded", ct);
+
+            int dash = ti.getUrl().indexOf('-');
+            int end = ti.getUrl().indexOf(".js");
+
+            s = ti.getUrl().substring(dash + 1, end);
+
+            Method m = getClass().getMethod(s + "Solution");
+            final String res = (String) m.invoke(this);
+
+            int newLine = res.indexOf('\n');
+        
+            final String name = res.substring("PROCEDURE ".length(), newLine);
             assertEquals("Still same", KAREL.getCurrentTask(), ct);
             KAREL.setSource(res);
-            KarelModel.compile(KAREL);
+            KarelModel.compileSource(KAREL);
             Command cmd = null;
             for (Command c : KAREL.getCommands()) {
                 if (name.equals(c.getName())) {
@@ -184,13 +179,15 @@ public class TasksTest {
                 }
             }
             assertNotNull("Command found", cmd);
+            KAREL.setSpeed(-1);
+            assertEquals("Run all test at once", -1, KAREL.getSpeed());
             KarelModel.invoke(KAREL, cmd);
+
+            for (TaskTestCase c : ct.getTests()) {
+                assertEquals("Case " + c.getDescription() + " from " + ti.getUrl() + " is OK", c.getState(), "ok");
+            }
         } catch (Throwable t) {
-            throw raise(RuntimeException.class, t);
-        }
-            
-        for (TaskTestCase c : ct.getTests()) {
-            assertEquals("Case " + c.getDescription() + " from " + ti.getUrl() + " is OK", c.getState(), "ok");
+            throw new AssertionError("Error running " + s, t);
         }
     }
     

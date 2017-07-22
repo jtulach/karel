@@ -30,7 +30,6 @@ import net.java.html.json.ComputedProperty;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
-import net.java.html.json.OnPropertyChange;
 import net.java.html.json.OnReceive;
 import net.java.html.json.Property;
 
@@ -88,7 +87,8 @@ final class KarelModel {
 
     @Function
     static void collapse(Karel model) {
-        Procedure proc = workspace.getSelectedProcedure();
+        Workspace w = findWorkspace(model);
+        Procedure proc = w.getSelectedProcedure();
         if (proc != null) {
             proc.setCollapsed(true);
         }
@@ -96,7 +96,8 @@ final class KarelModel {
 
     @Function
     static void expand(Karel model) {
-        Procedure proc = workspace.getSelectedProcedure();
+        Workspace w = findWorkspace(model);
+        Procedure proc = w.getSelectedProcedure();
         if (proc != null) {
             proc.setCollapsed(false);
         }
@@ -221,6 +222,41 @@ final class KarelModel {
     }
 
     @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
+        final List<KarelCompiler> next = animateOne(model, frames);
+        if (!next.isEmpty()) {
+            model.setRunning(true);
+            int spd = model.getSpeed();
+            if (spd < 0) {
+                animate(model, next);
+            } else {
+                if (spd < 50) {
+                    spd = 50;
+                }
+                if (spd > 1000) {
+                    spd = 1000;
+                }
+                KAREL.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        model.animate(next);
+                    }
+                }, spd);
+            }
+        } else {
+            model.setRunning(false);
+            boolean ok = true;
+            for (TaskTestCase c : model.getCurrentTask().getTests()) {
+                ok &= TaskModel.TestCaseModel.checkState(c);
+            }
+            int award = 1;
+            if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < award) {
+                model.getCurrentInfo().setAwarded(award);
+            }
+            model.getCurrentTask().setAwarded(1);
+        }
+    }
+
+    private static List<KarelCompiler> animateOne(final Karel model, List<KarelCompiler> frames) {
         final List<KarelCompiler> next = new ArrayList<>();
         for (KarelCompiler frame : frames) {
             State nxt = frame.exec.next();
@@ -252,33 +288,7 @@ final class KarelModel {
                     //ex.fillParams(t.getErrorParams());
             }
         }
-        if (!next.isEmpty()) {
-            model.setRunning(true);
-            int spd = model.getSpeed();
-            if (spd < 0) {
-                spd = 50;
-            }
-            if (spd > 1000) {
-                spd = 1000;
-            }
-            KAREL.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    model.animate(next);
-                }
-            }, spd);
-        } else {
-            model.setRunning(false);
-            boolean ok = true;
-            for (TaskTestCase c : model.getCurrentTask().getTests()) {
-                ok &= TaskModel.TestCaseModel.checkState(c);
-            }
-            int award = 1;
-            if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < award) {
-                model.getCurrentInfo().setAwarded(award);
-            }
-            model.getCurrentTask().setAwarded(1);
-        }
+        return next;
     }
 
     @ModelOperation @Function static void compile(Karel m) {
@@ -295,7 +305,8 @@ final class KarelModel {
     @Function
     static void loadSource(Karel m) {
         StringBuilder sb = new StringBuilder();
-        for (Procedure p : workspace.getProcedures()) {
+        Workspace w = findWorkspace(m);
+        for (Procedure p : w.getProcedures()) {
             sb.append("\n").append(p.getCode()).append("\n");
         }
         m.setSource(sb.toString());
@@ -303,7 +314,9 @@ final class KarelModel {
 
     @Function
     static void compileSource(Karel m) {
-        workspace.parse(m.getSource());
+        Workspace w = findWorkspace(m);
+        w.parse(m.getSource());
+        refreshCommands(m);
     }
 
     private static boolean containsURL(List<TaskInfo> arr, String url) {

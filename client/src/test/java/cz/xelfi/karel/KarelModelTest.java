@@ -20,6 +20,7 @@ package cz.xelfi.karel;
 import java.util.Locale;
 import static junit.framework.Assert.assertNotNull;
 import net.java.html.junit.BrowserRunner;
+import net.java.html.junit.HTMLContent;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,6 +31,9 @@ import org.junit.runner.RunWith;
  * @author Jaroslav Tulach
  */
 @RunWith(BrowserRunner.class)
+@HTMLContent(
+    "<div id='workspace' style='height: 80vh; background-color: red'></div>"
+)
 public class KarelModelTest {
     
     public KarelModelTest() {
@@ -42,15 +46,15 @@ public class KarelModelTest {
 
     @Test
     public void animateStopsOnError() throws Exception {
-        String prg = "naraz\n"
-                + "  vlevo-vbok\n"
-                + "  vlevo-vbok\n"
-                + "  krok\n"
-                + "  vlevo-vbok\n"
-                + "  vlevo-vbok\n"
-                + "  krok\n"
-                + "  krok\n"
-                + "konec";
+        String prg = "PROCEDURE naraz\n"
+                + "  LEFT\n"
+                + "  LEFT\n"
+                + "  STEP\n"
+                + "  LEFT\n"
+                + "  LEFT\n"
+                + "  STEP\n"
+                + "  STEP\n"
+                + "END";
         Town init = new Town();
         init.clear();
         
@@ -63,7 +67,7 @@ public class KarelModelTest {
             new TaskTestCase("xyz", init, null, end, prg, "current")
         );
         Karel km = new Karel("town", null, td, null, null, null, prg, 10, false, "tasks/list.js");
-        km.compile();
+        KarelModel.compileSource(km);
         
         Command cmd = null;
         for (Command c : km.getCommands()) {
@@ -73,12 +77,10 @@ public class KarelModelTest {
             }
         }
         assertNotNull("naraz found among " + km.getCommands(), cmd);
-        
+
+        km.setSpeed(-1);
+        assertEquals("Runs all code at once", -1, km.getSpeed());
         KarelModel.invoke(km, cmd);
-        
-        while (km.isRunning()) {
-            Thread.sleep(100);
-        }
         
         final Town cur = km.getCurrentTask().getTests().get(0).getCurrent();
         int[] karel = TownModel.findKarel(cur);
