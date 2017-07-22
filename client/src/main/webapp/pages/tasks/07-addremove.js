@@ -1,3 +1,4 @@
+[{
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,7 +16,6 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[{
     "description" : "Karel umí pokládat na políčka ve městě značky a otestovat " + 
         "zda-li na jeho současném políčku již značka je. Pojďme jej tedy nyní " +
         "naučit měnit značky: Je-li na jeho políčku značka, ať ji zvedne; " +

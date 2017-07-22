@@ -202,6 +202,12 @@
       <version>0.9</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.html</groupId>
+      <artifactId>xhr4j</artifactId>
+      <version>${net.java.html.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <profiles>
         <profile>

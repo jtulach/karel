@@ -1,3 +1,4 @@
+[
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,15 +16,14 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[
-    { "name" : "Udělej krok", "url": "tasks/00-step.js", "required" : 0 },
-    { "name" : "Otoč se čelem vzad", "url": "tasks/01-turnback.js", "required" : 1 },
-    { "name" : "Dva kroky", "url": "tasks/02-twosteps.js", "required" : 1 },
-    { "name" : "Vpravo vbok", "url": "tasks/03-turnright.js", "required" : 3 },
-    { "name" : "Šest kroků", "url": "tasks/04-sixsteps.js", "required" : 4 },
-    { "name" : "Opatrný krok", "url": "tasks/05-safestep.js", "required" : 4 },
-    { "name" : "Ke zdi", "url": "tasks/06-wall.js", "required" : 6 },
-    { "name" : "Přidej, uber značku", "url": "tasks/07-addremove.js", "required" : 6 },
-    { "name" : "Vysbírej značky", "url": "tasks/08-pickupall.js", "required" : 6 },
-    { "name" : "Kde domov můj?", "url": "tasks/09-home.js", "required" : 9 }
+    { "name" : "Udělej krok", "url": "00-step.js", "required" : 0 },
+    { "name" : "Otoč se čelem vzad", "url": "01-turnback.js", "required" : 1 },
+    { "name" : "Dva kroky", "url": "02-twosteps.js", "required" : 1 },
+    { "name" : "Vpravo vbok", "url": "03-turnright.js", "required" : 3 },
+    { "name" : "Šest kroků", "url": "04-sixsteps.js", "required" : 4 },
+    { "name" : "Opatrný krok", "url": "05-safestep.js", "required" : 4 },
+    { "name" : "Ke zdi", "url": "06-wall.js", "required" : 6 },
+    { "name" : "Přidej, uber značku", "url": "07-addremove.js", "required" : 6 },
+    { "name" : "Vysbírej značky", "url": "08-pickupall.js", "required" : 6 },
+    { "name" : "Kde domov můj?", "url": "09-home.js", "required" : 9 }
 ]

@@ -1,3 +1,4 @@
+[{
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,7 +16,6 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[{
     "description" : "Další základní příkaz, který robot Karel umí, je otočit se doleva. " + 
         "Avšak nejdůležitější je, že se Karel umí učit nové příkazy a skládat je dohromady. " + 
         "Prosím nauč jej otočit se čelem vzad. Vyber si 'definuj čelem-vzad' " +

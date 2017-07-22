@@ -1,3 +1,4 @@
+[{
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,7 +16,6 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[{
     "description" : "Jestliže už Karel umí vlevo-vbok a čelem-vzad, mělo by být snadné naučit jej i vpravo-vbok. " + 
         "Při vytváření nového příkazu zkus využít čelem-vzad.",
     "command" : "vpravo-vbok",

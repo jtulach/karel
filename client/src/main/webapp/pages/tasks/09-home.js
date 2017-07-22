@@ -1,3 +1,4 @@
+[{
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,7 +16,6 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[{
     "description" : "Karlovi patří celé město, ale jeho skutečným domovem " +
             "je levý dolní roh města, v němž je otočen směrem na východ. " +
             "Nauč Karla najít cestu domů z jakéhokoli místa ve městě (bez vnitřních zdí).",
