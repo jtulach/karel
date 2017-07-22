@@ -1,3 +1,4 @@
+[{
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,7 +16,6 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[{
     "description" : "Ať Karel dojde ke zdi, ke které je natočen. " + 
         "Využij příkaz 'dokud' a dělej kroky, dokud není zeď!",
     "command" : "ke-zdi",

@@ -102,6 +102,7 @@
                           <value>${basedir}/src/main/webapp/</value>
                       </property>
                   </systemProperties>
+                  <junitArtifactName>com.dukescript.api:junit-osgi</junitArtifactName>
               </configuration>
           </plugin>
           <plugin>
@@ -191,21 +192,21 @@
         <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
+        <groupId>cz.xelfi.karel</groupId>
+        <artifactId>js</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dukescript.api</groupId>
+      <artifactId>junit-browser-runner</artifactId>
+      <version>0.9</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.netbeans.html</groupId>
-      <artifactId>net.java.html.boot.script</artifactId>
+      <artifactId>xhr4j</artifactId>
       <version>${net.java.html.version}</version>
       <scope>test</scope>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-        <groupId>cz.xelfi.karel</groupId>
-        <artifactId>js</artifactId>
-        <version>${project.version}</version>
     </dependency>
   </dependencies>
   <profiles>

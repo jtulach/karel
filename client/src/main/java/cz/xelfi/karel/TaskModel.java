@@ -31,6 +31,7 @@ import net.java.html.json.Property;
     @Property(name = "required", type = int.class),
     @Property(name = "awarded", type = int.class),
     @Property(name = "disabled", type = boolean.class),
+    @Property(name = "description", type = TaskDescription.class)
 })
 class TaskModel {
     @Model(className = "TaskDescription", properties = {

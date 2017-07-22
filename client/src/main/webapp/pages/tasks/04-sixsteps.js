@@ -1,3 +1,4 @@
+[{
 /*
  * Karel
  * Copyright (C) 2014-2015 Jaroslav Tulach <jaroslav.tulach@apidesign.org>
@@ -15,7 +16,6 @@
  * along with this program. Look for COPYING file in the top folder.
  * If not, see http://opensource.org/licenses/GPL-2.0.
  */
-[{
     "description" : "Vytvoř příkaz, který udělá šest kroků. " + 
         "Neopakuj příkaz 'krok' šestkrát. Raději využij příkaz 'opakuj'!",
     "command" : "šest-kroků",

@@ -20,6 +20,8 @@ package cz.xelfi.karel;
 import cz.xelfi.karel.blockly.Execution.State;
 import cz.xelfi.karel.blockly.Procedure;
 import cz.xelfi.karel.blockly.Workspace;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -46,6 +48,7 @@ import net.java.html.json.Property;
     @Property(name = "source", type = String.class),
     @Property(name = "speed", type = int.class),
     @Property(name = "running", type = boolean.class),
+    @Property(name = "tasksUrl", type = String.class),
     @Property(name = "tasks", type = TaskInfo.class, array = true)
 })
 final class KarelModel {
@@ -58,7 +61,7 @@ final class KarelModel {
         final Scratch s = new Scratch();
         s.getTown().clear();
 
-        karel = new Karel("home", "msg", null, null, s, null, src, 300, false);
+        karel = new Karel("home", "msg", null, null, s, null, src, 300, false, "tasks/list.js");
         KarelModel.compile(karel, false);
         karel.applyBindings();
 
@@ -115,8 +118,9 @@ final class KarelModel {
         m.setTab("town");
     }
 
-    @ModelOperation @Function static void changeTabTask(Karel m) {
-        m.loadTasks("tasks/list.js");
+    @ModelOperation @Function static void changeTabTask(Karel m) throws URISyntaxException {
+        String tasks = m.getTasksUrl();
+        m.loadTasks(tasks, new URI(tasks));
         m.setTab("task");
     }
 
@@ -312,9 +316,11 @@ final class KarelModel {
     }
 
     @OnReceive(url = "{url}", onError = "errorLoadingTask")
-    static void loadTasks(Karel m, TaskInfo[] arr) {
+    static void loadTasks(Karel m, TaskInfo[] arr, URI baseUrl) {
         for (TaskInfo ti : arr) {
-            if (!containsURL(m.getTasks(), ti.getUrl())) {
+            URI url = baseUrl.resolve(ti.getUrl());
+            if (!containsURL(m.getTasks(), url.toString())) {
+                ti.setUrl(url.toString());
                 m.getTasks().add(ti);
             }
         }
@@ -337,11 +343,16 @@ final class KarelModel {
     @ModelOperation @Function static void chooseTask(Karel m, TaskInfo data) {
         m.setCurrentTask(null);
         m.setCurrentInfo(data);
-        m.loadTaskDescription(data.getUrl());
+        if (data.getDescription() == null) {
+            m.loadTaskDescription(data.getUrl(), data);
+        } else {
+            loadTaskDescription(m, data.getDescription(), data);
+        }
     }
 
     @OnReceive(url = "{url}", onError = "errorLoadingTask")
-    static void loadTaskDescription(Karel m, TaskDescription td) {
+    static void loadTaskDescription(Karel m, TaskDescription td, TaskInfo data) {
+        data.setDescription(td);
         for (TaskTestCase c : td.getTests()) {
             Town e = new Town();
             TownModel.load(e, c.getEnd());

@@ -158,7 +158,7 @@ public final class Execution {
                     if (repeat != null && repeat.repeat.equals(current)) {
                         if (--repeat.counter <= 0) {
                             repeat = repeat.previous;
-                            next = null;
+                            next = info.next;
                             break;
                         }
                     } else {

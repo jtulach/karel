@@ -17,79 +17,43 @@
  */
 package cz.xelfi.karel;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.java.html.BrwsrCtx;
-import net.java.html.boot.BrowserBuilder;
-import static org.testng.Assert.*;
-import org.testng.SkipException;
-import org.testng.annotations.Factory;
-import org.testng.annotations.Test;
+import net.java.html.junit.BrowserRunner;
+import net.java.html.junit.HTMLContent;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 
 /**
  *
  * @author Jaroslav Tulach <jtulach@netbeans.org>
  */
+@RunWith(BrowserRunner.class)
+@HTMLContent(
+    "<div id='workspace' style='height: 80vh; background-color: red'></div>"
+)
 public class TasksTest {
-    private static final CountDownLatch INIT = new CountDownLatch(1);
-    private static Throwable T;
-    private static BrwsrCtx CTX;
-    private static Karel KAREL;
+    private BrwsrCtx CTX;
+    private Karel KAREL;
     
-    @Factory public static Object[] initMirror() throws Throwable {
+    @Before
+    public void initKarel() throws Throwable {
         Locale.setDefault(new Locale("cs", "CZ"));
-        final BrowserBuilder bb = BrowserBuilder.newBrowser().
-            loadClass(TasksTest.class).
-            loadPage("pages/index.html").
-            invoke("ready");
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    bb.showAndWait();
-                } catch (Throwable t) {
-                    T = t;
-                    INIT.countDown();
-                }
-            }
-        });
-        INIT.await();
-        if (T != null) {
-            SkipException se = new SkipException("Problems initializing the mirror!");
-            se.initCause(T);
-            throw se;
-        }
-        assertNotNull(CTX, "Not null");
-        
-        KAREL.changeTabTask();
-        while (KAREL.getTasks().isEmpty()) {
-            Thread.sleep(100);
-        }
-
-        final List<TaskInfo> tasks = KAREL.getTasks();
-        final int size = tasks.size();
-        Object[] arr = new Object[size];
-        for (int i = 0; i < size; i++) {
-            arr[i] = new TasksTest(tasks.get(i));
-        }
-        return arr;
     }
     
-    public static void ready(String... args) throws Exception {
-        CTX = BrwsrCtx.findDefault(TasksTest.class);
-        KAREL = Main.onPageLoad(args);
-        INIT.countDown();
+    public TasksTest() {
     }
-    private final TaskInfo ti;
 
-    private TasksTest(TaskInfo info) {
-        this.ti = info;
-    }
-    
     public String stepSolution() {
         return "udelej-krok\n"
                 + "  krok\n"
@@ -173,33 +137,29 @@ public class TasksTest {
             + wallSolution();
     }
     
-    @Test public void checkTest() throws Throwable {
+    @Test
+    public Runnable[] allTests() throws Throwable {
+        if (KAREL == null) {
+            KAREL = Main.onPageLoad();
+            File browserDir = new File(System.getProperty("browser.rootdir"));
+            assertTrue(browserDir.isDirectory());
+            File tasks = new File(new File(new File(browserDir, "pages"), "tasks"), "list.js");
+            assertTrue("File " + tasks + " found", tasks.isFile());
+            KAREL.setTasksUrl(tasks.toURI().toString());
+            KAREL.changeTabTask();
+        }
+
+        return new Runnable[] {
+            new LoadListOfTasks(),
+            new ChooseTasks(),
+            new RunTests(),
+        };
+    }
+
+    private void checkTest(TaskInfo ti) throws Throwable {
         KAREL.chooseTask(ti);
-        class Wait implements Runnable {
-            CountDownLatch down;
-            TaskDescription ct;
-            @Override
-            public void run() {
-                ct = KAREL.getCurrentTask();
-                down.countDown();
-            }
-            
-            TaskDescription get() throws Exception {
-                down = new CountDownLatch(1);
-                CTX.execute(this);
-                down.await();
-                return ct;
-            }
-        }
-        Wait w = new Wait();
-        for (int i = 0; i < 50; i++) {
-            if (w.get() != null) {
-                break;
-            }
-            Thread.sleep(100);
-        }
-        final TaskDescription ct = w.get();
-        assertNotNull(ct, "Tasks loaded");
+        final TaskDescription ct = KAREL.getCurrentTask();
+        assertNotNull("Tasks loaded", ct);
 
         int dash = ti.getUrl().indexOf('-');
         int end = ti.getUrl().indexOf(".js");
@@ -212,49 +172,61 @@ public class TasksTest {
         int newLine = res.indexOf('\n');
         final String name = res.substring(0, newLine);
         
-        class DoTest implements Runnable {
-            CountDownLatch down = new CountDownLatch(1);
-            Throwable ex;
-            
-            @Override
-            public void run() {
-                try {
-                    doTest();
-                } catch (Throwable t) {
-                    ex = t;
-                } finally {
-                    down.countDown();
+        try {
+            assertEquals("Still same", KAREL.getCurrentTask(), ct);
+            KAREL.setSource(res);
+            KarelModel.compile(KAREL);
+            Command cmd = null;
+            for (Command c : KAREL.getCommands()) {
+                if (name.equals(c.getName())) {
+                    cmd = c;
+                    break;
                 }
             }
+            assertNotNull("Command found", cmd);
+            KarelModel.invoke(KAREL, cmd);
+        } catch (Throwable t) {
+            throw raise(RuntimeException.class, t);
+        }
             
-            private void doTest() throws Exception {
-                assertEquals(KAREL.getCurrentTask(), ct, "Still same");
-                KAREL.setSource(res);
-                KarelModel.compile(KAREL);
-                Command cmd = null;
-                for (Command c : KAREL.getCommands()) {
-                    if (name.equals(c.getName())) {
-                        cmd = c;
-                        break;
-                    }
-                }
-                assertNotNull(cmd, "Command found");
-                KarelModel.invoke(KAREL, cmd);
-            }
-        }
-        DoTest run = new DoTest();
-        CTX.execute(run);
-        run.down.await();
-        if (run.ex != null) {
-            throw run.ex;
-        }
-        while (KAREL.isRunning()) {
-            Thread.sleep(100);
-        }
-        
         for (TaskTestCase c : ct.getTests()) {
-            assertEquals(c.getState(), "ok", "Case " + c.getDescription() + " from " + ti.getUrl() + " is OK");
+            assertEquals("Case " + c.getDescription() + " from " + ti.getUrl() + " is OK", c.getState(), "ok");
         }
     }
     
+    private static <E extends Throwable> E raise(Class<E> type, Throwable ex) throws E {
+        throw (E)ex;
+    }
+
+    private class LoadListOfTasks implements Runnable {
+        @Override
+        public void run() {
+            final List<TaskInfo> tasks = KAREL.getTasks();
+        }
+    }
+
+    private class ChooseTasks implements Runnable {
+        @Override
+        public void run() {
+            final List<TaskInfo> tasks = KAREL.getTasks();
+            for (TaskInfo ti : tasks) {
+                KAREL.chooseTask(ti);
+            }
+        }
+    }
+
+    private class RunTests implements Runnable {
+        @Override
+        public void run() {
+            final List<TaskInfo> tasks = KAREL.getTasks();
+            final int size = tasks.size();
+            for (int i = 0; i < size; i++) {
+                try {
+                    checkTest(tasks.get(i));
+                } catch (Throwable ex) {
+                    throw raise(RuntimeException.class, ex);
+                }
+            }
+        }
+    }
 }
