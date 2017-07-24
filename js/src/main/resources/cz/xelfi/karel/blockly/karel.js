@@ -188,7 +188,7 @@ Blockly.Blocks['karel_call'] = {
     }
 
     function loadXml(xml) {
-        Blockly.Xml.domToWorkspace(workspace, Blockly.Xml.textToDom(xml));
+        Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), workspace);
     }
     
     function toXml() {

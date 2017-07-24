@@ -661,7 +661,7 @@ public class BlocklyTest {
             }
         };
 
-        final Exception[] arr = { null };
+        final Throwable[] arr = { null };
         final CountDownLatch cdl = new CountDownLatch(1);
         CTX.execute(new Runnable() {
             @Override
@@ -671,7 +671,7 @@ public class BlocklyTest {
                     Later toRun = pending.removeFirst();
                     toRun.call();
                     goesOn = pending.size() > 0;
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     arr[0] = ex;
                 } finally {
                     if (!goesOn) {
