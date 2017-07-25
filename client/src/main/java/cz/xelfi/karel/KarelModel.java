@@ -104,6 +104,16 @@ final class KarelModel {
     }
 
     @Function
+    static void showCode(Karel model) {
+        Workspace w = findWorkspace(model);
+        Procedure proc = w.getSelectedProcedure();
+        if (proc != null) {
+            model.setSource(proc.getCode());
+            model.setTab("edit");
+        }
+    }
+
+    @Function
     static void useTestForScratch(Karel model, TaskTestCase data) {
         data.getStart().copyTo(model.getScratch().getTown());
     }
@@ -245,14 +255,17 @@ final class KarelModel {
         } else {
             model.setRunning(false);
             boolean ok = true;
-            for (TaskTestCase c : model.getCurrentTask().getTests()) {
-                ok &= TaskModel.TestCaseModel.checkState(c);
+            final TaskDescription currentTask = model.getCurrentTask();
+            if (currentTask != null) {
+                for (TaskTestCase c : currentTask.getTests()) {
+                    ok &= TaskModel.TestCaseModel.checkState(c);
+                }
+                int award = 1;
+                if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < award) {
+                    model.getCurrentInfo().setAwarded(award);
+                }
+                currentTask.setAwarded(1);
             }
-            int award = 1;
-            if (ok && model.getCurrentInfo() != null && model.getCurrentInfo().getAwarded() < award) {
-                model.getCurrentInfo().setAwarded(award);
-            }
-            model.getCurrentTask().setAwarded(1);
         }
     }
 
@@ -317,6 +330,7 @@ final class KarelModel {
         Workspace w = findWorkspace(m);
         w.parse(m.getSource());
         refreshCommands(m);
+        m.setTab("town");
     }
 
     private static boolean containsURL(List<TaskInfo> arr, String url) {

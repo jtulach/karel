@@ -155,9 +155,8 @@
     </script>
     <script type="text/html" id="edit">
         <div class="col-sm-12" data-bind="visible: $root.source">
-            <textarea width="100%" cols="70" data-bind="value: $root.source"/>
+            <textarea width="100%" cols="70" rows="30" data-bind="value: $root.source"/>
         </div>
-        <button type="button" class="btn-sm btn-success" data-bind="click: $root.loadSource">Ukaž kód</button>
         <button type="button" class="btn btn-lg btn-default" data-bind="click: $root.compileSource">Přeložit</button>
     </script>
     
@@ -199,6 +198,7 @@
                 <button data-bind="click: $root.loadWorkspace">Load</button>
                 <button data-bind="click: $root.collapse, enable: $root.selectedCommand">Collapse</button>
                 <button data-bind="click: $root.expand, enable: $root.selectedCommand">Expand</button>
+                <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Show Code</button>
                 <div id="workspace" style="height: 80vh; background-color: red"></div>
             </div>
             <div class="col-sm-4">

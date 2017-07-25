@@ -61,6 +61,12 @@ public final class Procedure {
         }
     }
 
+    public void dispose() {
+        if (js != null) {
+            Workspace.disposeBlock(js, false);
+        }
+    }
+
     @Override
     public String toString() {
         return "Procedure[" + id + "]";

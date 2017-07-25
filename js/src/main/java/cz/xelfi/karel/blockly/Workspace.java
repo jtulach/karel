@@ -180,7 +180,7 @@ public final class Workspace {
             @Override
             public void enterProcedure(KarelParser.ProcedureContext ctx) {
                 final String procName = ctx.name().ID().getText();
-                sb.append(indent()).append("<block type=\"karel_funkce\">\n");
+                sb.append(indent()).append("<block type=\"karel_funkce\" collapsed=\"true\">\n");
                 procNames.add(procName);
             }
 
@@ -202,13 +202,21 @@ public final class Workspace {
         final KarelWalker karel = new KarelWalker();
         walker.walk(karel, tree);
         
+        for (String replace : karel.procNames) {
+            Procedure p = findProcedure(replace);
+            if (p != null) {
+                p.dispose();
+            }
+        }
         loadXML(karel.sb.toString());
-//        Object procJs = stringToProcedure(js, karel.sb.toString());
-//        final String name = karel.procNames.get(0);
-//        return new Procedure[] {
-//            new Procedure(procJs, this, name, name)
-//        };
-        return new Procedure[] { findProcedure(karel.procNames.get(0)) };
+        List<Procedure> all = new ArrayList<>();
+        for (String find : karel.procNames) {
+            Procedure p = findProcedure(find);
+            if (p != null) {
+                all.add(p);
+            }
+        }
+        return all.toArray(new Procedure[all.size()]);
     }
 
     public List<Procedure> getProcedures() {
@@ -312,6 +320,9 @@ public final class Workspace {
 
     @JavaScriptBody(args = { "js", "b" }, body = "js.setCollapsed(b);", wait4js = false)
     static native void setCollapsed(Object js, boolean b);
+
+    @JavaScriptBody(args = { "js", "heal" }, body = "js.dispose(heal);", wait4js = false)
+    static native void disposeBlock(Object js, boolean heal);
 
     @JavaScriptBody(args = { "js" }, body =
         "return [\n"
