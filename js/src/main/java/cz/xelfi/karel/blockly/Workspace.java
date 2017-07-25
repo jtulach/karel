@@ -279,8 +279,8 @@ public final class Workspace {
     private static native Object create0(Object karel, String id);
 
     @JavaScriptBody(args = { "workspace", "thiz" }, wait4js = false, javacall = true, body =
-        "workspace.listen(function(ev) {\n" +
-        "  thiz.@cz.xelfi.karel.blockly.Workspace::change([Ljava/lang/Object;)([ev.type, ev.target]);\n" +
+        "workspace.listen(function(arr) {\n" +
+        "  thiz.@cz.xelfi.karel.blockly.Workspace::change([Ljava/lang/Object;)(arr);\n" +
         "});\n"
     )
     private static native void listen0(Object workspace, Workspace thiz);

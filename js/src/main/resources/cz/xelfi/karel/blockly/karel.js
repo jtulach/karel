@@ -52,7 +52,13 @@ function injectKarel(id) {
         return arr;
     }
 
+    var onSelectListener = null;
+
     function toolbox(modify) {
+        if (onSelectListener && modify && 'selected' === modify.element) {
+            onSelectListener(['blocklySelectChange', modify.oldValue, modify.newValue]);
+            return;
+        }
         var s = '<xml>\n' +
             '<block type="karel_funkce"></block>\n' +
             '<block type="karel_if"></block>\n' +
@@ -184,7 +190,7 @@ Blockly.Blocks['karel_call'] = {
     workspace.addChangeListener(toolbox);
 
     function addListeners(callback) {
-        workspace.getCanvas().addEventListener('blocklySelectChange', callback, false);
+        onSelectListener = callback;
     }
 
     function loadXml(xml) {
