@@ -249,6 +249,22 @@
                         </span>
                         <span data-bind="ifnot: $root.selectedCommand">Start</span>
                     </button>
+                    <button type="button" class="btn btn-info"
+                      data-bind="click: $root.stop, enable: $root.running">
+                        <span>&Square;</span>
+                    </button>
+                    <button type="button" class="btn btn-info"
+                      data-bind="click: $root.pause, enable: $root.running">
+                        <span>||</span>
+                    </button>
+                    <button type="button" class="btn btn-info"
+                      data-bind="click: $root.slower, enable: $root.running">
+                        <span>&lt;&lt;</span>
+                    </button>
+                    <button type="button" class="btn btn-info"
+                      data-bind="click: $root.faster, enable: $root.running">
+                        <span>&gt;&gt;</span>
+                    </button>
                 </div>
             </div>
         </div>

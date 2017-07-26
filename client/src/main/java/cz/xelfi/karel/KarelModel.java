@@ -23,7 +23,10 @@ import cz.xelfi.karel.blockly.Workspace;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import net.java.html.json.ComputedProperty;
@@ -36,7 +39,7 @@ import net.java.html.json.Property;
 /** Model annotation generates class Data with
  * one message property, boolean property and read only words property
  */
-@Model(className = "Karel", targetId = "", properties = {
+@Model(className = "Karel", targetId = "", instance = true, builder = "assign", properties = {
     @Property(name = "tab", type = String.class),
     @Property(name = "message", type = String.class),
     @Property(name = "currentTask", type = TaskDescription.class),
@@ -46,11 +49,14 @@ import net.java.html.json.Property;
     @Property(name = "selectedCommand", type = Command.class),
     @Property(name = "source", type = String.class),
     @Property(name = "speed", type = int.class),
+    @Property(name = "paused", type = boolean.class),
     @Property(name = "running", type = boolean.class),
     @Property(name = "tasksUrl", type = String.class),
     @Property(name = "tasks", type = TaskInfo.class, array = true)
 })
 final class KarelModel {
+    /** @guardedby(this) */
+    private Set<List<KarelCompiler>> pausedFrames;
     private static Karel karel;
     private static final Timer KAREL = new Timer("Karel Moves");
     private static Workspace workspace;
@@ -60,7 +66,14 @@ final class KarelModel {
         final Scratch s = new Scratch();
         s.getTown().clear();
 
-        karel = new Karel("home", "msg", null, null, s, null, src, 300, false, "tasks/list.js");
+        karel = new Karel().
+                assignTab("home").
+                assignSpeed(50).
+                assignScratch(s).
+                assignSource(src).
+                assignCurrentTask(null).
+                assignSelectedCommand(null).
+                assignTasksUrl("tasks/list.js");
         KarelModel.compile(karel, false);
         karel.applyBindings();
 
@@ -231,7 +244,45 @@ final class KarelModel {
         m.setTab("edit");
     }
 
-    @ModelOperation static void animate(final Karel model, List<KarelCompiler> frames) {
+    @Function static void stop(Karel m) {
+        m.setRunning(false);
+    }
+
+    @Function static void slower(Karel m) {
+        double newSpeed = m.getSpeed() * 1.5;
+        if (newSpeed > 1000) {
+            newSpeed = 1000;
+        }
+        m.setSpeed((int) newSpeed);
+    }
+
+    @Function static void faster(Karel m) {
+        double newSpeed = m.getSpeed() / 1.5;
+        if (newSpeed < 3) {
+            newSpeed = 3;
+        }
+        m.setSpeed((int) newSpeed);
+    }
+
+    @Function
+    void pause(Karel m) {
+        Set<List<KarelCompiler>> wakeUp = Collections.emptySet();
+        synchronized (this) {
+            if (this.pausedFrames == null) {
+                this.pausedFrames = new HashSet<>();
+                m.setPaused(true);
+            } else {
+                wakeUp = this.pausedFrames;
+                this.pausedFrames = null;
+                m.setPaused(false);
+            }
+        }
+        for (List<KarelCompiler> frames : wakeUp) {
+            animate(m, frames);
+        }
+    }
+
+    @ModelOperation void animate(final Karel model, List<KarelCompiler> frames) {
         final List<KarelCompiler> next = animateOne(model, frames);
         if (!next.isEmpty()) {
             model.setRunning(true);
@@ -239,8 +290,14 @@ final class KarelModel {
             if (spd < 0) {
                 animate(model, next);
             } else {
-                if (spd < 50) {
-                    spd = 50;
+                synchronized (this) {
+                    if (this.pausedFrames != null) {
+                        this.pausedFrames.add(next);
+                        return;
+                    }
+                }
+                if (spd < 3) {
+                    spd = 3;
                 }
                 if (spd > 1000) {
                     spd = 1000;
@@ -248,6 +305,9 @@ final class KarelModel {
                 KAREL.schedule(new TimerTask() {
                     @Override
                     public void run() {
+                        if (!model.isRunning()) {
+                            return;
+                        }
                         model.animate(next);
                     }
                 }, spd);
