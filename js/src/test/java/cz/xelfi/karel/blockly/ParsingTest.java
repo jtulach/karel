@@ -415,4 +415,54 @@ public class ParsingTest {
             }
         }.get();
     }
+    @Test
+    public void whileMark() throws Exception {
+        final Workspace w = new Later<Workspace>() {
+            @Override
+            Workspace work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w;
+            }
+        }.get();
+
+        final String CODE =
+            "PROCEDURE znacky\n" +
+            "  WHILE MARK\n" +
+            "    STEP\n" +
+            "  END\n" +
+            "END\n";
+
+        final Procedure[] procs = new Later<Procedure[]>() {
+            @Override
+            Procedure[] work() throws Exception {
+                return w.parse(CODE);
+            }
+        }.get();
+        assertEquals(procs.length, 1, "One procedure has been defined");
+        assertEquals(procs[0].getName(), "znacky", "right name");
+        new Later<Void>() {
+            @Override
+            Void work() throws Exception {
+                Execution e = procs[0].prepareExecution(new BlocklyTest.FewMarks(3));
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_while");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_while");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_while");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_while");
+                assertEquals(e.next(), Execution.State.FINISHED);
+                assertNull(e.currentType());
+                return null;
+            }
+        }.get();
+    }
 }

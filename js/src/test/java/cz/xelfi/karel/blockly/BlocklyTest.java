@@ -753,4 +753,41 @@ public class BlocklyTest {
         }
     }
 
+    static class FewMarks implements Execution.Environment {
+
+        int steps;
+
+        public FewMarks(int steps) {
+            this.steps = steps;
+        }
+
+        @Override
+        public boolean isCondition(Execution.Condition c) {
+            if (c == Execution.Condition.MARK) {
+                return steps > 0;
+            }
+            return false;
+        }
+
+        @Override
+        public void left() {
+        }
+
+        @Override
+        public boolean step() {
+            steps--;
+            return true;
+        }
+
+        @Override
+        public boolean put() {
+            return false;
+        }
+
+        @Override
+        public boolean take() {
+            return false;
+        }
+    }
+
 }
