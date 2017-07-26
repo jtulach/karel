@@ -214,6 +214,10 @@ public final class Execution {
                         case "karel_if":
                         case "karel_if_else":
                             info = parentInfo;
+                            if (info.next != null) {
+                                current = info.next;
+                                break END;
+                            }
                             continue;
                         default:
                             break END;

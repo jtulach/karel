@@ -318,4 +318,101 @@ public class ParsingTest {
             }
         }.get();
     }
+
+    @Test
+    public void towall() throws Exception {
+        final Workspace w = new Later<Workspace>() {
+            @Override
+            Workspace work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w;
+            }
+        }.get();
+
+        final String CODE =
+            "PROCEDURE towall\n" +
+            "  IF NOT WALL\n" +
+            "    STEP\n" +
+            "  END\n" +
+            "  towall\n" +
+            "END\n";
+
+        final Procedure[] procs = new Later<Procedure[]>() {
+            @Override
+            Procedure[] work() throws Exception {
+                return w.parse(CODE);
+            }
+        }.get();
+        assertEquals(procs.length, 1, "One procedure has been defined");
+        assertEquals(procs[0].getName(), "towall", "right name");
+        new Later<Void>() {
+            @Override
+            Void work() throws Exception {
+                Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_if");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_funkce");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_if");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                return null;
+            }
+        }.get();
+    }
+    @Test
+    public void around() throws Exception {
+        final Workspace w = new Later<Workspace>() {
+            @Override
+            Workspace work() throws Exception {
+                final Workspace w = Workspace.create("any");
+                w.clear();
+                return w;
+            }
+        }.get();
+
+        final String CODE =
+            "PROCEDURE okolo\n" +
+            "  IF WALL\n" +
+            "    LEFT\n" +
+            "  ELSE\n" +
+            "    STEP\n" +
+            "  END\n" +
+            "  okolo\n" +
+            "END\n";
+
+        final Procedure[] procs = new Later<Procedure[]>() {
+            @Override
+            Procedure[] work() throws Exception {
+                return w.parse(CODE);
+            }
+        }.get();
+        assertEquals(procs.length, 1, "One procedure has been defined");
+        assertEquals(procs[0].getName(), "okolo", "right name");
+        new Later<Void>() {
+            @Override
+            Void work() throws Exception {
+                Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_if_else");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_funkce");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_if_else");
+                assertEquals(e.next(), Execution.State.RUNNING);
+                assertEquals(e.currentType(), "karel_call");
+                return null;
+            }
+        }.get();
+    }
 }
