@@ -261,12 +261,15 @@
                       data-bind="click: $root.pause, enable: $root.running">
                         <span>||</span>
                     </button>
+                </div>
+                <div>
                     <button type="button" class="btn btn-info"
-                      data-bind="click: $root.slower, enable: $root.running">
+                      data-bind="click: $root.slower">
                         <span>&lt;&lt;</span>
                     </button>
+                    <span data-bind="text: $root.speed"></span> ms
                     <button type="button" class="btn btn-info"
-                      data-bind="click: $root.faster, enable: $root.running">
+                      data-bind="click: $root.faster">
                         <span>&gt;&gt;</span>
                     </button>
                 </div>
