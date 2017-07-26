@@ -254,6 +254,10 @@
                         <span>&Square;</span>
                     </button>
                     <button type="button" class="btn btn-info"
+                      data-bind="click: $root.step, enable: $root.paused">
+                        <span>&trianglerighteq;</span>
+                    </button>
+                    <button type="button" class="btn btn-info"
                       data-bind="click: $root.pause, enable: $root.running">
                         <span>||</span>
                     </button>

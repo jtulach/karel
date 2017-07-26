@@ -25,7 +25,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -56,7 +58,7 @@ import net.java.html.json.Property;
 })
 final class KarelModel {
     /** @guardedby(this) */
-    private Set<List<KarelCompiler>> pausedFrames;
+    private List<List<KarelCompiler>> pausedFrames;
     private static Karel karel;
     private static final Timer KAREL = new Timer("Karel Moves");
     private static Workspace workspace;
@@ -266,10 +268,10 @@ final class KarelModel {
 
     @Function
     void pause(Karel m) {
-        Set<List<KarelCompiler>> wakeUp = Collections.emptySet();
+        List<List<KarelCompiler>> wakeUp = Collections.emptyList();
         synchronized (this) {
             if (this.pausedFrames == null) {
-                this.pausedFrames = new HashSet<>();
+                this.pausedFrames = new ArrayList<>();
                 m.setPaused(true);
             } else {
                 wakeUp = this.pausedFrames;
@@ -279,6 +281,21 @@ final class KarelModel {
         }
         for (List<KarelCompiler> frames : wakeUp) {
             animate(m, frames);
+        }
+    }
+
+    @Function
+    void step(Karel m) {
+        synchronized (this) {
+            if (this.pausedFrames == null) {
+                return;
+            }
+            ListIterator<List<KarelCompiler>> it = pausedFrames.listIterator();
+            while (it.hasNext()) {
+                List<KarelCompiler> frames = it.next();
+                List<KarelCompiler> newFrames = animateOne(m, frames);
+                it.set(newFrames);
+            }
         }
     }
 
