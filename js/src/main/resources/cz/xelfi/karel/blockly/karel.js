@@ -202,7 +202,7 @@ Blockly.Blocks['karel_call'] = {
     }
 
     function newBlock(type, commandName) {
-        var b = Blockly.Block.obtain(workspace, type);
+        var b = workspace.newBlock(type);
         b.initSvg();
         b.setFieldValue(commandName, 'NAME');
         b.render();
