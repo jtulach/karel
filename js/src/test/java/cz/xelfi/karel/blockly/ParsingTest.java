@@ -17,146 +17,72 @@
  */
 package cz.xelfi.karel.blockly;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import net.java.html.BrwsrCtx;
-import net.java.html.boot.BrowserBuilder;
-import org.testng.Assert;
-import static org.testng.Assert.*;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import net.java.html.junit.BrowserRunner;
+import net.java.html.junit.HTMLContent;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(BrowserRunner.class)
+@HTMLContent("<div id = 'any'>Blockly</div>")
 public class ParsingTest {
     private static BrwsrCtx CTX;
 
-    @BeforeClass
-    public static void initializePresenter() throws InterruptedException {
-        final CountDownLatch cdl = new CountDownLatch(1);
-        final BrowserBuilder builder = BrowserBuilder.newBrowser().
-            loadPage("test.html").
-            loadFinished(new Runnable() {
-                @Override
-                public void run() {
-                    CTX = BrwsrCtx.findDefault(ParsingTest.class);
-                    cdl.countDown();
-                }
-            });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                builder.showAndWait();
-            }
-        }, "Launcher").start();
-        cdl.await();
-        Assert.assertNotNull(CTX, "Context is ready");
-    }
-
     @Test
     public void printOutCodeOfProcedure() throws Exception {
-        String parsed = new Later<String>() {
-            @Override
-            String work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
-                w.loadXML(
-                    "<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                    + "  <block type=\"karel_funkce\" x=\"38\" y=\"45\">\n"
-                    + "    <field name=\"NAME\">safe-step</field>\n"
-                    + "    <statement name=\"IFTRUE\">\n"
-                    + "      <block type=\"karel_if\">\n"
-                    + "        <field name=\"NEG\">FALSE</field>\n"
-                    + "        <field name=\"COND\">WALL</field>\n"
-                    + "        <statement name=\"IFTRUE\">\n"
-                    + "          <block type=\"karel_call\">\n"
-                    + "            <field name=\"CALL\">STEP</field>\n"
-                    + "          </block>\n"
-                    + "        </statement>\n"
-                    + "      </block>\n"
-                    + "    </statement>\n"
-                    + "  </block>\n"
-                    + "  <block type=\"karel_funkce\" x=\"259\" y=\"44\">\n"
-                    + "    <field name=\"NAME\">ten-safe-steps</field>\n"
-                    + "    <statement name=\"IFTRUE\">\n"
-                    + "      <block type=\"karel_repeat\">\n"
-                    + "        <field name=\"N\">10</field>\n"
-                    + "        <statement name=\"IFTRUE\">\n"
-                    + "          <block type=\"karel_call\">\n"
-                    + "            <field name=\"CALL\">safe-step</field>\n"
-                    + "          </block>\n"
-                    + "        </statement>\n"
-                    + "      </block>\n"
-                    + "    </statement>\n"
-                    + "  </block>\n"
-                    + "</xml>"
-                );
+        w.loadXML(
+            "<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+            + "  <block type=\"karel_funkce\" x=\"38\" y=\"45\">\n"
+            + "    <field name=\"NAME\">safe-step</field>\n"
+            + "    <statement name=\"IFTRUE\">\n"
+            + "      <block type=\"karel_if\">\n"
+            + "        <field name=\"NEG\">FALSE</field>\n"
+            + "        <field name=\"COND\">WALL</field>\n"
+            + "        <statement name=\"IFTRUE\">\n"
+            + "          <block type=\"karel_call\">\n"
+            + "            <field name=\"CALL\">STEP</field>\n"
+            + "          </block>\n"
+            + "        </statement>\n"
+            + "      </block>\n"
+            + "    </statement>\n"
+            + "  </block>\n"
+            + "  <block type=\"karel_funkce\" x=\"259\" y=\"44\">\n"
+            + "    <field name=\"NAME\">ten-safe-steps</field>\n"
+            + "    <statement name=\"IFTRUE\">\n"
+            + "      <block type=\"karel_repeat\">\n"
+            + "        <field name=\"N\">10</field>\n"
+            + "        <statement name=\"IFTRUE\">\n"
+            + "          <block type=\"karel_call\">\n"
+            + "            <field name=\"CALL\">safe-step</field>\n"
+            + "          </block>\n"
+            + "        </statement>\n"
+            + "      </block>\n"
+            + "    </statement>\n"
+            + "  </block>\n"
+            + "</xml>"
+        );
 
-                List<Procedure> arr = BlocklyTest.filterProcedures(w);
-                assertEquals(arr.size(), 2, "Two procs: " + arr);
+        List<Procedure> arr = BlocklyTest.filterProcedures(w);
+        assertEquals("Two procs: " + arr, 2, arr.size());
 
-                Procedure tenSafeSteps = w.findProcedure("ten-safe-steps");
-                final Procedure safeStep = w.findProcedure("safe-step");
+        Procedure tenSafeSteps = w.findProcedure("ten-safe-steps");
+        final Procedure safeStep = w.findProcedure("safe-step");
 
-                assertNotNull(tenSafeSteps);
-                assertNotNull(safeStep);
+        assertNotNull(tenSafeSteps);
+        assertNotNull(safeStep);
 
-                return safeStep.getCode();
-            }
-        }.get();
-
-        assertTrue(parsed.contains("PROCEDURE safe-step"), parsed);
-        assertTrue(parsed.contains("IF NOT WALL"), parsed);
-        assertTrue(parsed.contains("STEP"), parsed);
-    }
-
-    private static abstract class Later<R> implements Runnable {
-        private static final LinkedList<Later> PENDING = new LinkedList<>();
-        private boolean executed;
-        private R result;
-        private Throwable ex;
-
-        protected Later() {
-            PENDING.add(this);
-        }
-
-        abstract R work() throws Exception;
-
-        @Override
-        public final void run() {
-            if (executed) {
-                return;
-            }
-            try {
-                result = work();
-            } catch (Throwable ex) {
-                this.ex = ex;
-            } finally {
-                synchronized (this) {
-                    executed = true;
-                    notifyAll();
-                }
-            }
-        }
-
-        public final R get() throws Exception {
-            for (Later run : PENDING.toArray(new Later[0])) {
-                PENDING.clear();
-                CTX.execute(run);
-            }
-            synchronized (this) {
-                while (!executed) {
-                    wait();
-                }
-            }
-            if (ex instanceof Exception) {
-                throw (Exception)ex;
-            }
-            if (ex instanceof Error) {
-                throw (Error)ex;
-            }
-            return result;
-        }
+        String p = safeStep.getCode();
+        assertTrue(p, p.contains("PROCEDURE safe-step"));
+        assertTrue(p, p.contains("IF NOT WALL"));
+        assertTrue(p, p.contains("STEP"));
     }
 
     @Test
@@ -180,14 +106,8 @@ public class ParsingTest {
     }
 
     private void doType(String type, int cnt) throws Exception {
-        final Workspace w = new Later<Workspace>() {
-            @Override
-            Workspace work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
-                return w;
-            }
-        }.get();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
         final StringBuilder sb = new StringBuilder();
         sb.append("PROCEDURE safe-step\n" + "  ").
@@ -204,33 +124,19 @@ public class ParsingTest {
 
         final String CODE = sb.toString();
 
-        final Procedure[] procs = new Later<Procedure[]>() {
-            @Override
-            Procedure[] work() throws Exception {
-                return w.parse(CODE);
-            }
-        }.get();
-        assertEquals(procs.length, 1, "One procedure has been defined");
-        assertEquals(procs[0].getName(), "safe-step", "right name");
-        assertEquals(procs[0].getId(), "safe-step", "right id");
-        new Later<Void>() {
-            @Override
-            Void work() throws Exception {
-                assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same, with\n" + w.toString());
-                return null;
-            }
-        }.get();
+        final Procedure[] procs = w.parse(CODE);
+
+        assertEquals("One procedure has been defined", 1, procs.length);
+        assertEquals("right name", "safe-step", procs[0].getName());
+        assertEquals("right id", "safe-step", procs[0].getId());
+
+        assertEquals("Generated code of the procedure is the same, with\n" + w.toString(), CODE, procs[0].getCode());
     }
+
     @Test
     public void testIfIfIfElseElseElse() throws Exception {
-        final Workspace w = new Later<Workspace>() {
-            @Override
-            Workspace work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
-                return w;
-            }
-        }.get();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
         final StringBuilder sb = new StringBuilder();
         sb.append(
@@ -254,34 +160,19 @@ public class ParsingTest {
 
         final String CODE = sb.toString();
 
-        final Procedure[] procs = new Later<Procedure[]>() {
-            @Override
-            Procedure[] work() throws Exception {
-                return w.parse(CODE);
-            }
-        }.get();
-        assertEquals(procs.length, 1, "One procedure has been defined");
-        assertEquals(procs[0].getName(), "safe-step", "right name");
-        assertEquals(procs[0].getId(), "safe-step", "right id");
-        new Later<Void>() {
-            @Override
-            Void work() throws Exception {
-                assertEquals(procs[0].getCode(), CODE, "Generated code of the procedure is the same, with\n" + w.toString());
-                return null;
-            }
-        }.get();
+        final Procedure[] procs = w.parse(CODE);
+
+        assertEquals("One procedure has been defined", 1, procs.length);
+        assertEquals("right name", "safe-step", procs[0].getName());
+        assertEquals("right id", "safe-step", procs[0].getId());
+
+        assertEquals("Generated code of the procedure is the same, with\n" + w.toString(), CODE, procs[0].getCode());
     }
 
     @Test
     public void twoSteps() throws Exception {
-        final Workspace w = new Later<Workspace>() {
-            @Override
-            Workspace work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
-                return w;
-            }
-        }.get();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
         final String CODE =
             "PROCEDURE two-steps\n" +
@@ -290,45 +181,30 @@ public class ParsingTest {
             "  END\n" +
             "END\n";
 
-        final Procedure[] procs = new Later<Procedure[]>() {
-            @Override
-            Procedure[] work() throws Exception {
-                return w.parse(CODE);
-            }
-        }.get();
-        assertEquals(procs.length, 1, "One procedure has been defined");
-        assertEquals(procs[0].getName(), "two-steps", "right name");
-        new Later<Void>() {
-            @Override
-            Void work() throws Exception {
-                Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_repeat");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_repeat");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_repeat");
-                assertEquals(e.next(), Execution.State.FINISHED);
-                assertNull(e.currentType());
-                return null;
-            }
-        }.get();
+        final Procedure[] procs = w.parse(CODE);
+
+        assertEquals("One procedure has been defined", 1, procs.length);
+        assertEquals("right name", "two-steps", procs[0].getName());
+
+        Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_repeat", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_repeat", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_repeat", e.currentType());
+        assertEquals(Execution.State.FINISHED, e.next());
+        assertNull(e.currentType());
     }
 
     @Test
     public void towall() throws Exception {
-        final Workspace w = new Later<Workspace>() {
-            @Override
-            Workspace work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
-                return w;
-            }
-        }.get();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
         final String CODE =
             "PROCEDURE towall\n" +
@@ -338,44 +214,29 @@ public class ParsingTest {
             "  towall\n" +
             "END\n";
 
-        final Procedure[] procs = new Later<Procedure[]>() {
-            @Override
-            Procedure[] work() throws Exception {
-                return w.parse(CODE);
-            }
-        }.get();
-        assertEquals(procs.length, 1, "One procedure has been defined");
-        assertEquals(procs[0].getName(), "towall", "right name");
-        new Later<Void>() {
-            @Override
-            Void work() throws Exception {
-                Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_if");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_funkce");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_if");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                return null;
-            }
-        }.get();
+        final Procedure[] procs = w.parse(CODE);
+        assertEquals("One procedure has been defined", 1, procs.length);
+        assertEquals("right name", "towall", procs[0].getName());
+
+        Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_if", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_funkce", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_if", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
     }
+
     @Test
     public void around() throws Exception {
-        final Workspace w = new Later<Workspace>() {
-            @Override
-            Workspace work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
-                return w;
-            }
-        }.get();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
         final String CODE =
             "PROCEDURE okolo\n" +
@@ -387,44 +248,29 @@ public class ParsingTest {
             "  okolo\n" +
             "END\n";
 
-        final Procedure[] procs = new Later<Procedure[]>() {
-            @Override
-            Procedure[] work() throws Exception {
-                return w.parse(CODE);
-            }
-        }.get();
-        assertEquals(procs.length, 1, "One procedure has been defined");
-        assertEquals(procs[0].getName(), "okolo", "right name");
-        new Later<Void>() {
-            @Override
-            Void work() throws Exception {
-                Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_if_else");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_funkce");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_if_else");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                return null;
-            }
-        }.get();
+        final Procedure[] procs = w.parse(CODE);
+        
+        assertEquals("One procedure has been defined", 1, procs.length);
+        assertEquals("right name", "okolo", procs[0].getName());
+
+        Execution e = procs[0].prepareExecution(new BlocklyTest.FewSteps(10));
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_if_else", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_funkce", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_if_else", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
     }
     @Test
     public void whileMark() throws Exception {
-        final Workspace w = new Later<Workspace>() {
-            @Override
-            Workspace work() throws Exception {
-                final Workspace w = Workspace.create("any");
-                w.clear();
-                return w;
-            }
-        }.get();
+        final Workspace w = Workspace.create("any");
+        w.clear();
 
         final String CODE =
             "PROCEDURE znacky\n" +
@@ -433,36 +279,27 @@ public class ParsingTest {
             "  END\n" +
             "END\n";
 
-        final Procedure[] procs = new Later<Procedure[]>() {
-            @Override
-            Procedure[] work() throws Exception {
-                return w.parse(CODE);
-            }
-        }.get();
-        assertEquals(procs.length, 1, "One procedure has been defined");
-        assertEquals(procs[0].getName(), "znacky", "right name");
-        new Later<Void>() {
-            @Override
-            Void work() throws Exception {
-                Execution e = procs[0].prepareExecution(new BlocklyTest.FewMarks(3));
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_while");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_while");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_while");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_call");
-                assertEquals(e.next(), Execution.State.RUNNING);
-                assertEquals(e.currentType(), "karel_while");
-                assertEquals(e.next(), Execution.State.FINISHED);
-                assertNull(e.currentType());
-                return null;
-            }
-        }.get();
+        final Procedure[] procs = w.parse(CODE);
+
+        assertEquals("One procedure has been defined", 1, procs.length);
+        assertEquals("right name", "znacky", procs[0].getName());
+
+        Execution e = procs[0].prepareExecution(new BlocklyTest.FewMarks(3));
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_while", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_while", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_while", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_call", e.currentType());
+        assertEquals(Execution.State.RUNNING, e.next());
+        assertEquals("karel_while", e.currentType());
+        assertEquals(Execution.State.FINISHED, e.next());
+        assertNull(e.currentType());
     }
 }

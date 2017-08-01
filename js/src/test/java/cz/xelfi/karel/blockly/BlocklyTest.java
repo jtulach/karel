@@ -18,78 +18,40 @@
 package cz.xelfi.karel.blockly;
 
 import cz.xelfi.karel.blockly.Execution.State;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import net.java.html.BrwsrCtx;
-import net.java.html.boot.BrowserBuilder;
-import org.testng.Assert;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import net.java.html.junit.BrowserRunner;
+import net.java.html.junit.HTMLContent;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(BrowserRunner.class)
+@HTMLContent("<div id = 'any'>Blockly</div>")
 public class BlocklyTest {
-    private static BrwsrCtx CTX;
-
     public BlocklyTest() {
-    }
-
-    @BeforeClass
-    public static void initializePresenter() throws InterruptedException {
-        final CountDownLatch cdl = new CountDownLatch(1);
-        final BrowserBuilder builder = BrowserBuilder.newBrowser().
-            loadPage("test.html").
-            loadFinished(new Runnable() {
-                @Override
-                public void run() {
-                    CTX = BrwsrCtx.findDefault(BlocklyTest.class);
-                    cdl.countDown();
-                }
-            });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                builder.showAndWait();
-            }
-        }, "Launcher").start();
-        cdl.await();
-        Assert.assertNotNull(CTX, "Context is ready");
     }
 
     @Test
     public void testWorkingWithWorkspace() throws Throwable {
-        doTest("doWorkingWithWorkspace");
-    }
-    
-    private void doWorkingWithWorkspace() throws Exception {
         Workspace w = Workspace.create("any");
-        assertEquals(filterProcedures(w).size(), 0, "No top blocks yet");
+        assertEquals("No top blocks yet", 0, filterProcedures(w).size());
         Procedure p = w.newProcedure("vpravo-vbok");
         assertNotNull(p);
         final List<Procedure> p2 = filterProcedures(w);
-        assertEquals(p2.size(), 1, "One top block now");
-        assertEquals(p2.get(0).getName(), "vpravo-vbok");
+        assertEquals("One top block now", 1, p2.size());
+        assertEquals("vpravo-vbok", p2.get(0).getName());
     }
 
     @Test
     public void testReachTheWall() throws Throwable {
-        doTest("doReachTheWall");
-    }
-
-    private void doReachTheWall() throws Exception {
         Workspace w = Workspace.create("any");
         w.clear();
 
-        assertTrue(w.isEmpty(), "Empty now");
+        assertTrue("Empty now", w.isEmpty());
 
         w.loadXML(
 "<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
@@ -111,36 +73,32 @@ public class BlocklyTest {
         );
 
         List<Procedure> arr = filterProcedures(w);
-        assertEquals(arr.size(), 1, "One proc: " + arr);
-        assertFalse(w.isEmpty(), "Not empty now");
+        assertEquals("One proc: " + arr, 1, arr.size());
+        Assert.assertFalse("Not empty now", w.isEmpty());
         arr.get(0).setCollapsed(true);
 
         FewSteps env = new FewSteps(2);
 
         Execution exec = arr.get(0).prepareExecution(env);
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_while");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_call");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_while");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_call");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_while");
-        assertEquals(exec.next(), State.FINISHED);
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_while", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_call", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_while", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_call", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_while", exec.currentType());
+        assertEquals(State.FINISHED, exec.next());
 
         final String code = arr.get(0).getCode();
-        assertTrue(code.contains("WHILE NOT WALL"), code);
+        assertTrue(code, code.contains("WHILE NOT WALL"));
     }
 
 
     @Test
     public void testTurnRight() throws Throwable {
-        doTest("doTurnRight");
-    }
-
-    private void doTurnRight() throws Exception {
         Workspace w = Workspace.create("any");
         w.clear();
 
@@ -163,7 +121,7 @@ public class BlocklyTest {
         );
 
         List<Procedure> arr = filterProcedures(w);
-        assertEquals(arr.size(), 1, "One proc: " + arr);
+        assertEquals("One proc: " + arr, 1, arr.size());
 
         class FewTurns implements Execution.Environment {
             int cnt;
@@ -200,34 +158,30 @@ public class BlocklyTest {
         FewTurns env = new FewTurns();
 
         Execution exec = arr.get(0).prepareExecution(env);
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_repeat");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_call");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_repeat");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_call");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_repeat");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_call");
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_repeat");
-        assertEquals(exec.next(), State.FINISHED);
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_repeat", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_call", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_repeat", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_call", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_repeat", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_call", exec.currentType());
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_repeat", exec.currentType());
+        assertEquals(State.FINISHED, exec.next());
 
-        assertEquals(env.cnt, 3, "Three turns left");
+        assertEquals("Three turns left", 3, env.cnt);
 
         String code = arr.get(0).getCode();
-        assertTrue(code.contains("REPEAT 3 TIMES"), code);
+        assertTrue(code, code.contains("REPEAT 3 TIMES"));
     }
 
     @Test
     public void testInfiniteRepeat() throws Throwable {
-        doTest("doInfiniteRepeat");
-    }
-
-    private void doInfiniteRepeat() throws Exception {
         Workspace w = Workspace.create("any");
         w.clear();
 
@@ -257,7 +211,7 @@ public class BlocklyTest {
         );
 
         List<Procedure> arr = filterProcedures(w);
-        assertEquals(arr.size(), 1, "One proc: " + arr);
+        assertEquals("One proc: " + arr, 1, arr.size());
 
         class NorthNoWall implements Execution.Environment {
             int cnt;
@@ -297,26 +251,22 @@ public class BlocklyTest {
         NorthNoWall env = new NorthNoWall();
 
         Execution exec = arr.get(0).prepareExecution(env);
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_while");
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_while", exec.currentType());
         for (int i = 0; i < 3; i++) {
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_while");
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_if", exec.currentType());
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_call", exec.currentType());
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_while", exec.currentType());
         }
-        assertEquals(exec.next(), State.FINISHED);
+        assertEquals(State.FINISHED, exec.next());
     }
 
 
     @Test
     public void testIfWhile() throws Throwable {
-        doTest("doIfWhile");
-    }
-
-    private void doIfWhile() throws Exception {
         Workspace w = Workspace.create("any");
         w.clear();
 
@@ -345,7 +295,7 @@ public class BlocklyTest {
         );
 
         List<Procedure> arr = filterProcedures(w);
-        assertEquals(arr.size(), 1, "One proc: " + arr);
+        assertEquals("One proc: " + arr, 1, arr.size());
 
         class StepNorth implements Execution.Environment {
             int direction;
@@ -389,36 +339,32 @@ public class BlocklyTest {
 
         {
             Execution exec = arr.get(0).prepareExecution(env);
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if_else");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.FINISHED);
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_if_else", exec.currentType());
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_call", exec.currentType());
+            assertEquals(State.FINISHED, exec.next());
 
-            assertEquals(env.direction, 0, "Heading north");
+            assertEquals("Heading north", 0, env.direction);
         }
 
         {
             Execution exec = arr.get(0).prepareExecution(env);
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if_else");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.ERROR_WALL);
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_if_else", exec.currentType());
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_call", exec.currentType());
+            assertEquals(State.ERROR_WALL, exec.next());
 
-            assertEquals(env.direction, 0, "Still Heading north");
+            assertEquals("Still Heading north", 0, env.direction);
         }
 
         String code = arr.get(0).getCode();
-        assertTrue(code.contains("ELSE"), code);
+        assertTrue(code, code.contains("ELSE"));
     }
 
     @Test
     public void testIfOnly() throws Throwable {
-        doTest("doIfOnly");
-    }
-
-    private void doIfOnly() throws Exception {
         Workspace w = Workspace.create("any");
         w.clear();
 
@@ -442,7 +388,7 @@ public class BlocklyTest {
         );
 
         List<Procedure> arr = filterProcedures(w);
-        assertEquals(arr.size(), 1, "One proc: " + arr);
+        assertEquals("One proc: " + arr, 1, arr.size());
 
         class StepNorth implements Execution.Environment {
             int direction;
@@ -486,66 +432,58 @@ public class BlocklyTest {
 
         {
             Execution exec = arr.get(0).prepareExecution(env);
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.FINISHED);
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_if", exec.currentType());
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_call", exec.currentType());
+            assertEquals(State.FINISHED, exec.next());
 
-            assertNotEquals(env.direction, 0, "Not Heading north");
+            assertNotEquals("Not Heading north", 0, env.direction);
         }
 
         {
             Execution exec = arr.get(0).prepareExecution(env);
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if");
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_call");
-            assertEquals(exec.next(), State.FINISHED);
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_if", exec.currentType());
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_call", exec.currentType());
+            assertEquals(State.FINISHED, exec.next());
 
-            assertEquals(env.direction, 0, "Now Heading north");
+            assertEquals("Now Heading north", 0, env.direction);
         }
 
         {
             Execution exec = arr.get(0).prepareExecution(env);
-            assertEquals(exec.next(), State.RUNNING, "OK, running");
-            assertEquals(exec.currentType(), "karel_if");
-            assertEquals(exec.next(), State.FINISHED);
+            assertEquals("OK, running", State.RUNNING, exec.next());
+            assertEquals("karel_if", exec.currentType());
+            assertEquals(State.FINISHED, exec.next());
 
-            assertEquals(env.direction, 0, "Still Heading north");
+            assertEquals("Still Heading north", 0, env.direction);
         }
 
         String code = arr.get(0).getCode();
-        assertTrue(code.contains("IF NOT NORTH"), code);
+        assertTrue(code, code.contains("IF NOT NORTH"));
     }
 
     @Test
     public void testPrimitiveCall() throws Throwable {
-        doTest("doPrimitiveCall");
-    }
-
-    private void doPrimitiveCall() throws Exception {
         Workspace w = Workspace.create("any");
         w.clear();
 
         FewSteps env = new FewSteps(1);
 
         Procedure step = w.findProcedure("STEP");
-        assertNotNull(step, "Step is always present");
+        assertNotNull("Step is always present", step);
 
         Execution exec = step.prepareExecution(env);
-        assertEquals(exec.next(), State.FINISHED, "one step is OK");
+        assertEquals("one step is OK", State.FINISHED, exec.next());
 
         Execution exec2 = step.prepareExecution(env);
-        assertEquals(exec2.next(), State.ERROR_WALL, "second isn't");
+        assertEquals("second isn't", State.ERROR_WALL, exec2.next());
     }
 
     @Test
-    public void testProcedureCall() throws Throwable {
-        doTest("doProcedureCall");
-    }
-
-    private void doProcedureCall() throws Exception {
+    public Runnable[] testProcedureCall() throws Throwable {
         final Workspace w = Workspace.create("any");
         w.clear();
 
@@ -582,7 +520,7 @@ public class BlocklyTest {
         );
 
         List<Procedure> arr = filterProcedures(w);
-        assertEquals(arr.size(), 2, "Two procs: " + arr);
+        assertEquals("Two procs: " + arr, 2, arr.size());
 
         FewSteps env = new FewSteps(10);
 
@@ -598,42 +536,41 @@ public class BlocklyTest {
             }
 
             void assertChange() {
-                assertTrue(changed, "Message delivered");
+                assertTrue("Message delivered", changed);
                 changed = false;
             }
         }
         final SelectionChanged selectionChanged = new SelectionChanged();
         w.addSelectionChange(selectionChanged);
-        assertNull(w.getSelectedProcedure(), "no selected procedure yet");
+        Assert.assertNull("no selected procedure yet", w.getSelectedProcedure());
 
         final Execution exec = tenSafeSteps.prepareExecution(env);
-        assertEquals(exec.next(), State.RUNNING, "OK, running");
-        assertEquals(exec.currentType(), "karel_repeat");
-        assertEquals(w.getSelectedProcedure(), tenSafeSteps, "ten steps is selected");
+        assertEquals("OK, running", State.RUNNING, exec.next());
+        assertEquals("karel_repeat", exec.currentType());
+        assertEquals("ten steps is selected", tenSafeSteps, w.getSelectedProcedure());
 
-        new Later() {
-            @Override
-            public Void call() {
+        return new Runnable[] {
+            () -> {},
+            () -> {},
+            () -> {},
+            () -> {},
+            () -> {},
+            () -> {
                 selectionChanged.assertChange();
-                assertEquals(exec.next(), State.RUNNING, "OK, running");
-                assertEquals(exec.currentType(), "karel_call");
-                assertEquals(exec.next(), State.RUNNING, "OK, running");
-                assertEquals(exec.currentType(), "karel_funkce");
-                assertEquals(exec.next(), State.RUNNING, "OK, running");
-                assertEquals(exec.currentType(), "karel_if");
-                assertEquals(w.getSelectedProcedure(), safeStep, "one safe step is selected");
-                return null;
-            }
-        };
-
-        new Later() {
-            @Override
-            public Void call() {
+                assertEquals("OK, running", State.RUNNING, exec.next());
+                assertEquals("karel_call", exec.currentType());
+                assertEquals("OK, running", State.RUNNING, exec.next());
+                assertEquals("karel_funkce", exec.currentType());
+                assertEquals("OK, running", State.RUNNING, exec.next());
+                assertEquals("karel_if", exec.currentType());
+                assertEquals("one safe step is selected", safeStep, w.getSelectedProcedure());
+            },
+            () -> {
                 selectionChanged.assertChange();
-                assertEquals(exec.next(), State.RUNNING, "OK, running");
-                assertEquals(exec.currentType(), "karel_call");
-                assertEquals(exec.next(), State.RUNNING, "OK, running");
-                assertEquals(exec.currentType(), "karel_repeat");
+                assertEquals("OK, running", State.RUNNING, exec.next());
+                assertEquals("karel_call", exec.currentType());
+                assertEquals("OK, running", State.RUNNING, exec.next());
+                assertEquals("karel_repeat", exec.currentType());
 
                 State state;
                 for (;;) {
@@ -642,74 +579,18 @@ public class BlocklyTest {
                         break;
                     }
                 }
-                assertEquals(exec.next(), State.FINISHED, "At the end reached successful state");
-                return null;
+                assertEquals("At the end reached successful state", State.FINISHED, exec.next());
             }
         };
     }
 
-    private final LinkedList<Later> pending = new LinkedList<>();
-    private void doTest(String method) throws Throwable {
-        final Method m = this.getClass().getDeclaredMethod(method);
-        m.setAccessible(true);
-
-        new Later() {
-            @Override
-            public Void call() throws Exception {
-                m.invoke(BlocklyTest.this);
-                return null;
-            }
-        };
-
-        final Throwable[] arr = { null };
-        final CountDownLatch cdl = new CountDownLatch(1);
-        CTX.execute(new Runnable() {
-            @Override
-            public void run() {
-                boolean goesOn = false;
-                try {
-                    Later toRun = pending.removeFirst();
-                    toRun.call();
-                    goesOn = pending.size() > 0;
-                } catch (Throwable ex) {
-                    arr[0] = ex;
-                } finally {
-                    if (!goesOn) {
-                        cdl.countDown();
-                    } else {
-                        final Runnable thiz = this;
-                        Executors.newSingleThreadExecutor().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                CTX.execute(thiz);
-                            }
-                        });
-                    }
-                }
-            }
-        });
-        cdl.await();
-        if (arr[0] != null) {
-            if (arr[0] instanceof InvocationTargetException) {
-                InvocationTargetException ite = (InvocationTargetException) arr[0];
-                throw ite.getTargetException();
-            }
-            throw arr[0];
-        }
-    }
-
-    abstract class Later implements Callable<Void> {
-        protected Later() {
-            pending.add(this);
-        }
-    }
 
     static List<Procedure> filterProcedures(Workspace w) {
         List<Procedure> arr = w.getProcedures();
-        assertEquals(arr.get(0).getId(), "STEP");
-        assertEquals(arr.get(1).getId(), "LEFT");
-        assertEquals(arr.get(2).getId(), "PUT");
-        assertEquals(arr.get(3).getId(), "TAKE");
+        assertEquals("STEP", arr.get(0).getId());
+        assertEquals("LEFT", arr.get(1).getId());
+        assertEquals("PUT", arr.get(2).getId());
+        assertEquals("TAKE", arr.get(3).getId());
         return arr.subList(4, arr.size());
     }
     
