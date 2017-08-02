@@ -21,7 +21,6 @@ import cz.xelfi.karel.blockly.grammar.KarelBaseListener;
 import cz.xelfi.karel.blockly.grammar.KarelLexer;
 import cz.xelfi.karel.blockly.grammar.KarelParser;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import net.java.html.js.JavaScriptBody;
 import net.java.html.js.JavaScriptResource;
@@ -30,28 +29,21 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-@JavaScriptResource("blockly_compressed.js")
 public final class Workspace {
-    static {
-        init0();
-    }
-    private final Object js;
-
+    private final String id;
+    private BW bw;
     private Runnable selectChange;
 
-    private Workspace(Object js) {
-        this.js = js;
-        listen0(js, this);
+    private Workspace(String id) {
+        this.id = id;
     }
 
     public static Workspace create(String id) {
-        Object karel = KarelBlockly.getDefault();
-        Object js = create0(karel, id);
-        return new Workspace(js);
+        return new Workspace(id);
     }
 
     public Procedure newProcedure(String commandName) {
-        return new Procedure(create1(js, "karel_funkce", commandName), this, commandName, commandName);
+        return new Procedure(create1(getJs(), "karel_funkce", commandName), this, commandName, commandName);
     }
 
     public Procedure[] parse(String code) {
@@ -220,7 +212,7 @@ public final class Workspace {
     }
 
     public List<Procedure> getProcedures() {
-        Object[] blocks = list0(js);
+        Object[] blocks = list0(getJs());
         List<Procedure> arr = new ArrayList<>(blocks.length / 3);
         for (int i = 0; i < blocks.length; i += 3) {
             arr.add(new Procedure(blocks[i + 2], this, (String)blocks[i + 0], (String)blocks[i + 1]));
@@ -229,7 +221,7 @@ public final class Workspace {
     }
 
     public Procedure getSelectedProcedure() {
-        Object[] jsProc = selected0(js);
+        Object[] jsProc = selected0(getJs());
         return jsProc == null ? null : new Procedure(jsProc[2], this, (String)jsProc[0], (String)jsProc[1]);
     }
 
@@ -252,16 +244,16 @@ public final class Workspace {
     }
 
     public void clear() {
-        clear0(js);
+        clear0(getJs());
     }
 
     public void loadXML(String xml) {
-        load0(js, xml);
+        load0(getJs(), xml);
     }
 
     @Override
     public String toString() {
-        return toString0(js);
+        return toString0(getJs());
     }
 
     public void addSelectionChange(Runnable r) {
@@ -275,23 +267,8 @@ public final class Workspace {
     }
 
     Object rawJS() {
-        return js;
+        return getJs();
     }
-
-    @JavaScriptBody(args = {}, body = "", wait4js = false)
-    private static native void init0();
-
-    @JavaScriptBody(args = { "karel", "id" }, wait4js = true, body =
-        "return karel(id);"
-    )
-    private static native Object create0(Object karel, String id);
-
-    @JavaScriptBody(args = { "workspace", "thiz" }, wait4js = false, javacall = true, body =
-        "workspace.listen(function(arr) {\n" +
-        "  thiz.@cz.xelfi.karel.blockly.Workspace::change([Ljava/lang/Object;)(arr);\n" +
-        "});\n"
-    )
-    private static native void listen0(Object workspace, Workspace thiz);
 
     @JavaScriptBody(args = { "workspace" }, wait4js = true, body =
         "return workspace.procedures();"
@@ -349,4 +326,41 @@ public final class Workspace {
     @JavaScriptBody(args = { "workspace", "proc" }, body = "return workspace.procedureToString(proc);")
     static native String procedureToString(Object workspace, Object proc);
 
+    /**
+     * @return the js
+     */
+    public Object getJs() {
+        if (bw == null) {
+            bw = new BW(this, id);
+        }
+        return bw.js;
+    }
+
+    @JavaScriptResource("blockly_compressed.js")
+    private static final class BW {
+        private final Object js;
+
+        public BW(Workspace ws, String id) {
+            init0();
+            Object karel = KarelBlockly.getDefault();
+            js = create0(karel, id);
+            listen0(js, ws);
+        }
+
+        @JavaScriptBody(args = {}, body = "")
+        private static native void init0();
+
+        @JavaScriptBody(args = {"karel", "id"}, wait4js = true, body
+            = "return karel(id);"
+        )
+        private static native Object create0(Object karel, String id);
+
+        @JavaScriptBody(args = {"workspace", "thiz"}, wait4js = false, javacall = true, body
+            = "workspace.listen(function(arr) {\n"
+            + "  thiz.@cz.xelfi.karel.blockly.Workspace::change([Ljava/lang/Object;)(arr);\n"
+            + "});\n"
+        )
+        private static native void listen0(Object workspace, Workspace thiz);
+
+    }
 }
