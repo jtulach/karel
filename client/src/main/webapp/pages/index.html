@@ -195,16 +195,19 @@
         <div class="container theme-showcase" role="main">
         <div class="row">
             <div class="col-sm-8">
-                <button data-bind="click: $root.loadWorkspace">Load</button>
-                <button data-bind="click: $root.collapse, enable: $root.selectedCommand">Collapse</button>
-                <button data-bind="click: $root.expand, enable: $root.selectedCommand">Expand</button>
-                <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Show Code</button>
-                <div id="workspace" style="height: 80vh; background-color: red"></div>
+                <div style="display: none" data-bind="visible: true">
+                    <button data-bind="click: $root.loadWorkspace">Load</button>
+                    <button data-bind="click: $root.collapse, enable: $root.selectedCommand">Collapse</button>
+                    <button data-bind="click: $root.expand, enable: $root.selectedCommand">Expand</button>
+                    <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Show Code</button>
+                </div>
+                <div id="workspace" style="height: 80vh;"></div>
             </div>
             <div class="col-sm-4">
-                <div data-bind="visible: currentInfo">
-                <div data-bind="with: currentInfo">Úkol: <span data-bind="text: name"></span></div>
-                <div class="input-group" data-bind="visible: currentTask, with: currentTask">
+                <div style="display: none" data-bind="visible: currentInfo">
+                    <div data-bind="with: currentInfo">Úkol: <span data-bind="text: name"></span></div>
+                </div>
+                <div style="display: none" class="input-group" data-bind="visible: currentTask, with: currentTask">
                     <form role="form">
                     <div class="input-group-btn">
                         <input type="text" class="form-control" data-bind="textInput: description">
@@ -236,7 +239,7 @@
                 </span>
 -->
                 </div>
-            <div data-bind="with: scratch">
+            <div style="display: none" data-bind="visible: scratch, with: scratch">
                 <div data-bind="with: town">
                     <div data-bind="template: 'draw-town'"></div>
                     <p></p>
@@ -274,6 +277,7 @@
                     </button>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
