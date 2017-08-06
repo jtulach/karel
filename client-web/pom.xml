@@ -194,6 +194,7 @@
             <artifactId>org-openide-util-lookup</artifactId>
             <version>RELEASE80</version>
             <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>cz.xelfi.karel</groupId>
