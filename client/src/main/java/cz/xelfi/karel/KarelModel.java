@@ -71,6 +71,7 @@ final class KarelModel {
                 assignScratch(s).
                 assignSource(src).
                 assignCurrentTask(null).
+                assignCurrentInfo(null).
                 assignSelectedCommand(null).
                 assignTasksUrl("tasks/list.js");
         KarelModel.compile(karel, false);

@@ -161,32 +161,34 @@
     </script>
     
     <script id="draw-town" type="text/html">
-        <table class="town">
-            <tbody>
-                <!-- ko foreach: rows -->
-                <tr>
-                    <!-- ko foreach: columns -->
-                    <td>
-                        <div class="karel" data-bind="css: ('direction-' + robot())"></div>
-                        <div class="karel" data-bind="css: ('mark-' + marks())"></div>
-                    </td>
+        <div class="town">
+            <div class="alert alert-warning" data-bind="visible: error() == 1">
+                <strong>Pozor!</strong> Narazil jsem do zdi!
+            </div>
+            <div class="alert alert-warning" data-bind="visible: error() == 2">
+                <strong>Pozor!</strong> Nelze sebrat značku!
+            </div>
+            <div class="alert alert-warning" data-bind="visible: error() == 3">
+                <strong>Pozor!</strong> Příliš mnoho značek!
+            </div>
+            <div class="alert alert-warning" data-bind="visible: error() == 4">
+                <strong>Pozor!</strong>
+                Neznámý příkaz <span data-bind="text: errorParams"></span>!
+            </div>
+            <table class="town">
+                <tbody>
+                    <!-- ko foreach: rows -->
+                    <tr>
+                        <!-- ko foreach: columns -->
+                        <td>
+                            <div class="karel" data-bind="css: ('direction-' + robot())"></div>
+                            <div class="karel" data-bind="css: ('mark-' + marks())"></div>
+                        </td>
+                        <!-- /ko -->
+                    </tr>
                     <!-- /ko -->
-                </tr>
-                <!-- /ko -->
-            </tbody>
-        </table>
-        <div class="alert alert-warning" data-bind="visible: error() == 1">
-            <strong>Pozor!</strong> Narazil jsem do zdi!
-        </div>
-        <div class="alert alert-warning" data-bind="visible: error() == 2">
-            <strong>Pozor!</strong> Nelze sebrat značku!
-        </div>
-        <div class="alert alert-warning" data-bind="visible: error() == 3">
-            <strong>Pozor!</strong> Příliš mnoho značek!
-        </div>
-        <div class="alert alert-warning" data-bind="visible: error() == 4">
-            <strong>Pozor!</strong>
-            Neznámý příkaz <span data-bind="text: errorParams"></span>!
+                </tbody>
+            </table>
         </div>
     </script>
 
@@ -238,43 +240,44 @@
                     </div>
                 </span>
 -->
-                </div>
-            <div style="display: none" data-bind="visible: scratch, with: scratch">
-                <div data-bind="with: town">
-                    <div data-bind="template: 'draw-town'"></div>
-                    <p></p>
-                    <button type="button" class="btn btn-info"
-                      data-bind="click: $root.invokeScratch, enable: $root.canStartScratch">
-                        <span data-bind="if: $root.selectedCommand">
-                            <span data-bind="with: $root.selectedCommand">
-                                <span data-bind="text: name"></span>
+                <div style="display: none" data-bind="visible: scratch, with: scratch">
+                    <div data-bind="with: town">
+                        <div data-bind="template: 'draw-town'"></div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info"
+                          data-bind="click: $root.invokeScratch, enable: $root.canStartScratch">
+                            <span data-bind="if: $root.selectedCommand">
+                                <span data-bind="with: $root.selectedCommand">
+                                    <span data-bind="text: name"></span>
+                                </span>
                             </span>
-                        </span>
-                        <span data-bind="ifnot: $root.selectedCommand">Start</span>
-                    </button>
-                    <button type="button" class="btn btn-info"
-                      data-bind="click: $root.stop, enable: $root.running">
-                        <span>&Square;</span>
-                    </button>
-                    <button type="button" class="btn btn-info"
-                      data-bind="click: $root.step, enable: $root.paused">
-                        <span>&trianglerighteq;</span>
-                    </button>
-                    <button type="button" class="btn btn-info"
-                      data-bind="click: $root.pause, enable: $root.running">
-                        <span>||</span>
-                    </button>
-                </div>
-                <div>
-                    <button type="button" class="btn btn-info"
-                      data-bind="click: $root.slower">
-                        <span>&lt;&lt;</span>
-                    </button>
-                    <span data-bind="text: $root.speed"></span> ms
-                    <button type="button" class="btn btn-info"
-                      data-bind="click: $root.faster">
-                        <span>&gt;&gt;</span>
-                    </button>
+                            <span data-bind="ifnot: $root.selectedCommand">Start</span>
+                        </button>
+                        <button type="button" class="btn btn-info"
+                          data-bind="click: $root.stop, enable: $root.running">
+                            <span>&Square;</span>
+                        </button>
+                        <button type="button" class="btn btn-info"
+                          data-bind="click: $root.step, enable: $root.paused">
+                            <span>&trianglerighteq;</span>
+                        </button>
+                        <button type="button" class="btn btn-info"
+                          data-bind="click: $root.pause, enable: $root.running">
+                            <span>||</span>
+                        </button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info"
+                          data-bind="click: $root.slower">
+                            <span>&lt;&lt;</span>
+                        </button>
+                        <span data-bind="text: $root.speed"></span> ms
+                        <button type="button" class="btn btn-info"
+                          data-bind="click: $root.faster">
+                            <span>&gt;&gt;</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
