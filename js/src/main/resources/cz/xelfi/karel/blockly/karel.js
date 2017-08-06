@@ -69,11 +69,8 @@ function injectKarel(id, keys, loc) {
             '<block type="karel_if"></block>\n' +
             '<block type="karel_if_else"></block>\n' +
             '<block type="karel_while"></block>\n' +
-            '<block type="karel_repeat"></block>\n';
-
-        procedures().forEach(function (b) {
-            s += '<block type="karel_call"><field name="CALL">' + b[1] + '</field></block>\n';
-        });
+            '<block type="karel_repeat"></block>\n' +
+            '<block type="karel_call"><field name="CALL">' + l10n["NOCMD"] + '</field></block>\n';
 
         s += '</xml>\n';
 
