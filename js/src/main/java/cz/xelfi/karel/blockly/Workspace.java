@@ -21,7 +21,10 @@ import cz.xelfi.karel.blockly.grammar.KarelBaseListener;
 import cz.xelfi.karel.blockly.grammar.KarelLexer;
 import cz.xelfi.karel.blockly.grammar.KarelParser;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import net.java.html.js.JavaScriptBody;
 import net.java.html.js.JavaScriptResource;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -343,17 +346,27 @@ public final class Workspace {
         public BW(Workspace ws, String id) {
             init0();
             Object karel = KarelBlockly.getDefault();
-            js = create0(karel, id);
+
+            List<String> keys = new ArrayList<>();
+            List<String> values = new ArrayList<>();
+            ResourceBundle bundle = ResourceBundle.getBundle("cz/xelfi/karel/blockly/Bundle", Locale.getDefault());
+            Enumeration<String> en = bundle.getKeys();
+            while (en.hasMoreElements()) {
+                String key = en.nextElement();
+                keys.add(key);
+                values.add(bundle.getString(key));
+            }
+            js = create0(karel, id, keys.toArray(), values.toArray());
             listen0(js, ws);
         }
 
         @JavaScriptBody(args = {}, body = "")
         private static native void init0();
 
-        @JavaScriptBody(args = {"karel", "id"}, wait4js = true, body
-            = "return karel(id);"
+        @JavaScriptBody(args = {"karel", "id", "keys", "values"}, wait4js = true, body
+            = "return karel(id, keys, values);"
         )
-        private static native Object create0(Object karel, String id);
+        private static native Object create0(Object karel, String id, Object[] keys, Object values);
 
         @JavaScriptBody(args = {"workspace", "thiz"}, wait4js = false, javacall = true, body
             = "workspace.listen(function(arr) {\n"

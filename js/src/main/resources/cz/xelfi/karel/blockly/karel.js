@@ -17,30 +17,35 @@
  */
 
 (function() {
-function injectKarel(id) {
+function injectKarel(id, keys, loc) {
     var workspace;
 
+    var l10n = {};
+    for (var i = 0; i < keys.length; i++) {
+        l10n[keys[i].toString()] = loc[i].toString();
+    }
+
     var negDropdown = [
-        ["je", "TRUE"], ["není", "FALSE"]
+        [l10n["TRUE"], "TRUE"], [l10n["FALSE"], "FALSE"]
     ];
 
     var condDropdown = [
-        ["zeď", "WALL"],
-        ["značka", "MARK"],
-        ["sever", "NORTH"],
-        ["jih", "SOUTH"],
-        ["západ", "WEST"],
-        ["východ", "EAST"]
+        [l10n["WALL"], "WALL"],
+        [l10n["MARK"], "MARK"],
+        [l10n["NORTH"], "NORTH"],
+        [l10n["SOUTH"], "SOUTH"],
+        [l10n["WEST"], "WEST"],
+        [l10n["EAST"], "EAST"]
     ];
 
     var ifColor = 210;
     
     function procedures() {
         var arr = [];
-        arr.push(['krok', 'STEP', null]);
-        arr.push(['vlevo-vbok', 'LEFT', null]);
-        arr.push(['polož', 'PUT', null]);
-        arr.push(['zvedni', 'TAKE', null]);
+        arr.push([l10n["STEP"], 'STEP', null]);
+        arr.push([l10n["LEFT"], 'LEFT', null]);
+        arr.push([l10n["PUT"], 'PUT', null]);
+        arr.push([l10n["TAKE"], 'TAKE', null]);
         if (workspace) {
             workspace.getTopBlocks().forEach(function (b) {
                 var n = b.getFieldValue("NAME");
@@ -81,10 +86,10 @@ var Blockly = window['Blockly'];
 Blockly.Blocks['karel_funkce'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("nový příkaz"), "NAME");
+        .appendField(new Blockly.FieldTextInput(l10n["NEWCMD"]), "NAME");
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
-        .appendField("konec");
+        .appendField(l10n["END"]);
     this.setColour(65);
     this.setTooltip('');
     this.setHelpUrl('help.html');
@@ -94,12 +99,12 @@ Blockly.Blocks['karel_funkce'] = {
 Blockly.Blocks['karel_if'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Když")
+        .appendField(l10n["IF"])
         .appendField(new Blockly.FieldDropdown(negDropdown), "NEG")
         .appendField(new Blockly.FieldDropdown(condDropdown), "COND");
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
-        .appendField("konec");
+        .appendField(l10n["END"]);
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -112,15 +117,15 @@ Blockly.Blocks['karel_if'] = {
 Blockly.Blocks['karel_if_else'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Když")
+        .appendField(l10n["IF"])
         .appendField(new Blockly.FieldDropdown(negDropdown), "NEG")
         .appendField(new Blockly.FieldDropdown(condDropdown), "COND");
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
-        .appendField("jinak");
+        .appendField(l10n["ELSE"]);
     this.appendStatementInput("IFFALSE");
     this.appendDummyInput()
-        .appendField("konec");
+        .appendField(l10n["END"]);
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -133,12 +138,12 @@ Blockly.Blocks['karel_if_else'] = {
 Blockly.Blocks['karel_while'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("dokud")
+        .appendField(l10n["WHILE"])
         .appendField(new Blockly.FieldDropdown(negDropdown), "NEG")
         .appendField(new Blockly.FieldDropdown(condDropdown), "COND");
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
-        .appendField("konec");
+        .appendField(l10n["END"]);
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -151,12 +156,12 @@ Blockly.Blocks['karel_while'] = {
 Blockly.Blocks['karel_repeat'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("opakuj")
+        .appendField(l10n["REPEAT"])
         .appendField(new Blockly.FieldTextInput("2"), "N")
-        .appendField("krát");
+        .appendField(l10n["TIMES"]);
     this.appendStatementInput("IFTRUE");
     this.appendDummyInput()
-        .appendField("konec");
+        .appendField(l10n["END"]);
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
