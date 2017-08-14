@@ -248,22 +248,6 @@ final class KarelModel {
         m.setRunning(false);
     }
 
-    @Function static void slower(Karel m) {
-        double newSpeed = m.getSpeed() * 1.5;
-        if (newSpeed > 1000) {
-            newSpeed = 1000;
-        }
-        m.setSpeed((int) newSpeed);
-    }
-
-    @Function static void faster(Karel m) {
-        double newSpeed = m.getSpeed() / 1.5;
-        if (newSpeed < 3) {
-            newSpeed = 3;
-        }
-        m.setSpeed((int) newSpeed);
-    }
-
     @Function
     void pause(Karel m) {
         List<List<KarelCompiler>> wakeUp = Collections.emptyList();
@@ -301,7 +285,7 @@ final class KarelModel {
         final List<KarelCompiler> next = animateOne(model, frames);
         if (!next.isEmpty()) {
             model.setRunning(true);
-            int spd = model.getSpeed();
+            int spd = 1000 / model.getSpeed();
             if (spd < 0) {
                 animate(model, next);
             } else {

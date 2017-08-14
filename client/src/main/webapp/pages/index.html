@@ -268,15 +268,7 @@
                         </button>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-info"
-                          data-bind="click: $root.slower">
-                            <span>&lt;&lt;</span>
-                        </button>
-                        <span data-bind="text: $root.speed"></span> ms
-                        <button type="button" class="btn btn-info"
-                          data-bind="click: $root.faster">
-                            <span>&gt;&gt;</span>
-                        </button>
+                        <input type="range" min="1" max="100" step="1" data-bind="value: $root.speed"/>
                     </div>
                 </div>
             </div>
