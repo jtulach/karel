@@ -51,16 +51,16 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li data-bind="css: { active : tab == 'task'}"><a href="#" data-bind="click: changeTabTask">Úkoly</a></li>
-            <li data-bind="css: { active : tab == 'town'}"><a href="#" data-bind="click: changeTabTown">Město</a></li>
-            <li data-bind="css: { active : tab == 'edit'}"><a href="#" data-bind="click: changeTabEdit">Kód</a></li>
-            <li data-bind="css: { active : tab == 'about'}"><a href="#" data-bind="click: changeTabAbout">Více</a></li>
+            <li data-bind="css: { active : tab === 'task'}"><a href="#" data-bind="click: changeTabTask">Úkoly</a></li>
+            <li data-bind="css: { active : tab === 'town'}"><a href="#" data-bind="click: changeTabTown">Město</a></li>
+            <li data-bind="css: { active : tab === 'edit'}"><a href="#" data-bind="click: changeTabEdit">Kód</a></li>
+            <li data-bind="css: { active : tab === 'about'}"><a href="#" data-bind="click: changeTabAbout">Více</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
-    <script type="text/html" id="home">
+    <template id="home">
         <div class="container theme-showcase" role="main">
           <div class="jumbotron">
             <h1>Karel</h1>
@@ -73,9 +73,9 @@
             <p><a href="#" data-bind="click: changeTabTask"class="btn btn-primary btn-lg" role="button">Vybrat si úkol &raquo;</a></p>
           </div>
         </div>
-    </script>
+    </template>
     
-    <script type="text/html" id="task">
+    <template id="task">
         <div class="list-group" data-bind="foreach: tasks">
             <!-- ko if: disabled -->
             <a href="#" class="disabled list-group-item">
@@ -92,16 +92,16 @@
             </a>
             <!-- /ko -->
         </div>
-    </script>
+    </template>
 
-    <script type="text/html" id="town">
+    <template id="town">
         <div data-bind="if: currentTask">
             <div data-bind="with: currentTask">
-                <span data-bind="if: name">
+                <div data-bind="if: name">
                     <div class="page-header">
                         <h1 data-bind="text: name"></h1>
                     </div>
-                </span>
+                </div>
                 <div class="well">
                     <p data-bind="text: description"></p>
                 </div>
@@ -114,7 +114,7 @@
                     <button type="button" class="btn btn-success" data-bind="click: $root.changeTabTask">Další úkol &raquo;</button>
                     </center>
                 </div>
-                <div class="row" data-bind="visible: awarded() == 0">
+                <div class="row" data-bind="visible: awarded() === 0">
                     <div class="col-sm-12">
                         <p></p>
                         <!-- ko foreach: $root.commands -->
@@ -131,47 +131,47 @@
                         <p></p>
                     </div>
                 </div>
-                <span data-bind="foreach: tests">
+                <div data-bind="foreach: tests">
                     <p></p>
                     <div class="alert alert-info" >
                         <span class="karel-result glyphicon" 
-                          data-bind="css: { 'glyphicon-thumbs-up' : state() == 'ok', 'glyphicon-thumbs-down' : state() == 'fail' }"
+                          data-bind="css: { 'glyphicon-thumbs-up' : state() === 'ok', 'glyphicon-thumbs-down' : state() === 'fail' }"
                         ></span>
                         <a href="#" data-bind="text: description, click: $parents[0].showHide"></a>
                     </div>
                     <div class="row" data-bind="visible: showing">
                         <ul class="nav nav-pills nav-justified">
-                            <li data-bind="css: { 'active' : showing() == 'start' }, click: begin"><a href="#">Počáteční pozice</a></li>
-                            <li data-bind="css: { 'active' : showing() == 'current' }, click: now"><a href="#">Nyní</a></li>
-                            <li data-bind="css: { 'active' : showing() == 'end' }, click: finish"><a href="#">Cílová pozice</a></li>
+                            <li data-bind="css: { 'active' : showing() === 'start' }, click: begin"><a href="#">Počáteční pozice</a></li>
+                            <li data-bind="css: { 'active' : showing() === 'current' }, click: now"><a href="#">Nyní</a></li>
+                            <li data-bind="css: { 'active' : showing() === 'end' }, click: finish"><a href="#">Cílová pozice</a></li>
                         </ul>
-                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: start, if: showing() == 'start' }"></div>
-                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: current, if: showing() == 'current' }"></div>
-                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: end, if: showing() == 'end' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: start, if: showing() === 'start' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: current, if: showing() === 'current' }"></div>
+                        <div class="col-sm-12" data-bind="template: { name: 'draw-town', data: end, if: showing() === 'end' }"></div>
                     </div>
-                </span>
+                </div>
             </div>
         </div>
-    </script>
-    <script type="text/html" id="edit">
+    </template>
+    <template id="edit">
         <div class="col-sm-12" data-bind="visible: $root.source">
-            <textarea width="100%" cols="70" rows="30" data-bind="value: $root.source"/>
+            <textarea width="100%" cols="70" rows="30" data-bind="value: $root.source"></textarea>
         </div>
         <button type="button" class="btn btn-lg btn-default" data-bind="click: $root.compileSource">Přeložit</button>
-    </script>
+    </template>
     
-    <script id="draw-town" type="text/html">
+    <template id="draw-town">
         <div class="town">
-            <div class="alert alert-warning" data-bind="visible: error() == 1">
+            <div class="alert alert-warning" data-bind="visible: error() === 1">
                 <strong>Pozor!</strong> Narazil jsem do zdi!
             </div>
-            <div class="alert alert-warning" data-bind="visible: error() == 2">
+            <div class="alert alert-warning" data-bind="visible: error() === 2">
                 <strong>Pozor!</strong> Nelze sebrat značku!
             </div>
-            <div class="alert alert-warning" data-bind="visible: error() == 3">
+            <div class="alert alert-warning" data-bind="visible: error() === 3">
                 <strong>Pozor!</strong> Příliš mnoho značek!
             </div>
-            <div class="alert alert-warning" data-bind="visible: error() == 4">
+            <div class="alert alert-warning" data-bind="visible: error() === 4">
                 <strong>Pozor!</strong>
                 Neznámý příkaz <span data-bind="text: errorParams"></span>!
             </div>
@@ -190,7 +190,7 @@
                 </tbody>
             </table>
         </div>
-    </script>
+    </template>
 
     <div data-bind="template: { name : tab(), afterRender: $root.templateShown }"></div>
     <div data-bind="visible: tab() === 'town'">
@@ -293,8 +293,7 @@
     </script>
 
 
-    <script type="text/html" id="about">
-    </script>
+    <template id="about"></template>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
