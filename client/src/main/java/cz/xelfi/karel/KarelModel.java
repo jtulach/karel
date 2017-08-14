@@ -241,7 +241,7 @@ final class KarelModel {
             proc = w.newProcedure(cmd);
         }
         proc.select();
-        m.setTab("edit");
+        m.setTab("town");
     }
 
     @Function static void stop(Karel m) {
