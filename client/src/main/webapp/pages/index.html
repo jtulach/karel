@@ -181,7 +181,8 @@
                     <tr>
                         <!-- ko foreach: columns -->
                         <td>
-                            <div class="karel" data-bind="css: ('direction-' + robot())"></div>
+                            <!-- i class="material-icons">&#xE868;</i -->
+                            <div class="karel material-icons robot" data-bind="visible: robot() !== 0, css: ('direction-' + robot())">&#xE868;</div>
                             <div class="karel" data-bind="css: ('mark-' + marks())"></div>
                         </td>
                         <!-- /ko -->
@@ -250,21 +251,22 @@
                             <span data-bind="if: $root.selectedCommand">
                                 <span data-bind="with: $root.selectedCommand">
                                     <span data-bind="text: name"></span>
+                                    <i class="material-icons">&#xE037;</i>
                                 </span>
                             </span>
                             <span data-bind="ifnot: $root.selectedCommand">Start</span>
                         </button>
                         <button type="button" class="btn btn-info"
                           data-bind="click: $root.stop, enable: $root.running">
-                            <span>&Square;</span>
+                            <i class="material-icons">&#xE047;</i>
                         </button>
                         <button type="button" class="btn btn-info"
                           data-bind="click: $root.step, enable: $root.paused">
-                            <span>&trianglerighteq;</span>
+                            <i class="material-icons">&#xE044;</i>
                         </button>
                         <button type="button" class="btn btn-info"
                           data-bind="click: $root.pause, enable: $root.running">
-                            <span>||</span>
+                            <i class="material-icons">&#xE034;</i>
                         </button>
                     </div>
                     <div>

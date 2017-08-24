@@ -20,6 +20,43 @@ body {
   padding-bottom: 30px;
 }
 
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(fonts/MaterialIcons-Regular.woff2) format('woff2'),
+    url(fonts/MaterialIcons-Regular.woff) format('woff'),
+    url(fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
@@ -78,8 +115,47 @@ table.town div {
     font-size: 24px;
 }
 
+table.town div.robot {
+    color: rgba( 0, 0, 0, 0.48);
+}
+/*
+table.town div.robot:after {
+    content: '\00E868';
+}
+*/
+
+table.town2 td {
+    border: 1px solid black;
+    vertical-align: middle;
+    text-align: center;
+}
+
+table.town2 div.karel {
+    background-color: red;
+    width: 5vmin;
+    height: 5vmin;
+}
+
+table.town div.direction-1 {
+    transform: rotate( 90deg );
+    align-content: center;
+}
+
+table.town div.direction-2 {
+    transform: rotate( 180deg );
+}
+
+table.town div.direction-3 {
+    transform: rotate( 270deg );
+}
+
+table.town div.direction-4 {
+    
+}
+
+
 table.town div.direction-1:after {
-    content: '\002192';
+    content: '\002192';  
 }
 
 table.town div.direction-2:after {
