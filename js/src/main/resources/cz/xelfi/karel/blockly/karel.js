@@ -78,8 +78,24 @@ function injectKarel(id, keys, loc) {
             workspace.updateToolbox(s);
         }
         return s;
-    };
+    };    
 var Blockly = window['Blockly'];
+if (Object.defineProperty) {
+    var currentlySelected = null;
+    Object.defineProperty(Blockly, 'selected', {
+        get: function () {
+            return currentlySelected;
+        },
+
+        set: function (value) {
+            var old = currentlySelected;
+            currentlySelected = value;
+            if (onSelectListener) {
+                onSelectListener(['blocklySelectChange', old, value]);
+            }
+        }
+    });
+}
 Blockly.Blocks['karel_funkce'] = {
   init: function() {
     this.appendDummyInput()
