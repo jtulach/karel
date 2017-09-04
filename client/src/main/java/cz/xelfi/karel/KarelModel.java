@@ -81,12 +81,7 @@ final class KarelModel {
         workArea.addSelectionChange(new Runnable() {
             @Override
             public void run() {
-                Procedure proc = workArea.getSelectedProcedure();
-                if (proc == null) {
-                    karel.setSelectedCommand(null);
-                } else {
-                    karel.setSelectedCommand(new Command(proc.getId(), proc.getName()));
-                }
+                refreshCommands(karel, true);
             }
         });
 
@@ -140,6 +135,7 @@ final class KarelModel {
 
     @Function static void changeTabTown(Karel m) {
         m.setTab("town");
+        refreshCommands(m, true);
     }
 
     @ModelOperation @Function static void changeTabTask(Karel m) throws URISyntaxException {
@@ -162,7 +158,7 @@ final class KarelModel {
 
     @Function static void templateShown(Karel m) {
         if ("edit".equals(m.getTab())) {
-            refreshCommands(m);
+            refreshCommands(m, false);
         }
     }
 
@@ -181,17 +177,32 @@ final class KarelModel {
         }
     }
 
-    private static void refreshCommands(Karel m) {
-        if (findWorkspace(m).isEmpty()) {
-            return;
-        }
-        List<Command> arr = new ArrayList<>();
+    private static void refreshCommands(Karel m, boolean select) {
+        Procedure selectedProc = findWorkspace(m).getSelectedProcedure();
+        Command selectedCommand = null;
+
+        List<Command> arr = new ArrayList<>(m.getCommands());
+        int index = 0;
         for (Procedure p : findWorkspace(m).getProcedures()) {
-            arr.add(new Command(p.getId(), p.getName()));
+            Command current = index < arr.size() ? arr.get(0) : null;
+            if (current != null && current.getId().equals(p.getId())) {
+                current.setName(p.getName());
+            } else {
+                arr.add(index, new Command(p.getId(), p.getName()));
+            }
+            if (selectedProc != null && selectedProc.getId().equals(p.getId())) {
+                selectedCommand = arr.get(index);
+            }
+            index++;
+        }
+        if (index < arr.size()) {
+            arr.subList(index, arr.size()).clear();
         }
         Storage.getDefault().put("workspace", findWorkspace(m).toString());
-        m.getCommands().clear();
-        m.getCommands().addAll(arr);
+        m.assignCommands(arr.toArray(new Command[0]));
+        if (select) {
+            karel.setSelectedCommand(selectedCommand);
+        }
     }
 
     @Function static void invokeScratch(Karel m) {
@@ -201,7 +212,7 @@ final class KarelModel {
         }
         Procedure procedure = findWorkspace(m).findProcedure(data.getId());
         if (procedure == null) {
-            refreshCommands(m);
+            refreshCommands(m, false);
             return;
         }
         List<KarelCompiler> comps = new ArrayList<>();
@@ -213,7 +224,7 @@ final class KarelModel {
     @Function static void invoke(Karel m, Command data) {
         Procedure procedure = findWorkspace(m).findProcedure(data.getId());
         if (procedure == null) {
-            refreshCommands(m);
+            refreshCommands(m, false);
             return;
         }
         List<TaskTestCase> arr = m.getCurrentTask().getTests();
@@ -368,7 +379,7 @@ final class KarelModel {
         compile(m, true);
     }
     static void compile(Karel m, boolean switchToTown) {
-        refreshCommands(m);
+        refreshCommands(m, false);
         if (switchToTown) {
             m.setTab("town");
         }
@@ -388,7 +399,7 @@ final class KarelModel {
     static void compileSource(Karel m) {
         Workspace w = findWorkspace(m);
         w.parse(m.getSource());
-        refreshCommands(m);
+        refreshCommands(m, true);
         m.setTab("town");
     }
 

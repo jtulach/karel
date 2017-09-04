@@ -245,16 +245,16 @@
                     <div data-bind="with: town">
                         <div data-bind="template: 'draw-town'"></div>
                     </div>
+                    <div class="form-group">
+                        <select class="form-control" 
+                            data-bind="options: $root.commands, optionsText: 'name', value: $root.selectedCommand"
+                        >
+                        </select>
+                    </div>
                     <div>
                         <button type="button" class="btn btn-info"
                           data-bind="click: $root.invokeScratch, enable: $root.canStartScratch">
-                            <span data-bind="if: $root.selectedCommand">
-                                <span data-bind="with: $root.selectedCommand">
-                                    <span data-bind="text: name"></span>
-                                    <i class="material-icons">&#xE037;</i>
-                                </span>
-                            </span>
-                            <span data-bind="ifnot: $root.selectedCommand">Start</span>
+                            <i class="material-icons">&#xE037;</i>
                         </button>
                         <button type="button" class="btn btn-info"
                           data-bind="click: $root.stop, enable: $root.running">
