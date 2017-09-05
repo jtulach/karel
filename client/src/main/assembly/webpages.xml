@@ -36,6 +36,7 @@
               <exclude>**/*.jpg</exclude>
               <exclude>**/*.gif</exclude>
               <exclude>media/**</exclude>
+              <exclude>fonts/**</exclude>
           </excludes>
       </fileSet>
       <fileSet>
@@ -47,6 +48,7 @@
               <include>**/*.jpg</include>
               <include>**/*.gif</include>
               <include>media/**</include>
+              <include>fonts/**</include>
           </includes>
       </fileSet>
   </fileSets>

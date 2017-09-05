@@ -153,23 +153,6 @@ table.town div.direction-4 {
     
 }
 
-
-table.town div.direction-1:after {
-    content: '\002192';  
-}
-
-table.town div.direction-2:after {
-    content: '\002193';
-}
-
-table.town div.direction-3:after {
-    content: '\002190';
-}
-
-table.town div.direction-4:after {
-    content: '\002191';
-}
-
 table.town div.mark-1:after {
     content: '1';
 }

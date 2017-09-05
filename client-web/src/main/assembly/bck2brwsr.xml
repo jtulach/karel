@@ -32,6 +32,25 @@
           <directory>target/web/pages</directory>
           <outputDirectory>/</outputDirectory>
           <filtered>true</filtered>
+          <excludes>
+              <exclude>**/*.png</exclude>
+              <exclude>**/*.jpg</exclude>
+              <exclude>**/*.gif</exclude>
+              <exclude>media/**</exclude>
+              <exclude>fonts/**</exclude>
+          </excludes>
+      </fileSet>
+      <fileSet>
+          <directory>target/web/pages</directory>
+          <outputDirectory>/</outputDirectory>
+          <filtered>false</filtered>
+          <includes>
+              <include>**/*.png</include>
+              <include>**/*.jpg</include>
+              <include>**/*.gif</include>
+              <include>media/**</include>
+              <include>fonts/**</include>
+          </includes>
       </fileSet>
         <fileSet>
             <directory>${project.build.directory}</directory>
