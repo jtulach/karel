@@ -17,6 +17,11 @@
  */
 package cz.xelfi.karel.blockly;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Locale;
 import net.java.html.js.JavaScriptBody;
 import net.java.html.js.JavaScriptResource;
 
@@ -27,6 +32,11 @@ final class KarelBlockly {
     static Object getDefault() {
         if (js == null) {
             js = init0();
+            try {
+                loadMsgs(Locale.getDefault());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
         return js;
     }
@@ -34,4 +44,34 @@ final class KarelBlockly {
 
     @JavaScriptBody(args = {}, body = "return Blockly['karel']")
     private static native Object init0();
+
+    private static void loadMsgs(Locale l) throws IOException {
+        String suffix = l.getLanguage();
+        StringBuilder sb;
+        try (Reader is = new InputStreamReader(findLocalizedMsgs(suffix), "UTF-8")) {
+            sb = new StringBuilder();
+            for (;;) {
+                int ch = is.read();
+                if (ch == -1) {
+                    break;
+                }
+                sb.append((char) ch);
+            }
+        }
+        registerMsg(sb.toString());
+    }
+
+    private static InputStream findLocalizedMsgs(String suffix) {
+        InputStream is = KarelBlockly.class.getResourceAsStream("msg/json/" + suffix + ".json");
+        if (is == null) {
+            KarelBlockly.class.getResourceAsStream("msg/json/en.json");
+        }
+        return is;
+    }
+
+    @JavaScriptBody(args = { "json" }, body =
+        "var obj = JSON.parse(json);\n" +
+        "Blockly.Msg = obj;\n"
+    )
+    private native static void registerMsg(String json);
 }
