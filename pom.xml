@@ -20,7 +20,7 @@
         <net.java.html.version>1.4</net.java.html.version>
         <bck2brwsr.version>0.20</bck2brwsr.version>
         <bck2brwsr.obfuscationlevel>FULL</bck2brwsr.obfuscationlevel>
-        <junit.browser.version>0.9</junit.browser.version>
+        <junit.browser.version>1.0</junit.browser.version>
         <nb.html.version>1.0</nb.html.version>
         <jersey.version>2.13</jersey.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
