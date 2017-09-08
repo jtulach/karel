@@ -198,12 +198,6 @@
         <div class="container theme-showcase" role="main">
         <div class="row">
             <div class="col-sm-8">
-                <div style="display: none" data-bind="visible: true">
-                    <button data-bind="click: $root.loadWorkspace">Load</button>
-                    <button data-bind="click: $root.collapse, enable: $root.selectedCommand">Collapse</button>
-                    <button data-bind="click: $root.expand, enable: $root.selectedCommand">Expand</button>
-                    <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Show Code</button>
-                </div>
                 <div id="workspace" style="height: 80vh;"></div>
             </div>
             <div class="col-sm-4">
@@ -271,6 +265,10 @@
                     </div>
                     <div>
                         <input type="range" min="1" max="100" step="1" data-bind="value: $root.speed"/>
+                    </div>
+                    <div style="display: none" data-bind="visible: true">
+                        <button data-bind="click: $root.loadWorkspace">Load</button>
+                        <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Show Code</button>
                     </div>
                 </div>
             </div>

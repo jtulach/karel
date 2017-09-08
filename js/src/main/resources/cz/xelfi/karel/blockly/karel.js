@@ -206,6 +206,7 @@ Blockly.Blocks['karel_call'] = {
         'toolbox': toolbox()
     });
     workspace.addChangeListener(toolbox);
+    workspace.options.collapse = true;
 
     function addListeners(callback) {
         onSelectListener = callback;
