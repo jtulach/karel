@@ -201,7 +201,7 @@ final class KarelModel {
         Storage.getDefault().put("workspace", findWorkspace(m).toString());
         m.assignCommands(arr.toArray(new Command[0]));
         if (select) {
-            karel.setSelectedCommand(selectedCommand);
+            m.setSelectedCommand(selectedCommand);
         }
     }
 
