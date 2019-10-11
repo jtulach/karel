@@ -180,7 +180,7 @@
                     <!-- ko foreach: rows -->
                     <tr>
                         <!-- ko foreach: columns -->
-                        <td>
+                        <td data-bind="click: rotate">
                             <!-- i class="material-icons">&#xE868;</i -->
                             <div class="karel material-icons robot" data-bind="visible: robot() !== 0, css: ('direction-' + robot())">&#xE868;</div>
                             <div class="karel" data-bind="css: ('mark-' + marks())"></div>
