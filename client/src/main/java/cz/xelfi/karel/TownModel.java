@@ -97,16 +97,44 @@ class TownModel {
         static boolean isEmpty(Square sq) {
             return sq.getRobot() == 0 && sq.getMarks() == 0;
         }
+    }
+
+    @Function
+    static void rotate(Town model, Square data, boolean shiftKey, boolean altKey, boolean ctrlKey) {
+        Square sq = findKarelSquare(model, null);
+        if (sq == data) {
+            model.left();
+            return;
+        }
+        if (sq == null) {
+            data.setRobot(1);
+            return;
+        }
+        if (shiftKey) {
+            data.setRobot(sq.getRobot());
+            sq.setRobot(0);
+            return;
+        }
         
-        @Function static void rotate(Square sq) {
-            if (sq.getRobot() == 0) {
-                if (sq.getMarks() == 5) {
-                    sq.setMarks(111);
-                } else if (sq.getMarks() == 111) {
-                    sq.setMarks(0);
-                } else {
-                    sq.setMarks(sq.getMarks() + 1);
-                }
+        if (altKey) {
+            if (data.getMarks() == 111) {
+                data.setMarks(0);
+            } else {
+                data.setMarks(111);
+            }
+            return;
+        }
+        
+        int delta = ctrlKey ? -1 : 1;
+        
+        if (data.getRobot() == 0) {
+            if (data.getMarks() == 111) {
+                data.setMarks(0);
+            } else {
+                data.setMarks(data.getMarks() + delta);
+            }
+            if (data.getMarks() < 0 || data.getMarks() > 5) {
+                data.setMarks(111);
             }
         }
     }
@@ -146,17 +174,26 @@ class TownModel {
         }
     }
     
-    static int[] findKarel(Town t) {
+    static Square findKarelSquare(Town t, int[] xyHeading) {
         for (int y = 0; y < t.getRows().size(); y++) {
             Row r = t.getRows().get(y);
             for (int x = 0; x < r.getColumns().size(); x++) {
                 Square square = r.getColumns().get(x);
                 if (square.getRobot() != 0) {
-                    return new int[] { x, y, square.getRobot() };
+                    if (xyHeading != null) {
+                        xyHeading[0] = x;
+                        xyHeading[1] = y;
+                        xyHeading[2] = square.getRobot();
+                    }
+                    return square;
                 }
             }
         }
         return null;
+    }
+    static int[] findKarel(Town t) {
+        int[] res = new int[3];
+        return findKarelSquare(t, res) == null ? null : res;
     }
     
     @Function @ModelOperation static void step(Town t) {
