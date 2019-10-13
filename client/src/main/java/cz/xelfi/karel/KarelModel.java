@@ -20,6 +20,8 @@ package cz.xelfi.karel;
 import cz.xelfi.karel.blockly.Execution.State;
 import cz.xelfi.karel.blockly.Procedure;
 import cz.xelfi.karel.blockly.Workspace;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -28,10 +30,14 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.java.html.BrwsrCtx;
 import net.java.html.json.ComputedProperty;
 import net.java.html.json.Function;
 import net.java.html.json.Model;
 import net.java.html.json.ModelOperation;
+import net.java.html.json.Models;
 import net.java.html.json.OnReceive;
 import net.java.html.json.Property;
 
@@ -173,8 +179,26 @@ final class KarelModel {
     static void loadWorkspace(Karel m) {
         String xml = Storage.getDefault().get("workspace", null);
         if (xml != null) {
-            findWorkspace(m).loadXML(xml);
+            final Workspace w = findWorkspace(m);
+            w.clear();
+            w.loadXML(xml);
         }
+        String json = Storage.getDefault().get("town", null);
+        if (json != null) {
+            ByteArrayInputStream is = new ByteArrayInputStream(json.getBytes());
+            try {
+                Town town = Models.parse(BrwsrCtx.findDefault(KarelModel.class), Town.class, is);
+                TownModel.load(m.getScratch().getTown(), town);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Function
+    static void storeWorkspace(Karel m) {
+        Storage.getDefault().put("workspace", findWorkspace(m).toString());
+        Storage.getDefault().put("town", TownModel.toJSON(m.getScratch().getTown()));
     }
 
     private static void refreshCommands(Karel m, boolean select) {
@@ -198,7 +222,6 @@ final class KarelModel {
         if (index < arr.size()) {
             arr.subList(index, arr.size()).clear();
         }
-        Storage.getDefault().put("workspace", findWorkspace(m).toString());
         m.assignCommands(arr.toArray(new Command[0]));
         if (select) {
             m.setSelectedCommand(selectedCommand);

@@ -267,8 +267,9 @@
                         <input type="range" min="1" max="100" step="1" data-bind="value: $root.speed"/>
                     </div>
                     <div style="display: none" data-bind="visible: true">
-                        <button data-bind="click: $root.loadWorkspace">Load</button>
-                        <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Show Code</button>
+                        <button data-bind="click: $root.loadWorkspace">Načíst</button>
+                        <button data-bind="click: $root.storeWorkspace">Uložit</button>
+                        <button data-bind="click: $root.showCode, enable: $root.selectedCommand">Kódovat</button>
                     </div>
                 </div>
             </div>
