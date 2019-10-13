@@ -83,7 +83,41 @@ public class TownModelTest {
         boolean isWall = TownModel.isCondition(t, Execution.Condition.WALL);
         assertTrue("Yes, heading towards the wall", isWall);
     }
+
+    @Test
+    public void rotateEmptyWallOneTwoMore() throws Exception {
+        Town t = new Town();
+        t.clear();
+        Square sq = t.getRows().get(5).getColumns().get(5);
+
+        assertEquals("Empty", 0, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, false);
+        assertEquals("There is a wall", 111, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, false);
+        assertEquals("One mark", 1, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, false);
+        assertEquals("Two marks", 2, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, false);
+        TownModel.rotate(t, sq, false, false, false);
+        TownModel.rotate(t, sq, false, false, false);
+        assertEquals("Five marks", 5, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, false);
+        assertEquals("Empty again", 0, sq.getMarks());
+    }
     
+    @Test
+    public void rotateBackwardsEmptyWallOneTwoMore() throws Exception {
+        Town t = new Town();
+        t.clear();
+        Square sq = t.getRows().get(5).getColumns().get(5);
+
+        assertEquals("Empty", 0, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, true);
+        assertEquals("There is a wall", 111, sq.getMarks());
+        TownModel.rotate(t, sq, false, false, true);
+        assertEquals("Empty again", 0, sq.getMarks());
+    }
+
     @Test public void compressTown() throws Exception {
         Town t = new Town();
         t.clear();

@@ -124,17 +124,24 @@ class TownModel {
             }
             return;
         }
-        
-        int delta = ctrlKey ? -1 : 1;
-        
-        if (data.getRobot() == 0) {
-            if (data.getMarks() == 111) {
-                data.setMarks(0);
-            } else {
-                data.setMarks(data.getMarks() + delta);
-            }
-            if (data.getMarks() < 0 || data.getMarks() > 5) {
+
+        switch (data.getMarks()) {
+            case 0:
                 data.setMarks(111);
+                break;
+            case 111:
+                if (ctrlKey) {
+                    data.setMarks(0);
+                } else {
+                    data.setMarks(1);
+                }
+                break;
+            default: {
+                int delta = ctrlKey ? -1 : 1;
+                data.setMarks(data.getMarks() + delta);
+                if (data.getMarks() < 0 || data.getMarks() > 5) {
+                    data.setMarks(0);
+                }
             }
         }
     }
